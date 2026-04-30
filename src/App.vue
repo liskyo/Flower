@@ -4,8 +4,10 @@ import GardenScene from './components/GardenScene.vue';
 import FlowerCatalog from './components/FlowerCatalog.vue';
 import AuthModal from './components/AuthModal.vue';
 import StartScene from './components/StartScene.vue';
+import ShopOverlay from './components/ShopOverlay.vue';
+import MapOverlay from './components/MapOverlay.vue';
 import { supabase } from './supabase';
-import { loadStateFromCloud, handleLogout } from './store/gameState';
+import { loadStateFromCloud, handleLogout, resetGame } from './store/gameState';
 
 const isLoading = ref(true);
 const currentTab = ref('start'); 
@@ -61,11 +63,12 @@ const doLogout = async () => {
       <div v-else class="game-content">
         <!-- 會員控制按鈕 -->
         <div class="auth-control">
-          <button v-if="!currentUser" @click="showAuth = true" class="auth-btn login-btn">雲端登入</button>
+          <button v-if="!currentUser" @click="showAuth = true" class="auth-btn login">雲端登入</button>
           <div v-else class="user-badge">
             <span class="user-email" :title="currentUser.email">{{ currentUser.email.split('@')[0] }}</span>
-            <button @click="doLogout" class="auth-btn logout-btn">登出</button>
+            <button @click="doLogout" class="auth-btn logout">登出</button>
           </div>
+          <button @click="resetGame" class="auth-btn reset">🔄 重置</button>
         </div>
 
         <AuthModal v-if="showAuth" @close="showAuth = false" @login-success="handleLoginSuccess" />
@@ -84,6 +87,15 @@ const doLogout = async () => {
             <FlowerCatalog 
               v-else-if="currentTab === 'catalog'" 
               @back="currentTab = 'garden'" 
+            />
+            <ShopOverlay 
+              v-else-if="currentTab === 'shop'" 
+              @back="currentTab = 'garden'" 
+            />
+            <MapOverlay 
+              v-else-if="currentTab === 'map'" 
+              @back="currentTab = 'garden'"
+              @select-country="currentTab = 'garden'"
             />
             <div v-else @click="currentTab = 'garden'" class="placeholder-overlay">
               暫未開放，點擊返回
@@ -116,11 +128,16 @@ body { background: #000; overflow: hidden; height: 100vh; width: 100vw; }
 }
 
 /* 登入按鈕區域 */
-.auth-control { position: absolute; top: 10px; left: 10px; z-index: 6000; }
-.auth-btn { background: #3498db; color: #fff; border: 2px solid #2980b9; padding: 5px 12px; border-radius: 20px; font-weight: 900; font-size: 0.8rem; cursor: pointer; box-shadow: 0 3px 0 #2980b9; transition: transform 0.1s; }
-.auth-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 #2980b9; }
-.auth-btn.logout-btn { background: #e74c3c; border-color: #c0392b; box-shadow: 0 3px 0 #c0392b; margin-left: 5px; }
-.auth-btn.logout-btn:active { box-shadow: 0 1px 0 #c0392b; }
+.auth-control { position: absolute; top: 10px; left: 10px; z-index: 6000; display: flex; gap: 8px; }
+.auth-btn {
+  padding: 6px 12px; border-radius: 20px; font-weight: 900; font-size: 0.85rem;
+  border: 3px solid #2d3436; cursor: pointer; box-shadow: 0 4px 0 #2d3436; color: white;
+}
+.auth-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #2d3436; }
+.auth-btn.login { background: #3498db; }
+.auth-btn.logout { background: #e74c3c; }
+.auth-btn.reset { background: #e67e22; padding: 6px 10px; }
+
 .user-badge { display: flex; align-items: center; background: rgba(255,255,255,0.8); padding: 3px 5px 3px 12px; border-radius: 20px; border: 2px solid #2d3436; }
 .user-email { font-weight: 900; font-size: 0.8rem; color: #2d3436; max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 

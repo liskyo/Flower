@@ -4,7 +4,7 @@ import { FLOWERS } from '../data/flowers';
 const SAVE_KEY = 'global_flower_game_save_v6'; // 升級版本以強制重置結構
 
 const defaultState = {
-  diamonds: 100,
+  diamonds: 1000, // 給予一些初始鑽石方便測試
   currentCountry: 'Taiwan',
   currentScene: 1,
   unlockedScenes: { 'Taiwan': [1, 2, 3, 4] },
@@ -14,10 +14,80 @@ const defaultState = {
     'Taiwan_1': [], 'Taiwan_2': [], 'Taiwan_3': [], 'Taiwan_4': [],
     'Japan_1': [], 'Japan_2': [], 'Japan_3': [], 'Japan_4': []
   },
-  upgrades: { spawnRate: 0.5, maxSlots: 24 }
+  upgrades: { spawnRate: 0.5, maxSlots: 24 },
+  activeBuffs: {
+    sunnyDollUntil: null,
+    rainUntil: null,
+    rainMultiplier: 1,
+    fertilizerUntil: null,
+    fertilizerMultiplier: 1
+  }
 };
 
 import { supabase } from '../supabase';
+
+export const WEATHER_TYPES = [
+  { id: 'storm', name: '暴風雨', speed: 0.5 },
+  { id: 'cloudy', name: '陰天', speed: 1.0 },
+  { id: 'rainy', name: '小雨', speed: 1.1 },
+  { id: 'sunny', name: '晴天', speed: 1.1 }
+];
+export const WEATHER_CYCLE_MS = 2 * 60 * 60 * 1000;
+
+export const getCurrentWeather = () => {
+  if (state.activeBuffs?.sunnyDollUntil && Date.now() < state.activeBuffs.sunnyDollUntil) {
+    return WEATHER_TYPES[3]; // sunny
+  }
+  const cycleIndex = Math.floor(Date.now() / WEATHER_CYCLE_MS) % 4;
+  return WEATHER_TYPES[cycleIndex];
+};
+
+export const calculateEffectiveElapsedTime = (startTime) => {
+  const now = Date.now();
+  if (!startTime || now <= startTime) return { growthElapsed: 0, realElapsed: 0 };
+  
+  let totalGrowthSeconds = 0;
+  let cursor = startTime;
+  
+  while (cursor < now) {
+    const nextWeatherBoundary = Math.ceil((cursor + 1) / WEATHER_CYCLE_MS) * WEATHER_CYCLE_MS;
+    const sunnyEnd = (state.activeBuffs?.sunnyDollUntil > cursor) ? state.activeBuffs.sunnyDollUntil : Infinity;
+    const rainEnd = (state.activeBuffs?.rainUntil > cursor) ? state.activeBuffs.rainUntil : Infinity;
+    
+    let nextTransition = Math.min(now, nextWeatherBoundary, sunnyEnd, rainEnd);
+    
+    let weatherSpeed = 1.0;
+    if (cursor < sunnyEnd) {
+      weatherSpeed = 1.1; // sunny
+    } else {
+      const cycleIndex = Math.floor(cursor / WEATHER_CYCLE_MS) % 4;
+      weatherSpeed = WEATHER_TYPES[cycleIndex].speed;
+    }
+    
+    let rainSpeed = 1.0;
+    if (cursor < rainEnd) {
+      rainSpeed = state.activeBuffs?.rainMultiplier || 1;
+    }
+    
+    const segmentDuration = (nextTransition - cursor) / 1000;
+    totalGrowthSeconds += segmentDuration * weatherSpeed * rainSpeed;
+    
+    cursor = nextTransition;
+  }
+  
+  return {
+    growthElapsed: totalGrowthSeconds,
+    realElapsed: (now - startTime) / 1000
+  };
+};
+
+export const getWitherMultiplier = () => {
+  const now = Date.now();
+  if (state.activeBuffs?.fertilizerUntil && now < state.activeBuffs.fertilizerUntil) {
+    return state.activeBuffs?.fertilizerMultiplier || 1;
+  }
+  return 1;
+};
 
 // 初始化各場景花園
 Object.keys(defaultState.gardens).forEach(key => {
@@ -175,6 +245,37 @@ export const autoSpawn = () => {
 export const setScene = (sceneId) => {
   state.currentScene = Number(sceneId);
   if (getCurrentGarden().slice(0, 16).filter(s => s.status !== 'empty').length < 2) {
+    seedVariety();
+  }
+};
+
+export const resetGame = () => {
+  if (confirm("確定要重置遊戲嗎？所有花園與鑽石將歸零，此動作無法復原！")) {
+    const freshState = {
+      diamonds: 100,
+      currentCountry: 'Taiwan',
+      currentScene: 1,
+      unlockedScenes: { 'Taiwan': [1, 2, 3, 4] },
+      inventory: {}, 
+      medals: {},
+      gardens: {},
+      upgrades: { spawnRate: 0.5, maxSlots: 24 }
+    };
+    
+    // 初始化各場景花園
+    ['Taiwan_1', 'Taiwan_2', 'Taiwan_3', 'Taiwan_4', 'Japan_1', 'Japan_2', 'Japan_3', 'Japan_4'].forEach(key => {
+      freshState.gardens[key] = Array.from({ length: 24 }, (_, i) => ({
+        id: i, flowerId: null, startTime: null, status: 'empty'
+      }));
+    });
+
+    Object.assign(state, freshState);
+    localStorage.setItem(SAVE_KEY, JSON.stringify(state));
+    
+    if (currentUser) {
+      supabase.from('profiles').upsert({ id: currentUser.id, game_state: state }).then();
+    }
+    
     seedVariety();
   }
 };

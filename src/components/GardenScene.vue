@@ -2,7 +2,7 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted, computed, nextTick } from 'vue';
-import { state, autoSpawn, setScene, getCurrentGarden, harvestFlower } from '../store/gameState';
+import { state, autoSpawn, setScene, getCurrentGarden, harvestFlower, getCurrentWeather } from '../store/gameState';
 import { FLOWERS } from '../data/flowers';
 import GardenSlot from './GardenSlot.vue';
 
@@ -24,6 +24,14 @@ const currentSceneNames = computed(() => {
 });
 
 let spawnTimer = null;
+let weatherTimer = null;
+
+const currentWeather = ref(getCurrentWeather());
+
+const getWeatherIcon = (id) => {
+  const map = { storm: '⛈️', cloudy: '☁️', rainy: '🌧️', sunny: '☀️' };
+  return map[id] || '☀️';
+};
 
 const startSwiping = () => { isSwiping.value = true; };
 const stopSwiping = () => { isSwiping.value = false; };
@@ -87,10 +95,15 @@ onMounted(() => {
   spawnTimer = setInterval(() => {
     autoSpawn();
   }, 1500);
+  
+  weatherTimer = setInterval(() => {
+    currentWeather.value = getCurrentWeather();
+  }, 5000); // 每 5 秒更新一次天氣
 });
 
 onUnmounted(() => {
   clearInterval(spawnTimer);
+  clearInterval(weatherTimer);
 });
 </script>
 
@@ -114,11 +127,23 @@ onUnmounted(() => {
         <div class="hud-level">Lv. 1</div>
         <div class="progress-bar"><div class="progress-fill"></div></div>
       </div>
-      <div class="weather-icon">☀</div>
       <div class="diamond-display">💎 {{ state.diamonds }}</div>
     </div>
 
+    <!-- 右上角：天氣指示器 -->
+    <div class="weather-hud">
+      <div class="weather-icon-large">{{ getWeatherIcon(currentWeather.id) }}</div>
+      <div class="weather-info">
+        <div class="weather-name">{{ currentWeather.name }}</div>
+        <div class="weather-speed">生長 {{ Math.round(currentWeather.speed * 100) }}%</div>
+      </div>
+    </div>
+
     <div class="scene-overlay-ui">
+      <!-- 天氣視覺特效層 -->
+      <div class="weather-overlay" :class="currentWeather.id">
+        <div class="rain-layer"></div>
+      </div>
       <div class="landmark-nav">
         <button 
           v-for="(name, index) in currentSceneNames" 
@@ -216,6 +241,43 @@ onUnmounted(() => {
 .diamond-display {
   background: white; border: 3px solid #2d3436; padding: 5px 12px;
   border-radius: 20px; font-weight: 900; box-shadow: 0 4px 0 #2d3436; color: #2d3436;
+}
+
+/* 右上角天氣面板 */
+.weather-hud {
+  position: absolute; top: 15px; right: 15px; z-index: 2000;
+  display: flex; align-items: center; gap: 8px;
+  background: rgba(45, 52, 54, 0.85); border: 2px solid rgba(255,255,255,0.3);
+  padding: 6px 12px; border-radius: 20px; color: white; box-shadow: 0 4px 0 rgba(0,0,0,0.5);
+}
+.weather-icon-large { font-size: 1.8rem; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.5)); }
+.weather-info { display: flex; flex-direction: column; }
+.weather-name { font-weight: 900; font-size: 0.9rem; }
+.weather-speed { font-size: 0.75rem; color: #ffeaa7; font-weight: bold; }
+
+/* 天氣濾鏡與特效 */
+.weather-overlay {
+  position: absolute; inset: 0; z-index: 5; pointer-events: none;
+  transition: background 2s ease; overflow: hidden;
+}
+.weather-overlay.storm { background: rgba(10, 15, 30, 0.5); }
+.weather-overlay.cloudy { background: rgba(50, 55, 65, 0.35); }
+.weather-overlay.rainy { background: rgba(30, 45, 60, 0.25); }
+.weather-overlay.sunny { background: rgba(255, 230, 150, 0.1); }
+
+.rain-layer {
+  position: absolute; inset: -20% -10%; 
+  background-image: radial-gradient(circle at 50% 50%, rgba(255,255,255,0.4) 1px, transparent 1px);
+  background-size: 20px 40px; background-position: 0 0;
+  animation: rainFall 0.4s linear infinite; opacity: 0;
+  transform: rotate(15deg);
+}
+.storm .rain-layer { opacity: 1; animation-duration: 0.2s; background-size: 10px 20px; }
+.rainy .rain-layer { opacity: 0.5; animation-duration: 0.5s; background-size: 15px 30px; }
+
+@keyframes rainFall {
+  0% { background-position: 0 0; }
+  100% { background-position: -20px 100vh; }
 }
 
 /* Landmark Nav */

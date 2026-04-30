@@ -1,7 +1,7 @@
 <script setup>
 import { computed, ref, onMounted, onUnmounted, watch } from 'vue';
 import { FLOWERS } from '../data/flowers';
-import { state, harvestFlower } from '../store/gameState';
+import { state, harvestFlower, calculateEffectiveElapsedTime, getWitherMultiplier } from '../store/gameState';
 
 const props = defineProps(['slotData']);
 const emit = defineEmits(['swipe', 'harvest-animate']);
@@ -72,20 +72,24 @@ watch(() => props.slotData.flowerId, (newId) => {
 
 const updateProgress = () => {
   if (props.slotData.startTime && flower.value) {
-    const elapsed = (Date.now() - props.slotData.startTime) / 1000;
+    const { growthElapsed } = calculateEffectiveElapsedTime(props.slotData.startTime);
     
     if (props.slotData.status === 'growing') {
-      const p = Math.min((elapsed / flower.value.growthTime) * 100, 100);
+      const p = Math.min((growthElapsed / flower.value.growthTime) * 100, 100);
       progress.value = p;
       if (p >= 100) {
         props.slotData.status = 'ready';
+        props.slotData.readyTime = Date.now();
       }
     }
     
-    // 獨立檢查枯萎 (超過 30 分鐘)
+    // 獨立檢查枯萎 (真實時間 30 分鐘 * 肥料倍率)
     if (props.slotData.status === 'ready') {
-      const witherTime = flower.value.growthTime + 30 * 60; // 30 分鐘 = 1800 秒
-      if (elapsed >= witherTime) {
+      // 若舊存檔無 readyTime，則以現在時間扣掉 30 分鐘作為預估，避免剛讀取就枯萎的落差
+      const rTime = props.slotData.readyTime || (Date.now() - 1000); 
+      const timeSinceReady = (Date.now() - rTime) / 1000;
+      const witherTime = (30 * 60) * getWitherMultiplier(); // 30 分鐘 = 1800 秒
+      if (timeSinceReady >= witherTime) {
         props.slotData.status = 'withered';
       }
     }
