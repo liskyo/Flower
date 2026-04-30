@@ -91,34 +91,19 @@ const doLogout = async () => {
         <!-- 導航邏輯 -->
         <main class="main-viewport">
           <Transition name="pop" mode="out-in">
-            <StartScene 
-              v-if="currentTab === 'start'" 
-              @start="setTab('garden')" 
-            />
-            <GardenScene 
-              v-else-if="currentTab === 'garden'" 
-              @change-tab="setTab"
-            />
-            <FlowerCatalog 
-              v-else-if="currentTab === 'catalog'" 
-              @back="currentTab = 'garden'" 
-            />
-            <ShopOverlay 
-              v-else-if="currentTab === 'shop'" 
-              @back="currentTab = 'garden'" 
-            />
-            <MapOverlay 
-              v-else-if="currentTab === 'map'" 
-              @back="currentTab = 'garden'"
-              @select-country="currentTab = 'garden'"
-            />
-            <InventoryOverlay
-              v-else-if="currentTab === 'inventory'"
-              @back="currentTab = 'garden'"
-            />
-            <div v-else @click="currentTab = 'garden'" class="placeholder-overlay">
-              暫未開放，點擊返回
-            </div>
+            <StartScene v-if="currentTab === 'start'" @start="setTab('garden')" />
+          </Transition>
+
+          <GardenScene 
+            v-show="currentTab !== 'start'" 
+            @change-tab="setTab"
+          />
+
+          <Transition name="pop" mode="out-in">
+            <FlowerCatalog v-if="currentTab === 'catalog'" @back="currentTab = 'garden'" />
+            <ShopOverlay v-else-if="currentTab === 'shop'" @back="currentTab = 'garden'" />
+            <MapOverlay v-else-if="currentTab === 'map'" @back="currentTab = 'garden'" @select-country="currentTab = 'garden'"/>
+            <InventoryOverlay v-else-if="currentTab === 'inventory'" @back="currentTab = 'garden'" />
           </Transition>
         </main>
       </div>

@@ -277,14 +277,16 @@ export const autoSpawn = () => {
   if (Math.random() < 0.01 && legendaries.length > 0) finalPool = [...legendaries];
 
   if (finalPool.length > 0) {
-    // 【新增】權重對照表 (星數對應權重：數字越大越容易出現)
+    // 【新增防呆】確保傳說花朵權重最低
     const getWeight = (rarity) => {
+      if (rarity === 'Legendary') return 1; // 傳說機率最低 (權重1)
+
       const r = parseInt(rarity) || 1;
       if (r === 1) return 100; // 1星機率最高 (權重100)
-      if (r === 2) return 50;  // 2星
-      if (r === 3) return 20;  // 3星
-      if (r === 4) return 5;   // 4星
-      if (r === 5) return 1;   // 5星機率最低 (權重1)
+      if (r === 2) return 50;
+      if (r === 3) return 20;
+      if (r === 4) return 5;
+      if (r === 5) return 1;
       return 100;
     };
 
