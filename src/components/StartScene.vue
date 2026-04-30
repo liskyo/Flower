@@ -33,7 +33,11 @@ const handleStart = () => {
 
 <style scoped>
 .start-scene {
-  position: absolute; inset: 0; background: url('/background.png') no-repeat center center; background-size: cover; background-color: #87CEEB;
+  position: fixed; /* 👈 關鍵：從 absolute 改成 fixed */
+  inset: 0; 
+  background: url('/background.png') no-repeat center center; 
+  background-size: cover; 
+  background-color: #87CEEB;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   z-index: 50; cursor: pointer; opacity: 0; transition: opacity 0.8s ease-in-out;
   overflow: hidden;

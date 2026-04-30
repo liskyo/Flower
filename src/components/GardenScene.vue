@@ -350,23 +350,24 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
-.garden-scene { position: absolute; inset: 0; width: 100vw; height: 100vh; overflow: hidden; }
-
+/* GardenScene.vue */
+.garden-scene { 
+  position: fixed; /* 👈 同樣改成 fixed */
+  inset: 0; 
+  width: 100vw; height: 100vh; overflow: hidden; 
+}
 .scene-bg-wrapper { position: absolute; inset: 0; z-index: 0; overflow: hidden; }
 /* --- 找到這段並替換 --- */
 
-/* --- 找到這段並替換 --- */
+/* GardenScene.vue */
 .scene-bg-full {
   position: absolute; top: 0; left: 0; height: 100%;
   width: 300%; 
-  
-  /* 👇 關鍵修改：將 auto 改為 100vw，強迫單張背景寬高剛好等於螢幕大小 */
-  background-size: 100vw 100%; 
-  
+  /* 關鍵修正：確保每一張圖片的寬度剛好等於螢幕寬度 (300% 的 1/3) */
+  background-size: 33.333% 100%; 
   background-repeat: repeat-x;
   background-position: left center;
   animation: scrollBg 80s linear infinite;
-  transition: background-image 0.5s ease;
 }
 
 /* 2. 暴風雨飄移層：保留 z-index 提高的修正，確保閃電和龍捲風不會被 UI 蓋住 */

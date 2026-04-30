@@ -88,8 +88,12 @@ const handleSelect = (countryId) => {
 </template>
 
 <style scoped>
+/* --- 找到這段並替換 --- */
 .map-overlay {
-  position: absolute; inset: 0; background: radial-gradient(circle at center, #2c3e50, #1a252f); z-index: 8000;
+  position: fixed; /* 從 absolute 改為 fixed */
+  inset: 0; 
+  background: radial-gradient(circle at center, #2c3e50, #1a252f); 
+  z-index: 8000;
   display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px;
 }
 .close-btn {

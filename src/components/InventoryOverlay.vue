@@ -83,8 +83,12 @@ const useItem = (item) => {
 </template>
 
 <style scoped>
+/* --- 找到這段並替換 --- */
 .inventory-overlay {
-  position: absolute; inset: 0; background: rgba(10, 15, 25, 0.7); z-index: 8000;
+  position: fixed; /* 從 absolute 改為 fixed */
+  inset: 0; 
+  background: rgba(10, 15, 25, 0.7); 
+  z-index: 8000;
   display: flex; flex-direction: column; padding: 40px; color: white; backdrop-filter: blur(15px);
 }
 .shop-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
