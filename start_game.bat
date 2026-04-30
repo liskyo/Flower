@@ -8,13 +8,10 @@ if not exist "node_modules\" (
     call npm install
 )
 
-echo [2/3] Starting Game Server...
-echo Game URL: http://localhost:5173/
+echo [2/2] Starting Game Server and Opening Browser...
+echo Game URL will be automatically opened when ready!
 
-echo [3/3] Opening browser...
-start http://localhost:5173/
-
-:: Run Vite dev server
-call npm run dev
+:: Run Vite dev server and auto-open browser
+call npm run dev -- --open
 
 pause

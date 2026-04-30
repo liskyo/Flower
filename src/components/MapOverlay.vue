@@ -1,17 +1,19 @@
 <script setup>
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { state } from '../store/gameState';
 
 const emit = defineEmits(['back', 'select-country']);
 
+const selectedCountry = ref(null);
+
 const formatNumber = (num) => new Intl.NumberFormat('en-US').format(num);
 
 const countries = [
-  { id: 'Taiwan', name: '台灣', x: 82, y: 45, flag: '🇹🇼' },
-  { id: 'Japan', name: '日本', x: 92, y: 35, flag: '🇯🇵' },
-  { id: 'Korea', name: '韓國', x: 83, y: 35, flag: '🇰🇷' },
-  { id: 'Thailand', name: '泰國', x: 78, y: 50, flag: '🇹🇭' },
-  { id: 'Singapore', name: '新加坡', x: 79, y: 58, flag: '🇸🇬' }
+  { id: 'Taiwan', name: '台灣', x: 56, y: 76, flag: '🇹🇼' },
+  { id: 'Japan', name: '日本', x: 90, y: 33, flag: '🇯🇵' },
+  { id: 'Korea', name: '韓國', x: 64, y: 45, flag: '🇰🇷' },
+  { id: 'Thailand', name: '泰國', x: 45, y: 84, flag: '🇹🇭' },
+  { id: 'Singapore', name: '新加坡', x: 50, y: 85, flag: '🇸🇬' }
 ];
 
 const handleSelect = (countryId) => {
@@ -62,13 +64,16 @@ const handleSelect = (countryId) => {
           locked: !state.unlockedCountries.includes(country.id)
         }"
         :style="{ top: `${country.y}%`, left: `${country.x}%` }"
-        @click="handleSelect(country.id)"
       >
-        <div class="hotspot"></div>
-        <div class="country-label">
+        <div class="hotspot" @click.stop="selectedCountry = selectedCountry === country.id ? null : country.id"></div>
+        <div class="country-label" :class="{ 'show-label': selectedCountry === country.id }">
           <div class="name">{{ country.flag }} {{ country.name }}</div>
-          <div v-if="state.unlockedCountries.includes(country.id)" class="status unlocked">✅ 已解鎖 (可免費前往)</div>
+          <div v-if="state.unlockedCountries.includes(country.id)" class="status unlocked">✅ 已解鎖</div>
           <div v-else class="status locked">🔒 需 {{ formatNumber(state.visitedCount * 1000000) }} 鑽石</div>
+          
+          <button class="action-btn" @click.stop="handleSelect(country.id)">
+            {{ state.unlockedCountries.includes(country.id) ? '🛫 立即前往' : '💰 購買機票' }}
+          </button>
         </div>
       </div>
     </div>
@@ -93,7 +98,7 @@ const handleSelect = (countryId) => {
 .diamond-val { color: #feca57; font-size: 1.2rem; }
 
 .map-container {
-  width: 95vw; max-width: 1200px; height: 75vh; position: relative; margin-top: 60px;
+  width: 95vw; max-width: 1200px; height: 75vh; position: relative; margin-top: 100px;
   background: #0f1c29; border-radius: 30px; overflow: hidden; border: 4px solid rgba(255,255,255,0.1);
   box-shadow: 0 20px 50px rgba(0,0,0,0.8), inset 0 0 100px rgba(0,0,0,0.5);
 }
@@ -122,18 +127,25 @@ const handleSelect = (countryId) => {
 .country-node.active .hotspot { background: #e74c3c; box-shadow: 0 0 20px #e74c3c, 0 0 40px #e74c3c; transform: scale(1.2); animation: pulse-active 1s infinite alternate; }
 
 .country-label {
-  background: rgba(0,0,0,0.85); border: 2px solid rgba(255,255,255,0.3); border-radius: 12px;
-  padding: 10px 20px; color: white; margin-top: 15px; text-align: center;
-  transition: all 0.3s; opacity: 0; transform: translateY(10px) scale(0.9); white-space: nowrap; pointer-events: none;
-  backdrop-filter: blur(5px);
+  background: rgba(0,0,0,0.85); border: 2px solid rgba(255,255,255,0.3); border-radius: 10px;
+  padding: 8px 12px; color: white; margin-top: 10px; text-align: center;
+  transition: all 0.2s; opacity: 0; transform: translateY(10px) scale(0.9); white-space: nowrap; pointer-events: none;
+  backdrop-filter: blur(5px); z-index: 100;
 }
-.country-node:hover .country-label { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; z-index: 100; }
-.country-node.active .country-label { border-color: #e74c3c; opacity: 1; transform: translateY(0) scale(1); }
+.country-label.show-label { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+.country-node.active .country-label.show-label { border-color: #e74c3c; }
 
-.country-label .name { font-weight: 900; font-size: 1.4rem; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
-.country-label .status { font-size: 0.9rem; margin-top: 8px; font-weight: bold; }
+.country-label .name { font-weight: 900; font-size: 1.1rem; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+.country-label .status { font-size: 0.8rem; margin-top: 5px; font-weight: bold; }
 .country-label .status.unlocked { color: #2ecc71; }
 .country-label .status.locked { color: #e74c3c; }
+
+.action-btn {
+  margin-top: 8px; width: 100%; padding: 6px; border-radius: 6px; font-weight: bold; font-size: 0.85rem;
+  background: linear-gradient(to bottom, #3498db, #2980b9); color: white; border: none; cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+}
+.action-btn:active { transform: translateY(1px); }
 
 @keyframes pulse {
   0% { box-shadow: 0 0 5px currentColor; }

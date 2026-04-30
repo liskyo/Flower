@@ -185,7 +185,7 @@ defineExpose({ triggerHarvest: pullUp });
     @mouseenter="handleMouseEnter"
   >
     <div class="slot-inner-centered">
-      <div v-if="slotData.status !== 'empty'" class="flower-container-v3" :style="{ transform: `scale(${growthScale})` }">
+      <div v-if="slotData.status !== 'empty' && flower" class="flower-container-v3" :style="{ transform: `scale(${growthScale})` }">
         <div class="flower-render-box">
           <img ref="imgRef" :src="`/assets/flowers/${flower.country.toLowerCase()}/${flower.id}.png`" class="hidden-core" @load="processImage" />
           <canvas ref="canvasRef" class="hidden-core"></canvas>

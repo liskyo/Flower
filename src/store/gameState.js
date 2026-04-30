@@ -161,6 +161,16 @@ export const getCurrentGarden = () => {
   if (!state.gardens[key]) {
     state.gardens[key] = Array.from({ length: 24 }, (_, i) => ({ id: i, flowerId: null, startTime: null, status: 'empty' }));
   }
+  
+  // 自動清理舊存檔中已不存在的花朵 (例如改過場景ID導致變更)
+  state.gardens[key].forEach(slot => {
+    if (slot.flowerId && !FLOWERS.some(f => f.id === slot.flowerId)) {
+      slot.status = 'empty';
+      slot.flowerId = null;
+      slot.startTime = null;
+    }
+  });
+
   return state.gardens[key];
 };
 
