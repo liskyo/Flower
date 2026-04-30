@@ -7,11 +7,11 @@ const emit = defineEmits(['back', 'select-country']);
 const formatNumber = (num) => new Intl.NumberFormat('en-US').format(num);
 
 const countries = [
-  { id: 'Taiwan', name: '台灣', x: 74, y: 55, flag: '🇹🇼' },
-  { id: 'Japan', name: '日本', x: 84, y: 38, flag: '🇯🇵' },
-  { id: 'Korea', name: '韓國', x: 73, y: 34, flag: '🇰🇷' },
-  { id: 'Thailand', name: '泰國', x: 45, y: 68, flag: '🇹🇭' },
-  { id: 'Singapore', name: '新加坡', x: 50, y: 88, flag: '🇸🇬' }
+  { id: 'Taiwan', name: '台灣', x: 82, y: 45, flag: '🇹🇼' },
+  { id: 'Japan', name: '日本', x: 86, y: 35, flag: '🇯🇵' },
+  { id: 'Korea', name: '韓國', x: 83, y: 35, flag: '🇰🇷' },
+  { id: 'Thailand', name: '泰國', x: 78, y: 50, flag: '🇹🇭' },
+  { id: 'Singapore', name: '新加坡', x: 79, y: 58, flag: '🇸🇬' }
 ];
 
 const handleSelect = (countryId) => {
@@ -49,23 +49,8 @@ const handleSelect = (countryId) => {
     </div>
     
     <div class="map-container">
-      <!-- 亞洲地圖輪廓 (抽象幾何) -->
-      <div class="world-map-bg">
-        <svg viewBox="0 0 1000 600" preserveAspectRatio="xMidYMid slice">
-          <!-- 亞歐大陸主體 -->
-          <path fill="rgba(46, 204, 113, 0.15)" stroke="rgba(46, 204, 113, 0.4)" stroke-width="2" 
-                d="M100 100 L400 50 L600 150 L700 300 L650 400 L550 450 L450 600 L300 550 L200 450 L50 300 Z" />
-          <!-- 日本群島 -->
-          <path fill="rgba(46, 204, 113, 0.15)" stroke="rgba(46, 204, 113, 0.4)" stroke-width="2" 
-                d="M800 200 L850 250 L830 300 L780 250 Z" />
-          <!-- 台灣 -->
-          <path fill="rgba(46, 204, 113, 0.15)" stroke="rgba(46, 204, 113, 0.4)" stroke-width="2" 
-                d="M720 330 L740 340 L730 360 L710 350 Z" />
-          <!-- 菲律賓/印尼區域 -->
-          <path fill="rgba(46, 204, 113, 0.15)" stroke="rgba(46, 204, 113, 0.4)" stroke-width="2" 
-                d="M750 450 L780 480 L760 550 L700 520 Z M500 550 L600 520 L650 580 L550 590 Z" />
-        </svg>
-      </div>
+      <!-- 真實世界地圖背景 -->
+      <div class="world-map-bg"></div>
       
       <!-- 國家節點 -->
       <div 
@@ -113,8 +98,14 @@ const handleSelect = (countryId) => {
   box-shadow: 0 20px 50px rgba(0,0,0,0.8), inset 0 0 100px rgba(0,0,0,0.5);
 }
 
-.world-map-bg { position: absolute; inset: 0; pointer-events: none; }
-.world-map-bg svg { width: 100%; height: 100%; object-fit: cover; }
+.world-map-bg { 
+  position: absolute; inset: 0; pointer-events: none; 
+  background-image: url('/worldmap.png');
+  background-size: 100% 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.85;
+}
 
 .country-node {
   position: absolute; transform: translate(-50%, -50%); cursor: pointer; z-index: 5;

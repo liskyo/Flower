@@ -3,11 +3,11 @@ import json
 from PIL import Image
 
 # ===== 設定區 =====
-IMAGE_PATH = "japan.png"      # 你的原始圖片
-JSON_PATH = "japan.json"       # 你的JSON檔
-OUTPUT_DIR = r"Cut\japan"    # 使用 r 避免 \o 轉義錯誤
-GRID_COLS = 8                # 橫向數量 (例如 8)
-GRID_ROWS = 5                # 縱向數量 (例如 5)
+IMAGE_PATH = "taiwan2.png"      # 你的原始圖片
+JSON_PATH = "taiwan2.json"       # 你的JSON檔
+OUTPUT_DIR = r"Cut\taiwan"    # 使用 r 避免 \o 轉義錯誤
+GRID_COLS = 6                # 橫向數量 (例如 8)
+GRID_ROWS = 6                # 縱向數量 (例如 5)
 
 # ==================
 
