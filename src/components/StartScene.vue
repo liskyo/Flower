@@ -69,7 +69,7 @@ const handleStart = () => {
 }
 
 .version-info {
-  position: absolute; top: 10px; left: 10px; font-family: monospace;
+  position: absolute; bottom: 10px; left: 10px; font-family: monospace;
   font-size: 1rem; color: #10ac84; font-weight: 900; text-shadow: 1px 1px 0 #fff;
 }
 

@@ -58,12 +58,23 @@ const handleAuth = async () => {
     isLoading.value = false;
   }
 };
+
+const handleGoogleLogin = async () => {
+  try {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+    });
+    if (error) throw error;
+  } catch (err) {
+    errorMessage.value = err.message;
+  }
+};
 </script>
 
 <template>
   <div class="auth-overlay" @click.self="emit('close')">
     <div class="auth-modal">
-      <h2>{{ isLoginMode ? '研究員登入' : '註冊新研究員' }}</h2>
+      <h2>{{ isLoginMode ? '採花賊 登入' : '註冊新 採花賊' }}</h2>
       
       <form @submit.prevent="handleAuth" class="auth-form">
         <div class="input-group">
@@ -82,6 +93,13 @@ const handleAuth = async () => {
           {{ isLoading ? '處理中...' : (isLoginMode ? '登入' : '註冊') }}
         </button>
       </form>
+
+      <div class="divider"><span>或</span></div>
+
+      <button type="button" class="google-btn" @click="handleGoogleLogin">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google Logo" class="google-icon" />
+        使用 Google 帳號登入
+      </button>
 
       <div class="toggle-mode">
         <button type="button" class="text-btn" @click="toggleMode">
@@ -132,7 +150,25 @@ h2 {
 .submit-btn:active:not(:disabled) { transform: translateY(2px); box-shadow: 0 2px 0 #3c1a1a; }
 .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
-.toggle-mode { text-align: center; margin-top: 15px; }
+/* Google 登入按鈕 */
+.divider {
+  display: flex; align-items: center; text-align: center; margin: 15px 0; color: #7f8c8d; font-size: 0.85rem; font-weight: 900;
+}
+.divider::before, .divider::after {
+  content: ''; flex: 1; border-bottom: 2px solid #dfe6e9; margin: 0 10px;
+}
+
+.google-btn {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  background: white; color: #2d3436; border: 3px solid #2d3436;
+  padding: 10px; border-radius: 8px; font-size: 1rem; font-weight: 900;
+  cursor: pointer; transition: transform 0.1s; box-shadow: 0 4px 0 #2d3436;
+  width: 100%;
+}
+.google-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #2d3436; }
+.google-icon { width: 20px; height: 20px; }
+
+.toggle-mode { text-align: center; margin-top: 20px; }
 .text-btn { background: none; border: none; color: #2980b9; font-size: 0.85rem; font-weight: 900; cursor: pointer; text-decoration: underline; }
 
 .close-btn {
