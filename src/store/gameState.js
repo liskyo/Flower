@@ -86,7 +86,7 @@ const getFlowersForCurrentScene = () => {
 };
 
 const seedVariety = () => {
-  const garden = getCurrentGarden();
+  const garden = getCurrentGarden().slice(0, 16);
   const pool = getFlowersForCurrentScene();
   if (pool.length === 0) return;
 
@@ -101,7 +101,7 @@ const seedVariety = () => {
 };
 
 // 初始檢查
-if (getCurrentGarden().filter(s => s.status !== 'empty').length < 3) {
+if (getCurrentGarden().slice(0, 16).filter(s => s.status !== 'empty').length < 3) {
   seedVariety();
 }
 
@@ -150,7 +150,7 @@ export const harvestFlower = (slotId) => {
 };
 
 export const autoSpawn = () => {
-  const garden = getCurrentGarden();
+  const garden = getCurrentGarden().slice(0, 16);
   const emptySlots = garden.filter(s => s.status === 'empty');
   if (emptySlots.length === 0) return;
   
@@ -174,7 +174,7 @@ export const autoSpawn = () => {
 
 export const setScene = (sceneId) => {
   state.currentScene = Number(sceneId);
-  if (getCurrentGarden().filter(s => s.status !== 'empty').length < 2) {
+  if (getCurrentGarden().slice(0, 16).filter(s => s.status !== 'empty').length < 2) {
     seedVariety();
   }
 };

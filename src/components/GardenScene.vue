@@ -135,7 +135,7 @@ onUnmounted(() => {
         <div class="cloud-fixed-base"></div>
         <div class="flowers-fixed-grid">
           <GardenSlot 
-            v-for="slot in currentGarden" 
+            v-for="slot in currentGarden.slice(0, 16)" 
             :key="`${state.currentCountry}_${state.currentScene}_${slot.id}`" 
             :ref="el => slotRefs[slot.id] = el"
             :slot-data="slot" 
@@ -240,8 +240,8 @@ onUnmounted(() => {
 }
 .flowers-fixed-grid {
   position: absolute; top: 48%; left: 50%; transform: translate(-50%, -50%);
-  width: 80%; height: 60%; z-index: 10; display: grid;
-  grid-template-columns: repeat(8, 1fr); grid-template-rows: repeat(3, 1fr); gap: 2px;
+  width: 85%; height: 60%; z-index: 10; display: grid;
+  grid-template-columns: repeat(8, 1fr); grid-template-rows: repeat(2, 1fr); gap: 10px 5px;
   align-items: center; justify-items: center;
 }
 

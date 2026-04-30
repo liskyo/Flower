@@ -201,7 +201,7 @@ defineExpose({ triggerHarvest: pullUp });
 }
 
 .flower-container-v3 {
-  width: 100%; max-width: 32px; height: 32px;
+  width: 100%; max-width: 55px; height: 55px;
   display: flex; align-items: center; justify-content: center;
   position: relative; transition: transform 0.3s ease;
   overflow: visible; z-index: 50;
