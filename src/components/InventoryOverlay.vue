@@ -34,6 +34,15 @@ const useItem = (item) => {
     state.inventoryItems[item.id]--;
     const now = Date.now();
     
+    // 【新增】防呆機制：如果舊存檔沒有 activeBuffs，先初始化它以確保響應式生效
+    if (!state.activeBuffs) {
+      state.activeBuffs = { 
+        sunnyDollUntil: null, 
+        rainUntil: null, rainMultiplier: 1, 
+        fertilizerUntil: null, fertilizerMultiplier: 1 
+      };
+    }
+    
     if (item.type === 'weather') {
       state.activeBuffs.sunnyDollUntil = now + item.duration * 60 * 60 * 1000;
     } else if (item.type === 'rain') {

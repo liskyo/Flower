@@ -107,7 +107,14 @@ const stopSwiping = () => { isSwiping.value = false; };
 const handleSwipe = (slotId) => {
   if (!isSwiping.value) return;
   const slotComp = slotRefs.value[slotId];
-  if (slotComp) slotComp.triggerHarvest();
+  if (slotComp) {
+    // 檢查花朵狀態，如果是 ready 或 withered 才收成並發出音效
+    const status = slotComp.getSlotStatus?.();
+    if (status === 'ready' || status === 'withered') {
+      slotComp.triggerHarvest();
+      playPop(); // 加入這行補上音效
+    }
+  }
 };
 
 // Touch 滑動連續收成
@@ -196,6 +203,7 @@ onUnmounted(() => {
 </script>
 
 <template>
+  <div class="scene-bg-full" :style="bgImageStyle"></div>
   <div 
     class="garden-scene"
     @mousedown="startSwiping"
@@ -345,22 +353,33 @@ onUnmounted(() => {
 .garden-scene { position: absolute; inset: 0; width: 100vw; height: 100vh; overflow: hidden; }
 
 .scene-bg-wrapper { position: absolute; inset: 0; z-index: 0; overflow: hidden; }
+/* --- 找到這段並替換 --- */
+
+/* 1. 恢復背景原本的無限捲動動畫 */
 .scene-bg-full {
   position: absolute; top: 0; left: 0; height: 100%;
   width: 300%; /* 3倍寬讓背景可循環 */
   background-size: auto 100%; background-repeat: repeat-x;
   background-position: left center;
-  animation: scrollBg 80s linear infinite;
+  animation: scrollBg 80s linear infinite; /* 把捲動動畫加回來 */
   transition: background-image 0.5s ease;
 }
+
+/* 2. 暴風雨飄移層：保留 z-index 提高的修正，確保閃電和龍捲風不會被 UI 蓋住 */
+.storm-layer { 
+  position: absolute; inset: 0; z-index: 105; pointer-events: none; overflow: hidden; 
+}
+
+
 @keyframes scrollBg {
   0% { transform: translateX(0); }
   100% { transform: translateX(-33.333%); }
 }
 
-/* 暴風雨飄移層 */
-.storm-layer { position: absolute; inset: 0; z-index: 6; pointer-events: none; overflow: hidden; }
-.storm-element {
+/* 3. 暴風雨飄移層：將 z-index 從 6 提高到 105，確保不被天氣濾鏡或 UI 蓋住 */
+.storm-layer { 
+  position: absolute; inset: 0; z-index: 105; pointer-events: none; overflow: hidden; 
+}.storm-element {
   position: absolute; left: -10%;
   animation: stormFly var(--dur, 5s) linear forwards;
   opacity: 0.85; filter: drop-shadow(0 0 8px rgba(255,200,0,0.6));
@@ -477,10 +496,13 @@ onUnmounted(() => {
 .landmark-btn.active { background: #ffd100; transform: translateY(2px); box-shadow: 0 1px 0 #2d3436; }
 .landmark-btn.locked-scene { background: #636e72; color: #b2bec3; cursor: not-allowed; opacity: 0.7; }
 
-/* 核心種植區 */
+/* --- 找到 核心種植區 這段並替換 --- */
 .absolute-garden-container {
   position: absolute; top: 60%; left: 50%; transform: translate(-50%, -50%);
-  width: 90vw; max-width: 600px; aspect-ratio: 3 / 1; z-index: 10;
+  width: 95vw; 
+  max-width: 800px;      /* 原本是 600px，拉大電腦版雲朵極限 */
+  aspect-ratio: 2.5 / 1; /* 原本是 3 / 1，讓雲朵變高一點以容納大花朵 */
+  z-index: 10;
 }
 .cloud-fixed-base {
   position: absolute; inset: 5%; background-image: url('/cloud.png');
@@ -489,8 +511,10 @@ onUnmounted(() => {
 }
 .flowers-fixed-grid {
   position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%);
-  width: 85%; height: 60%; z-index: 10; display: grid;
-  grid-template-columns: repeat(8, 1fr); grid-template-rows: repeat(2, 1fr); gap: 10px 5px;
+  width: 90%;            /* 原本 85%，讓網格更貼近雲朵邊緣 */
+  height: 75%;           /* 原本 60%，讓上下兩排花距拉開 */
+  z-index: 10; display: grid;
+  grid-template-columns: repeat(8, 1fr); grid-template-rows: repeat(2, 1fr); gap: 15px 5px;
   align-items: center; justify-items: center;
 }
 
@@ -571,9 +595,19 @@ onUnmounted(() => {
   100% { transform: translateY(var(--endY)) scale(0); opacity: 0; } /* 瞬間消失模擬掉進去 */
 }
 
+/* --- 滑到最下方，找到 @media 這段並替換 --- */
 @media (max-width: 1024px) {
-  .absolute-garden-container { max-width: 450px; top: 55%; }
-  .flowers-fixed-grid { width: 75%; }
+  .absolute-garden-container { 
+    max-width: 100vw;      /* 解除手機版原本的 450px 限制 */
+    width: 98vw;           /* 幾乎佔滿手機橫向寬度 */
+    top: 55%; 
+    aspect-ratio: 2 / 1;   /* 手機版讓雲朵更飽滿，不會太扁 */
+  }
+  .flowers-fixed-grid { 
+    width: 95%;            /* 極大化種植區 */
+    height: 85%; 
+    gap: 10px 2px;         /* 調整手機版間距 */
+  }
   .action-cluster { bottom: 20px; right: 15px; transform: scale(0.85); transform-origin: bottom right; gap: 10px; }
   .basket-container { bottom: 10%; left: 10%; transform: scale(1); transform-origin: bottom left; }
 }

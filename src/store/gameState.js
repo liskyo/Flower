@@ -10,7 +10,7 @@ const defaultState = {
   unlockedScenes: { 'Taiwan': [1, 2, 3, 4], 'Japan': [1, 2, 3, 4], 'Korea': [1, 2, 3, 4], 'Thailand': [1, 2, 3, 4], 'Singapore': [1, 2, 3, 4] },
   unlockedCountries: ['Taiwan'],
   visitedCount: 1,
-  inventory: {}, 
+  inventory: {},
   medals: {},
   gardens: {},
   upgrades: { spawnRate: 0.5, maxSlots: 24 },
@@ -47,17 +47,17 @@ export const getCurrentWeather = () => {
 export const calculateEffectiveElapsedTime = (startTime) => {
   const now = Date.now();
   if (!startTime || now <= startTime) return { growthElapsed: 0, realElapsed: 0 };
-  
+
   let totalGrowthSeconds = 0;
   let cursor = startTime;
-  
+
   while (cursor < now) {
     const nextWeatherBoundary = Math.ceil((cursor + 1) / WEATHER_CYCLE_MS) * WEATHER_CYCLE_MS;
     const sunnyEnd = (state.activeBuffs?.sunnyDollUntil > cursor) ? state.activeBuffs.sunnyDollUntil : Infinity;
     const rainEnd = (state.activeBuffs?.rainUntil > cursor) ? state.activeBuffs.rainUntil : Infinity;
-    
+
     let nextTransition = Math.min(now, nextWeatherBoundary, sunnyEnd, rainEnd);
-    
+
     let weatherSpeed = 1.0;
     if (cursor < sunnyEnd) {
       weatherSpeed = 1.1; // sunny
@@ -65,18 +65,18 @@ export const calculateEffectiveElapsedTime = (startTime) => {
       const cycleIndex = Math.floor(cursor / WEATHER_CYCLE_MS) % 4;
       weatherSpeed = WEATHER_TYPES[cycleIndex].speed;
     }
-    
+
     let rainSpeed = 1.0;
     if (cursor < rainEnd) {
       rainSpeed = state.activeBuffs?.rainMultiplier || 1;
     }
-    
+
     const segmentDuration = (nextTransition - cursor) / 1000;
     totalGrowthSeconds += segmentDuration * weatherSpeed * rainSpeed;
-    
+
     cursor = nextTransition;
   }
-  
+
   return {
     growthElapsed: totalGrowthSeconds,
     realElapsed: (now - startTime) / 1000
@@ -168,7 +168,7 @@ export const getCurrentGarden = () => {
   if (!state.gardens[key]) {
     state.gardens[key] = Array.from({ length: 24 }, (_, i) => ({ id: i, flowerId: null, startTime: null, status: 'empty' }));
   }
-  
+
   // 自動清理舊存檔中已不存在的花朵 (例如改過場景ID導致變更)
   state.gardens[key].forEach(slot => {
     if (slot.flowerId && !FLOWERS.some(f => f.id === slot.flowerId)) {
@@ -268,20 +268,41 @@ export const autoSpawn = () => {
   const garden = getCurrentGarden().slice(0, 16);
   const emptySlots = garden.filter(s => s.status === 'empty');
   if (emptySlots.length === 0) return;
-  
+
   const slot = emptySlots[Math.floor(Math.random() * emptySlots.length)];
-  
-  // 嚴格過濾場景花卉
   const pool = getFlowersForCurrentScene();
-  // 傳說花卉只有在該國非傳說花朵全解鎖後才可能出現
   const legendaries = FLOWERS.filter(f => f.rarity === 'Legendary' && hasCollectedAllCountryFlowers(f.country));
-  
+
   let finalPool = [...pool];
-  if (Math.random() < 0.01 && legendaries.length > 0) finalPool = [...legendaries]; // 1% 機率出現已解鎖條件的傳說
+  if (Math.random() < 0.01 && legendaries.length > 0) finalPool = [...legendaries];
 
   if (finalPool.length > 0) {
-    const randomFlower = finalPool[Math.floor(Math.random() * finalPool.length)];
-    slot.flowerId = randomFlower.id;
+    // 【新增】權重對照表 (星數對應權重：數字越大越容易出現)
+    const getWeight = (rarity) => {
+      const r = parseInt(rarity) || 1;
+      if (r === 1) return 100; // 1星機率最高 (權重100)
+      if (r === 2) return 50;  // 2星
+      if (r === 3) return 20;  // 3星
+      if (r === 4) return 5;   // 4星
+      if (r === 5) return 1;   // 5星機率最低 (權重1)
+      return 100;
+    };
+
+    // 計算總權重
+    const totalWeight = finalPool.reduce((sum, flower) => sum + getWeight(flower.rarity), 0);
+    let randomVal = Math.random() * totalWeight;
+    let selectedFlower = finalPool[0]; // 預設值
+
+    // 依權重抽取
+    for (const flower of finalPool) {
+      randomVal -= getWeight(flower.rarity);
+      if (randomVal <= 0) {
+        selectedFlower = flower;
+        break;
+      }
+    }
+
+    slot.flowerId = selectedFlower.id;
     slot.startTime = Date.now();
     slot.status = 'growing';
   }
@@ -311,7 +332,7 @@ export const resetGame = () => {
       unlockedScenes: { 'Taiwan': [1, 2, 3, 4], 'Japan': [1, 2, 3, 4], 'Korea': [1, 2, 3, 4], 'Thailand': [1, 2, 3, 4], 'Singapore': [1, 2, 3, 4] },
       unlockedCountries: ['Taiwan'],
       visitedCount: 1,
-      inventory: {}, 
+      inventory: {},
       medals: {},
       gardens: {},
       upgrades: { spawnRate: 0.5, maxSlots: 24 },
@@ -320,7 +341,7 @@ export const resetGame = () => {
       level: 1,
       inventoryItems: {}
     };
-    
+
     // 初始化各場景花園
     ['Taiwan', 'Japan', 'Korea', 'Thailand', 'Singapore'].forEach(country => {
       [1, 2, 3, 4].forEach(scene => {
@@ -332,11 +353,11 @@ export const resetGame = () => {
 
     Object.assign(state, freshState);
     localStorage.setItem(SAVE_KEY, JSON.stringify(state));
-    
+
     if (currentUser) {
       supabase.from('profiles').upsert({ id: currentUser.id, game_state: state }).then();
     }
-    
+
     seedVariety();
   }
 };
