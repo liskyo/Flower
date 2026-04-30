@@ -55,6 +55,15 @@ const doLogout = async () => {
 
 <template>
   <div class="game-container">
+    <!-- 橫向螢幕鎖定提示 (僅在手機直向時顯示) -->
+    <div class="orientation-warning">
+      <div class="warning-content">
+        <div class="rotate-icon">📱</div>
+        <h2>請將手機轉為橫向</h2>
+        <p>為了最佳的遊玩體驗，<br>請解鎖畫面旋轉並橫向持握手機。</p>
+      </div>
+    </div>
+
     <Transition name="fade">
       <div v-if="isLoading" class="loading-screen">
         <div class="loading-content">🌸 加載中...</div>
@@ -143,4 +152,24 @@ body { background: #000; overflow: hidden; height: 100vh; width: 100vw; }
 
 .fade-enter-active, .fade-leave-active { transition: opacity 0.3s; }
 .fade-enter-from, .fade-leave-to { opacity: 0; }
+
+/* 橫向螢幕鎖定提示 */
+.orientation-warning {
+  display: none; position: fixed; inset: 0; background: radial-gradient(circle at center, #34495e, #2c3e50); z-index: 999999;
+  flex-direction: column; align-items: center; justify-content: center; color: white; text-align: center;
+}
+.warning-content { display: flex; flex-direction: column; align-items: center; gap: 20px; }
+.rotate-icon { font-size: 6rem; display: inline-block; animation: rotate-phone 2s infinite ease-in-out; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.5)); }
+.orientation-warning h2 { font-size: 2rem; font-weight: 900; color: #f1c40f; text-shadow: 0 4px 10px rgba(0,0,0,0.5); margin: 0; }
+.orientation-warning p { font-size: 1.1rem; color: #ecf0f1; line-height: 1.6; font-weight: bold; margin: 0; }
+
+@keyframes rotate-phone {
+  0% { transform: rotate(0deg); }
+  50% { transform: rotate(-90deg); }
+  100% { transform: rotate(-90deg); }
+}
+
+@media screen and (max-width: 900px) and (orientation: portrait) {
+  .orientation-warning { display: flex; }
+}
 </style>
