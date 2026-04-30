@@ -17,6 +17,8 @@ const defaultState = {
   upgrades: { spawnRate: 0.5, maxSlots: 24 }
 };
 
+import { supabase } from '../supabase';
+
 // 初始化各場景花園
 Object.keys(defaultState.gardens).forEach(key => {
   defaultState.gardens[key] = Array.from({ length: 24 }, (_, i) => ({
@@ -26,6 +28,44 @@ Object.keys(defaultState.gardens).forEach(key => {
 
 const savedData = localStorage.getItem(SAVE_KEY);
 export const state = reactive(savedData ? JSON.parse(savedData) : defaultState);
+
+let currentUser = null;
+let saveTimeout = null;
+
+// 從雲端讀取存檔
+export const loadStateFromCloud = async (user) => {
+  currentUser = user;
+  if (!user) return;
+
+  try {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('game_state')
+      .eq('id', user.id)
+      .single();
+
+    if (error && error.code !== 'PGRST116') throw error; // PGRST116 is "no rows returned"
+
+    if (data && data.game_state && Object.keys(data.game_state).length > 0) {
+      // 覆蓋當前狀態
+      Object.assign(state, data.game_state);
+      localStorage.setItem(SAVE_KEY, JSON.stringify(state));
+    } else {
+      // 若雲端無存檔，建立一筆新資料
+      await supabase.from('profiles').upsert({ id: user.id, game_state: state });
+    }
+  } catch (err) {
+    console.error('讀取雲端存檔失敗:', err);
+  }
+};
+
+// 處理登出
+export const handleLogout = async () => {
+  await supabase.auth.signOut();
+  currentUser = null;
+  Object.assign(state, defaultState); // 清空本地狀態
+  localStorage.removeItem(SAVE_KEY);
+};
 
 // 精確獲取當前花園資料
 export const getCurrentGarden = () => {
@@ -65,8 +105,24 @@ if (getCurrentGarden().filter(s => s.status !== 'empty').length < 3) {
   seedVariety();
 }
 
+// 監聽狀態變更並防抖存檔
 watch(state, (newState) => {
+  // 本地即時儲存
   localStorage.setItem(SAVE_KEY, JSON.stringify(newState));
+
+  // 雲端防抖儲存 (延遲 3 秒)
+  if (currentUser) {
+    if (saveTimeout) clearTimeout(saveTimeout);
+    saveTimeout = setTimeout(async () => {
+      try {
+        await supabase
+          .from('profiles')
+          .upsert({ id: currentUser.id, game_state: newState });
+      } catch (err) {
+        console.error('雲端存檔失敗:', err);
+      }
+    }, 3000);
+  }
 }, { deep: true });
 
 export const harvestFlower = (slotId) => {
