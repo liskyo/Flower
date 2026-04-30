@@ -3,11 +3,12 @@ import { ref, onMounted } from 'vue';
 import GardenScene from './components/GardenScene.vue';
 import FlowerCatalog from './components/FlowerCatalog.vue';
 import AuthModal from './components/AuthModal.vue';
+import StartScene from './components/StartScene.vue';
 import { supabase } from './supabase';
 import { loadStateFromCloud, handleLogout } from './store/gameState';
 
 const isLoading = ref(true);
-const currentTab = ref('garden'); 
+const currentTab = ref('start'); 
 const currentUser = ref(null);
 const showAuth = ref(false);
 
@@ -69,11 +70,15 @@ const doLogout = async () => {
 
         <AuthModal v-if="showAuth" @close="showAuth = false" @login-success="handleLoginSuccess" />
 
-        <!-- 導航邏輯：將 Tab 傳遞給 Scene 內部渲染，確保 UI 不消失 -->
+        <!-- 導航邏輯 -->
         <main class="main-viewport">
           <Transition name="pop" mode="out-in">
+            <StartScene 
+              v-if="currentTab === 'start'" 
+              @start="setTab('garden')" 
+            />
             <GardenScene 
-              v-if="currentTab === 'garden'" 
+              v-else-if="currentTab === 'garden'" 
               @change-tab="setTab"
             />
             <FlowerCatalog 

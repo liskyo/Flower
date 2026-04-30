@@ -1,13 +1,18 @@
 // GardenScene.vue
 
 <script setup>
-import { ref, onMounted, onUnmounted, computed } from 'vue';
-import { state, autoSpawn, setScene, getCurrentGarden } from '../store/gameState';
+import { ref, onMounted, onUnmounted, computed, nextTick } from 'vue';
+import { state, autoSpawn, setScene, getCurrentGarden, harvestFlower } from '../store/gameState';
+import { FLOWERS } from '../data/flowers';
 import GardenSlot from './GardenSlot.vue';
 
 const emit = defineEmits(['change-tab']);
 const slotRefs = ref([]);
 const isSwiping = ref(false);
+
+const basketRef = ref(null);
+const flyingFlowers = ref([]);
+let flyIdCounter = 0;
 
 const sceneNames = {
   taiwan: ["台北 101", "日月潭", "九份老街", "阿里山"],
@@ -24,19 +29,60 @@ const startSwiping = () => { isSwiping.value = true; };
 const stopSwiping = () => { isSwiping.value = false; };
 
 const handleSwipe = (slotId) => {
-  if (isSwiping.value) {
-    const slotComp = slotRefs.value[slotId];
-    if (slotComp) {
-      slotComp.triggerHarvest();
+  if (!isSwiping.value) return;
+  const slotComp = slotRefs.value[slotId];
+  if (!slotComp) return;
+
+  const slotData = currentGarden.value[slotId];
+  if (slotData && slotData.status === 'ready') {
+    const flowerId = slotData.flowerId;
+    const flower = FLOWERS.find(f => f.id === flowerId);
+    
+    // 獲取起點座標
+    const el = slotComp.$el;
+    const rect = el.getBoundingClientRect();
+    const startX = rect.left + rect.width / 2;
+    const startY = rect.top + rect.height / 2;
+
+    // 執行實際採收邏輯
+    if (harvestFlower(slotId)) {
+      triggerFlyAnimation(flower, startX, startY);
     }
   }
+};
+
+const triggerFlyAnimation = (flower, startX, startY) => {
+  if (!basketRef.value) return;
+  
+  const basketRect = basketRef.value.getBoundingClientRect();
+  const endX = basketRect.left + basketRect.width / 2;
+  const endY = basketRect.top + basketRect.height / 2;
+
+  const flyId = flyIdCounter++;
+  const imgUrl = `/assets/flowers/${flower.country.toLowerCase()}/${flower.id}.png`;
+
+  flyingFlowers.value.push({
+    id: flyId,
+    url: imgUrl,
+    startX, startY, endX, endY
+  });
+
+  // 動畫結束後移除
+  setTimeout(() => {
+    flyingFlowers.value = flyingFlowers.value.filter(f => f.id !== flyId);
+    // 播放花籃震動
+    if (basketRef.value) {
+      basketRef.value.classList.remove('shake');
+      void basketRef.value.offsetWidth; // trigger reflow
+      basketRef.value.classList.add('shake');
+    }
+  }, 600); // 對應 CSS 動畫時間
 };
 
 const bgImageStyle = computed(() => ({
   backgroundImage: `url('/assets/scenes/${state.currentCountry.toLowerCase()}/scene_${state.currentCountry.toLowerCase()}_${state.currentScene}.png')`,
 }));
 
-// 計算當前場景對應的花園列表
 const currentGarden = computed(() => getCurrentGarden());
 
 onMounted(() => {
@@ -63,12 +109,18 @@ onUnmounted(() => {
       <div class="scene-bg-full" :style="bgImageStyle"></div>
     </div>
 
-    <div class="scene-overlay-ui">
-      <div class="internal-hud">
-        <div class="hud-item diamond">💎 {{ state.diamonds }}</div>
-        <div class="hud-item location">🌍 {{ state.currentCountry }}</div>
+    <!-- 左上角：仿圖3的等級/資訊列 -->
+    <div class="top-hud">
+      <div class="level-box">
+        <div class="hud-title">{{ state.currentCountry === 'Taiwan' ? '台灣花園' : '日本花園' }}</div>
+        <div class="hud-level">Lv. 1</div>
+        <div class="progress-bar"><div class="progress-fill"></div></div>
       </div>
+      <div class="weather-icon">☀</div>
+      <div class="diamond-display">💎 {{ state.diamonds }}</div>
+    </div>
 
+    <div class="scene-overlay-ui">
       <div class="landmark-nav">
         <button 
           v-for="(name, index) in currentSceneNames" 
@@ -83,7 +135,6 @@ onUnmounted(() => {
       
       <div class="absolute-garden-container">
         <div class="cloud-fixed-base"></div>
-        
         <div class="flowers-fixed-grid">
           <GardenSlot 
             v-for="slot in currentGarden" 
@@ -95,24 +146,43 @@ onUnmounted(() => {
         </div>
       </div>
 
-      <div class="internal-nav">
-        <button class="nav-jump garden active">
-          <div class="ball pink">🏠</div>
-          <span>花園</span>
+      <!-- 左下角：收集花籃 -->
+      <div class="basket-container" ref="basketRef">
+        <div class="basket-img">🧺</div>
+        <div class="basket-label">收集箱</div>
+      </div>
+
+      <!-- 右下角：功能按鍵群組 (仿圖3) -->
+      <div class="action-cluster">
+        <button class="action-btn map" @click="emit('change-tab', 'map')">
+          <span class="icon">🗺️</span>
+          <span class="label">地圖</span>
         </button>
-        <button class="nav-jump" @click="emit('change-tab', 'catalog')">
-          <div class="ball blue">📖</div>
-          <span>圖鑑</span>
+        <button class="action-btn catalog" @click="emit('change-tab', 'catalog')">
+          <span class="icon">📖</span>
+          <span class="label">圖鑑</span>
         </button>
-        <button class="nav-jump" @click="emit('change-tab', 'shop')">
-          <div class="ball yellow">🛒</div>
-          <span>商店</span>
-        </button>
-        <button class="nav-jump">
-          <div class="ball green">🗺️</div>
-          <span>地圖</span>
+        <button class="action-btn shop" @click="emit('change-tab', 'shop')">
+          <span class="icon">🛒</span>
+          <span class="label">商店</span>
         </button>
       </div>
+    </div>
+
+    <!-- 飛行動畫層 -->
+    <div class="flying-layer">
+      <img 
+        v-for="flower in flyingFlowers" 
+        :key="flower.id" 
+        :src="flower.url" 
+        class="flying-flower"
+        :style="{
+          '--startX': `${flower.startX}px`,
+          '--startY': `${flower.startY}px`,
+          '--endX': `${flower.endX}px`,
+          '--endY': `${flower.endY}px`
+        }"
+      />
     </div>
   </div>
 </template>
@@ -123,129 +193,126 @@ onUnmounted(() => {
 .scene-bg-wrapper { position: absolute; inset: 0; z-index: 0; }
 .scene-bg-full { position: absolute; inset: 0; background-size: cover; background-position: center; transition: background-image 0.5s ease; }
 
-.scene-overlay-ui {
-  position: relative; z-index: 100; height: 100%; width: 100%;
-}
+.scene-overlay-ui { position: relative; z-index: 100; height: 100%; width: 100%; }
 
-/* Internal HUD */
-.internal-hud {
-  position: absolute; top: 15px; left: 15px; right: 15px;
-  display: flex; justify-content: space-between; z-index: 1000;
+/* 左上角 HUD */
+.top-hud {
+  position: absolute; top: 15px; left: 15px; z-index: 2000; display: flex; align-items: center; gap: 10px;
 }
-.hud-item {
-  background: white; border: 3px solid #2d3436; padding: 4px 12px;
-  border-radius: 50px; font-weight: 900; box-shadow: 0 4px 0 #2d3436;
+.level-box {
+  background: rgba(255, 255, 255, 0.9); border: 3px solid #2d3436; border-radius: 10px;
+  padding: 5px 15px; box-shadow: 0 4px 0 #2d3436; position: relative;
+}
+.hud-title { font-size: 0.8rem; font-weight: 900; color: #2d3436; }
+.hud-level { font-size: 1.1rem; font-weight: 900; color: #2d3436; margin-bottom: 2px; }
+.progress-bar { width: 100px; height: 10px; background: #dfe6e9; border: 2px solid #2d3436; border-radius: 5px; overflow: hidden; }
+.progress-fill { width: 40%; height: 100%; background: #00b894; }
+
+.weather-icon {
+  background: white; border: 3px solid #2d3436; width: 40px; height: 40px;
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-size: 1.5rem; box-shadow: 0 4px 0 #2d3436;
+}
+.diamond-display {
+  background: white; border: 3px solid #2d3436; padding: 5px 12px;
+  border-radius: 20px; font-weight: 900; box-shadow: 0 4px 0 #2d3436; color: #2d3436;
 }
 
 /* Landmark Nav */
 .landmark-nav {
-  position: absolute; top: 70px; left: 0; right: 0;
-  display: flex; justify-content: center; gap: 8px; z-index: 1000;
+  position: absolute; top: 80px; left: 0; right: 0; display: flex; justify-content: center; gap: 8px; z-index: 1000;
 }
 .landmark-btn {
-  background: white; border: 3px solid #2d3436; padding: 5px 12px;
-  border-radius: 50px; font-weight: 900; font-size: 0.8rem;
-  box-shadow: 0 3px 0 #2d3436; cursor: pointer; transition: all 0.2s;
+  background: white; border: 3px solid #2d3436; padding: 5px 12px; border-radius: 50px;
+  font-weight: 900; font-size: 0.8rem; box-shadow: 0 3px 0 #2d3436; cursor: pointer; transition: all 0.2s;
 }
 .landmark-btn.active { background: #ffd100; transform: translateY(2px); box-shadow: 0 1px 0 #2d3436; }
 
-/* 核心種植區：絕對定位 */
+/* 核心種植區 */
 .absolute-garden-container {
-  position: absolute;
-  /* 改用 top 定位：將容器中心點精準定位在螢幕高度 65% 的位置（也就是大約底部 1/3 處） */
-  top: 65%;
-  left: 50%;
-  transform: translate(-50%, -50%); /* 水平與垂直絕對置中 */
-  width: 90vw;
-  max-width: 600px; /* 雲朵寬度 */
-  /* 移除固定的 height: 400px，改用比例限制，確保容器縮放時不變形 */
-  aspect-ratio: 3 / 1; 
-  z-index: 10;
+  position: absolute; top: 60%; left: 50%; transform: translate(-50%, -50%);
+  width: 90vw; max-width: 600px; aspect-ratio: 3 / 1; z-index: 10;
 }
-
 .cloud-fixed-base {
-  position: absolute;
-  inset: 5%; /* 留出一點邊距讓圓角更明顯 */
-  background-image: url('/cloud.png');
-  background-size: auto 100%;
-  background-position: center;
-  background-repeat: repeat-x;
-  
-  /* 圓潤裁切 */
-  border-radius: 200px;
-  overflow: hidden;
-  
-  /* 半透明與柔化 */
-  opacity: 0.7;
-  filter: drop-shadow(0 0 15px rgba(255,255,255,0.5)) blur(1px);
-  
-  z-index: 1;
+  position: absolute; inset: 5%; background-image: url('/cloud.png');
+  background-size: auto 100%; background-position: center; background-repeat: repeat-x;
+  border-radius: 200px; overflow: hidden; opacity: 0.7; filter: drop-shadow(0 0 15px rgba(255,255,255,0.5)) blur(1px); z-index: 1;
 }
-
 .flowers-fixed-grid {
-  position: absolute;
-  /* 微調中心點：通常雲的重心偏下方，所以網格可以稍微往下挪一點點 (55%) */
-  top: 48%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  /* 關鍵修改：大幅縮小網格佔比，用來抵銷原圖的透明空白區域 */
-  width: 80%; /* 從 55% 增加到 80%，讓花朵分布更均勻 */
-  height: 60%; 
-  z-index: 10;
-  display: grid;
-  grid-template-columns: repeat(8, 1fr);
-  grid-template-rows: repeat(3, 1fr);
-  gap: 2px; /* 縮小間距 */
-  align-items: center;
-  justify-items: center;
+  position: absolute; top: 48%; left: 50%; transform: translate(-50%, -50%);
+  width: 80%; height: 60%; z-index: 10; display: grid;
+  grid-template-columns: repeat(8, 1fr); grid-template-rows: repeat(3, 1fr); gap: 2px;
+  align-items: center; justify-items: center;
+}
+
+/* 左下角花籃 */
+.basket-container {
+  position: absolute; bottom: 30px; left: 30px; z-index: 1500;
+  display: flex; flex-direction: column; align-items: center;
+}
+.basket-img {
+  font-size: 4rem; text-shadow: 2px 2px 0 rgba(0,0,0,0.3);
+}
+.basket-label {
+  background: #2d3436; color: white; padding: 2px 8px; border-radius: 10px;
+  font-size: 0.8rem; font-weight: 900; border: 2px solid white; box-shadow: 0 2px 0 rgba(0,0,0,0.5);
+  margin-top: -10px; z-index: 2;
+}
+.shake { animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both; }
+@keyframes shake {
+  10%, 90% { transform: translate3d(-1px, 0, 0); }
+  20%, 80% { transform: translate3d(2px, 0, 0); }
+  30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+  40%, 60% { transform: translate3d(4px, 0, 0); }
+}
+
+/* 右下角群組按鈕 */
+.action-cluster {
+  position: absolute; bottom: 30px; right: 30px; z-index: 1500;
+  display: flex; flex-direction: column; gap: 15px; align-items: flex-end;
+}
+.action-btn {
+  background: #fff; border: 4px solid #2d3436; border-radius: 50%;
+  width: 70px; height: 70px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  cursor: pointer; box-shadow: 0 6px 0 #2d3436; transition: all 0.1s; position: relative;
+}
+.action-btn:active { transform: translateY(4px); box-shadow: 0 2px 0 #2d3436; }
+.action-btn .icon { font-size: 1.8rem; }
+.action-btn .label {
+  position: absolute; bottom: -12px; background: #2d3436; color: white;
+  font-size: 0.7rem; font-weight: 900; padding: 2px 8px; border-radius: 10px;
+  border: 2px solid white; white-space: nowrap;
+}
+
+/* 個別按鈕顏色 */
+.action-btn.map { background: #feca57; width: 60px; height: 60px; margin-right: 15px; }
+.action-btn.map .icon { font-size: 1.4rem; }
+.action-btn.catalog { background: #ff6b6b; width: 85px; height: 85px; }
+.action-btn.catalog .icon { font-size: 2.2rem; }
+.action-btn.shop { background: #48dbfb; width: 65px; height: 65px; margin-right: 50px; margin-top: -20px; }
+
+/* 飛行動畫層 */
+.flying-layer { position: absolute; inset: 0; pointer-events: none; z-index: 5000; overflow: hidden; }
+.flying-flower {
+  position: absolute; top: 0; left: 0; width: 45px; height: 45px; object-fit: contain;
+  /* 拋物線動畫：X 軸線性，Y 軸使用 ease-in 加速落下 */
+  animation: flyX 0.6s linear forwards, flyY 0.6s ease-in forwards;
+}
+
+@keyframes flyX {
+  0% { transform: translateX(var(--startX)); }
+  100% { transform: translateX(var(--endX)); }
+}
+@keyframes flyY {
+  0% { transform: translateY(var(--startY)) scale(1); }
+  30% { transform: translateY(calc(var(--startY) - 80px)) scale(1.2); } /* 拋高 */
+  100% { transform: translateY(var(--endY)) scale(0.3); opacity: 0; } /* 掉入縮小 */
 }
 
 @media (max-width: 1024px) {
-  .absolute-garden-container { 
-    max-width: 450px; 
-    top: 65%; /* 確保手機版也在相同比例位置 */
-  }
-  .flowers-fixed-grid { 
-    width: 65%; /* 手機上雲比較小，網格可以稍微佔滿一點 */
-  }
-}
-
-/* Internal Nav */
-.internal-nav {
-  position: absolute; bottom: 0; left: 0; right: 0;
-  height: 110px; display: flex; justify-content: center; gap: 20px; align-items: center;
-  padding-bottom: 15px;
-}
-
-.nav-jump {
-  background: transparent; border: none; display: flex; flex-direction: column; align-items: center; gap: 5px;
-  cursor: pointer;
-}
-
-.ball {
-  width: 50px; height: 50px; border: 3px solid #2d3436; border-radius: 50%;
-  background: white; display: flex; align-items: center; justify-content: center;
-  font-size: 1.6rem; box-shadow: 0 5px 0 #2d3436;
-  animation: jump 2s infinite ease-in-out;
-}
-
-@keyframes jump { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
-
-.nav-jump.active .ball { transform: translateY(-12px) scale(1.1); box-shadow: 0 8px 0 #2d3436; }
-.nav-jump.active.garden .ball { background: #ff7675; }
-
-.nav-jump span { font-weight: 900; font-size: 0.75rem; color: white; text-shadow: 2px 2px 0 #2d3436; }
-
-@media (max-width: 1024px) {
-  .absolute-garden-container {
-    max-width: 500px; /* 縮小 max-width (代替 600px) */
-    height: 300px;
-    bottom: 33vh; /* 將雲朵定位在畫面底部 1/3 (代替 120px) */
-  }
-  .flowers-fixed-grid {
-    grid-template-columns: repeat(8, 1fr);
-    grid-template-rows: repeat(3, 1fr);
-    width: 85%;
-  }
+  .absolute-garden-container { max-width: 450px; top: 55%; }
+  .flowers-fixed-grid { width: 65%; }
+  .action-cluster { bottom: 20px; right: 20px; transform: scale(0.85); transform-origin: bottom right; }
+  .basket-container { bottom: 20px; left: 20px; transform: scale(0.85); transform-origin: bottom left; }
 }
 </style>
