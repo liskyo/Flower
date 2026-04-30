@@ -1,6 +1,6 @@
 <script setup>
 import { computed, ref, onMounted } from 'vue';
-import { state } from '../store/gameState';
+import { state, hasCollectedAllCountryFlowers } from '../store/gameState';
 import { FLOWERS } from '../data/flowers';
 
 const emit = defineEmits(['back']);
@@ -8,11 +8,20 @@ const emit = defineEmits(['back']);
 // 分頁邏輯
 const currentPage = ref(0);
 const itemsPerPage = 6;
-const totalPages = computed(() => Math.ceil(FLOWERS.length / itemsPerPage));
+const visibleFlowers = computed(() => {
+  return FLOWERS.filter(f => {
+    if (f.rarity === 'Legendary') {
+      return (state.inventory[f.id] || 0) > 0 || hasCollectedAllCountryFlowers(f.country);
+    }
+    return true;
+  });
+});
+
+const totalPages = computed(() => Math.ceil(visibleFlowers.value.length / itemsPerPage));
 
 const paginatedFlowers = computed(() => {
   const start = currentPage.value * itemsPerPage;
-  return FLOWERS.slice(start, start + itemsPerPage);
+  return visibleFlowers.value.slice(start, start + itemsPerPage);
 });
 
 // 詳情彈窗
@@ -27,6 +36,13 @@ const closeDetail = () => { selectedFlower.value = null; };
 const getStars = (rarity) => (rarity === 'Legendary' ? 5 : parseInt(rarity) || 1);
 const nextPage = () => { if (currentPage.value < totalPages.value - 1) currentPage.value++; };
 const prevPage = () => { if (currentPage.value > 0) currentPage.value--; };
+
+const getGlowClass = (rarity) => {
+  if (rarity === 'Legendary') return 'glow-rainbow';
+  if (parseInt(rarity) === 5) return 'glow-gold';
+  if (parseInt(rarity) === 4) return 'glow-silver';
+  return '';
+};
 
 // --- 圖片去背組件邏輯 (封裝在內部) ---
 const processedImages = ref({});
@@ -137,7 +153,7 @@ const processCatalogImage = (flower, e) => {
           <div class="m-modal-body">
             <div class="m-top-section">
               <div class="m-image-frame">
-                <img :src="processedImages[selectedFlower.id]" class="m-detail-img" />
+                <img :src="processedImages[selectedFlower.id]" :class="['m-detail-img', getGlowClass(selectedFlower.rarity)]" />
               </div>
               
               <div class="m-stats-column">
@@ -268,4 +284,20 @@ const processCatalogImage = (flower, e) => {
 
 .zoom-enter-active { animation: zoom 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
 @keyframes zoom { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+.glow-silver { filter: drop-shadow(0 0 10px silver); }
+.glow-gold { animation: pulseGold 2s infinite alternate; }
+.glow-rainbow { animation: rainbowGlow 2s infinite alternate; }
+@keyframes pulseGold {
+  from { filter: drop-shadow(0 0 10px #f1c40f); transform: scale(1); }
+  to { filter: drop-shadow(0 0 20px #f39c12); transform: scale(1.05); }
+}
+@keyframes rainbowGlow {
+  0% { filter: drop-shadow(0 0 15px #ff0000); }
+  20% { filter: drop-shadow(0 0 15px #ff7f00); }
+  40% { filter: drop-shadow(0 0 15px #ffff00); }
+  60% { filter: drop-shadow(0 0 15px #00ff00); }
+  80% { filter: drop-shadow(0 0 15px #0000ff); }
+  100% { filter: drop-shadow(0 0 15px #8b00ff); }
+}
 </style>

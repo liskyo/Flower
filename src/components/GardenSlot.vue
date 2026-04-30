@@ -22,6 +22,14 @@ const growthScale = computed(() => {
   return 0;
 });
 
+const getGlowClass = (rarity) => {
+  if (!rarity) return '';
+  if (rarity === 'Legendary') return 'glow-rainbow';
+  if (parseInt(rarity) === 5) return 'glow-gold';
+  if (parseInt(rarity) === 4) return 'glow-silver';
+  return '';
+};
+
 // 全域快取，避免切換場景時重複消耗 CPU 運算去背
 const globalImageCache = window.__FLOWER_IMG_CACHE__ || (window.__FLOWER_IMG_CACHE__ = new Map());
 
@@ -181,7 +189,7 @@ defineExpose({ triggerHarvest: pullUp });
         <div class="flower-render-box">
           <img ref="imgRef" :src="`/assets/flowers/${flower.country.toLowerCase()}/${flower.id}.png`" class="hidden-core" @load="processImage" />
           <canvas ref="canvasRef" class="hidden-core"></canvas>
-          <img v-if="processedSrc" :src="processedSrc" class="final-flower-img" />
+          <img v-if="processedSrc" :src="processedSrc" class="final-flower-img" :class="getGlowClass(flower?.rarity)" />
         </div>
       </div>
       
@@ -222,6 +230,22 @@ defineExpose({ triggerHarvest: pullUp });
   width: 100%; height: 100%; object-fit: contain;
   filter: drop-shadow(0 4px 0 rgba(0,0,0,0.1));
   transition: filter 0.3s ease, opacity 0.3s ease;
+}
+
+.glow-silver { filter: drop-shadow(0 0 10px silver) !important; }
+.glow-gold { animation: pulseGold 2s infinite alternate !important; }
+.glow-rainbow { animation: rainbowGlow 2s infinite alternate !important; }
+@keyframes pulseGold {
+  from { filter: drop-shadow(0 0 10px #f1c40f); transform: scale(1); }
+  to { filter: drop-shadow(0 0 20px #f39c12); transform: scale(1.05); }
+}
+@keyframes rainbowGlow {
+  0% { filter: drop-shadow(0 0 15px #ff0000); }
+  20% { filter: drop-shadow(0 0 15px #ff7f00); }
+  40% { filter: drop-shadow(0 0 15px #ffff00); }
+  60% { filter: drop-shadow(0 0 15px #00ff00); }
+  80% { filter: drop-shadow(0 0 15px #0000ff); }
+  100% { filter: drop-shadow(0 0 15px #8b00ff); }
 }
 
 /* 枯萎狀態視覺效果 */

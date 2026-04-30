@@ -15,8 +15,8 @@ const flyingFlowers = ref([]);
 let flyIdCounter = 0;
 
 const sceneNames = {
-  taiwan: ["台北 101", "日月潭", "九份老街", "阿里山"],
-  japan: ["富士山", "京都清水寺", "澀谷路口", "大阪城"]
+  taiwan: ["台北 101", "阿里山", "民雄鬼屋", "台灣夜市"],
+  japan: ["富士山", "晴空塔", "百鬼夜行", "夏日祭典"]
 };
 
 const currentSceneNames = computed(() => {
@@ -124,8 +124,10 @@ onUnmounted(() => {
     <div class="top-hud">
       <div class="level-box">
         <div class="hud-title">{{ state.currentCountry === 'Taiwan' ? '台灣花園' : '日本花園' }}</div>
-        <div class="hud-level">Lv. 1</div>
-        <div class="progress-bar"><div class="progress-fill"></div></div>
+        <div class="hud-level">Lv. {{ state.level || 1 }}</div>
+        <div class="progress-bar">
+          <div class="progress-fill" :style="{ width: `${((state.exp || 0) % 1000) / 10}%` }"></div>
+        </div>
       </div>
       <div class="diamond-display">💎 {{ state.diamonds }}</div>
     </div>

@@ -9,17 +9,17 @@ const formatNumber = (num) => {
 };
 
 const items = [
-  { id: 'sunnyDoll', name: '☀️ 晴天娃娃', desc: '強制天氣變晴天 6 小時', price: 5000, type: 'weather', duration: 6 },
-  { id: 'rain1', name: '🌧️ 人造雨一階', desc: '全域生長速度 2 倍 (1小時)', price: 10000, type: 'rain', multi: 2, duration: 1 },
-  { id: 'rain2', name: '🌧️ 人造雨二階', desc: '全域生長速度 4 倍 (1小時)', price: 50000, type: 'rain', multi: 4, duration: 1 },
-  { id: 'rain3', name: '🌧️ 人造雨三階', desc: '全域生長速度 6 倍 (1小時)', price: 100000, type: 'rain', multi: 6, duration: 1 },
-  { id: 'rain4', name: '🌧️ 人造雨四階', desc: '全域生長速度 8 倍 (1小時)', price: 250000, type: 'rain', multi: 8, duration: 1 },
-  { id: 'rain5', name: '🌧️ 人造雨五階', desc: '全域生長速度 10 倍 (1小時)', price: 500000, type: 'rain', multi: 10, duration: 1 },
-  { id: 'fert1', name: '💩 肥料一階', desc: '枯萎時間延長 2 倍 (2小時)', price: 10000, type: 'fertilizer', multi: 2, duration: 2 },
-  { id: 'fert2', name: '💩 肥料二階', desc: '枯萎時間延長 4 倍 (2小時)', price: 50000, type: 'fertilizer', multi: 4, duration: 2 },
-  { id: 'fert3', name: '💩 肥料三階', desc: '枯萎時間延長 6 倍 (2小時)', price: 100000, type: 'fertilizer', multi: 6, duration: 2 },
-  { id: 'fert4', name: '💩 肥料四階', desc: '枯萎時間延長 8 倍 (2小時)', price: 250000, type: 'fertilizer', multi: 8, duration: 2 },
-  { id: 'fert5', name: '💩 肥料五階', desc: '枯萎時間延長 10 倍 (2小時)', price: 500000, type: 'fertilizer', multi: 10, duration: 2 }
+  { id: 'sunnyDoll', name: '☀️ 晴天娃娃', desc: '強制天氣變晴天 6 小時', price: 5000, type: 'weather', duration: 6, reqLevel: 2 },
+  { id: 'rain1', name: '🌧️ 人造雨一階', desc: '全域生長速度 2 倍 (1小時)', price: 10000, type: 'rain', multi: 2, duration: 1, reqLevel: 3 },
+  { id: 'rain2', name: '🌧️ 人造雨二階', desc: '全域生長速度 4 倍 (1小時)', price: 50000, type: 'rain', multi: 4, duration: 1, reqLevel: 5 },
+  { id: 'rain3', name: '🌧️ 人造雨三階', desc: '全域生長速度 6 倍 (1小時)', price: 100000, type: 'rain', multi: 6, duration: 1, reqLevel: 8 },
+  { id: 'rain4', name: '🌧️ 人造雨四階', desc: '全域生長速度 8 倍 (1小時)', price: 250000, type: 'rain', multi: 8, duration: 1, reqLevel: 12 },
+  { id: 'rain5', name: '🌧️ 人造雨五階', desc: '全域生長速度 10 倍 (1小時)', price: 500000, type: 'rain', multi: 10, duration: 1, reqLevel: 15 },
+  { id: 'fert1', name: '💩 肥料一階', desc: '枯萎時間延長 2 倍 (2小時)', price: 10000, type: 'fertilizer', multi: 2, duration: 2, reqLevel: 3 },
+  { id: 'fert2', name: '💩 肥料二階', desc: '枯萎時間延長 4 倍 (2小時)', price: 50000, type: 'fertilizer', multi: 4, duration: 2, reqLevel: 5 },
+  { id: 'fert3', name: '💩 肥料三階', desc: '枯萎時間延長 6 倍 (2小時)', price: 100000, type: 'fertilizer', multi: 6, duration: 2, reqLevel: 8 },
+  { id: 'fert4', name: '💩 肥料四階', desc: '枯萎時間延長 8 倍 (2小時)', price: 250000, type: 'fertilizer', multi: 8, duration: 2, reqLevel: 12 },
+  { id: 'fert5', name: '💩 肥料五階', desc: '枯萎時間延長 10 倍 (2小時)', price: 500000, type: 'fertilizer', multi: 10, duration: 2, reqLevel: 15 }
 ];
 
 const buyItem = (item) => {
@@ -52,12 +52,19 @@ const buyItem = (item) => {
     <div class="diamond-display">💎 您的鑽石: <span class="diamond-val">{{ formatNumber(state.diamonds) }}</span></div>
     
     <div class="items-grid">
-      <div v-for="item in items" :key="item.id" class="item-card">
+      <div v-for="item in items" :key="item.id" class="item-card" :class="{ 'is-locked': (state.level || 1) < (item.reqLevel || 1) }">
         <h3>{{ item.name }}</h3>
         <p>{{ item.desc }}</p>
-        <button @click="buyItem(item)" :disabled="state.diamonds < item.price" class="buy-btn">
+        
+        <button v-if="(state.level || 1) >= (item.reqLevel || 1)" 
+                @click="buyItem(item)" 
+                :disabled="state.diamonds < item.price" 
+                class="buy-btn">
           💎 {{ formatNumber(item.price) }}
         </button>
+        <div v-else class="locked-btn">
+          🔒 需達到 Lv. {{ item.reqLevel }} 解鎖
+        </div>
       </div>
     </div>
   </div>
@@ -111,5 +118,12 @@ const buyItem = (item) => {
 .buy-btn:disabled { 
   background: linear-gradient(to bottom, #7f8c8d, #636e72); color: #bdc3c7;
   box-shadow: none; cursor: not-allowed; opacity: 0.6; 
+}
+
+.item-card.is-locked { filter: grayscale(80%); opacity: 0.8; }
+.locked-btn {
+  background: rgba(0,0,0,0.5); padding: 15px; border-radius: 12px;
+  font-weight: 900; font-size: 1rem; color: #ff7675; text-align: center;
+  border: 2px dashed #ff7675; cursor: not-allowed;
 }
 </style>

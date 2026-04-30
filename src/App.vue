@@ -128,7 +128,7 @@ body { background: #000; overflow: hidden; height: 100vh; width: 100vw; }
 }
 
 /* 登入按鈕區域 */
-.auth-control { position: absolute; top: 10px; left: 10px; z-index: 6000; display: flex; gap: 8px; }
+.auth-control { position: absolute; bottom: 20px; left: 20px; z-index: 6000; display: flex; gap: 8px; }
 .auth-btn {
   padding: 6px 12px; border-radius: 20px; font-weight: 900; font-size: 0.85rem;
   border: 3px solid #2d3436; cursor: pointer; box-shadow: 0 4px 0 #2d3436; color: white;

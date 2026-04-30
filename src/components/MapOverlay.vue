@@ -8,7 +8,7 @@ const formatNumber = (num) => new Intl.NumberFormat('en-US').format(num);
 
 const countries = [
   { id: 'Taiwan', name: '台灣', x: 82, y: 45, flag: '🇹🇼' },
-  { id: 'Japan', name: '日本', x: 86, y: 35, flag: '🇯🇵' },
+  { id: 'Japan', name: '日本', x: 92, y: 35, flag: '🇯🇵' },
   { id: 'Korea', name: '韓國', x: 83, y: 35, flag: '🇰🇷' },
   { id: 'Thailand', name: '泰國', x: 78, y: 50, flag: '🇹🇭' },
   { id: 'Singapore', name: '新加坡', x: 79, y: 58, flag: '🇸🇬' }

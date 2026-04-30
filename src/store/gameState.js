@@ -20,7 +20,9 @@ const defaultState = {
     rainMultiplier: 1,
     fertilizerUntil: null,
     fertilizerMultiplier: 1
-  }
+  },
+  exp: 0,
+  level: 1
 };
 
 import { supabase } from '../supabase';
@@ -220,6 +222,9 @@ export const harvestFlower = (slotId) => {
     if (flower) {
       state.diamonds += flower.price;
       state.inventory[flowerId] = (state.inventory[flowerId] || 0) + 1;
+      // 增加經驗值並計算新等級 (每 1000 經驗 1 級)
+      state.exp = (state.exp || 0) + Math.round(flower.price / 10);
+      state.level = Math.floor(state.exp / 1000) + 1;
     }
     slot.status = 'empty';
     slot.flowerId = null;
@@ -235,6 +240,13 @@ export const harvestFlower = (slotId) => {
   return false;
 };
 
+// 檢查是否已解鎖某國家所有的非傳說花朵
+export const hasCollectedAllCountryFlowers = (countryId) => {
+  const countryFlowers = FLOWERS.filter(f => String(f.country).toLowerCase() === String(countryId).toLowerCase() && f.rarity !== 'Legendary');
+  if (countryFlowers.length === 0) return false;
+  return countryFlowers.every(f => (state.inventory[f.id] || 0) > 0);
+};
+
 export const autoSpawn = () => {
   const garden = getCurrentGarden().slice(0, 16);
   const emptySlots = garden.filter(s => s.status === 'empty');
@@ -244,11 +256,11 @@ export const autoSpawn = () => {
   
   // 嚴格過濾場景花卉
   const pool = getFlowersForCurrentScene();
-  // 傳說花卉只有極低機率出現
-  const legendaries = FLOWERS.filter(f => f.rarity === 'Legendary');
+  // 傳說花卉只有在該國非傳說花朵全解鎖後才可能出現
+  const legendaries = FLOWERS.filter(f => f.rarity === 'Legendary' && hasCollectedAllCountryFlowers(f.country));
   
   let finalPool = [...pool];
-  if (Math.random() < 0.01) finalPool = [...legendaries]; // 1% 機率出現傳說
+  if (Math.random() < 0.01 && legendaries.length > 0) finalPool = [...legendaries]; // 1% 機率出現已解鎖條件的傳說
 
   if (finalPool.length > 0) {
     const randomFlower = finalPool[Math.floor(Math.random() * finalPool.length)];
@@ -278,7 +290,9 @@ export const resetGame = () => {
       medals: {},
       gardens: {},
       upgrades: { spawnRate: 0.5, maxSlots: 24 },
-      activeBuffs: { sunnyDollUntil: null, rainUntil: null, rainMultiplier: 1, fertilizerUntil: null, fertilizerMultiplier: 1 }
+      activeBuffs: { sunnyDollUntil: null, rainUntil: null, rainMultiplier: 1, fertilizerUntil: null, fertilizerMultiplier: 1 },
+      exp: 0,
+      level: 1
     };
     
     // 初始化各場景花園
