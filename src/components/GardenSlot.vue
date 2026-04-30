@@ -4,7 +4,7 @@ import { FLOWERS } from '../data/flowers';
 import { state, harvestFlower } from '../store/gameState';
 
 const props = defineProps(['slotData']);
-const emit = defineEmits(['swipe']);
+const emit = defineEmits(['swipe', 'harvest-animate']);
 
 const imgRef = ref(null);
 const canvasRef = ref(null);
@@ -76,17 +76,32 @@ const endHold = () => {
 };
 
 const pullUp = () => {
+  if (isHarvesting.value) return;
   isHarvesting.value = true;
   isShaking.value = false;
   holdTimer.value = null;
+
+  // 紀錄拔起前的資訊，給動畫使用
+  const currentFlowerId = props.slotData.flowerId;
+  const currentSlotId = props.slotData.id;
+
   setTimeout(() => {
-    harvestFlower(props.slotData.id);
+    // 拔起動畫結束時，取得圖片的座標位置
+    if (imgRef.value) {
+      const rect = imgRef.value.getBoundingClientRect();
+      const startX = rect.left + rect.width / 2;
+      const startY = rect.top + rect.height / 2;
+      emit('harvest-animate', { slotId: currentSlotId, flowerId: currentFlowerId, startX, startY });
+    }
+
+    harvestFlower(currentSlotId);
     isHarvesting.value = false;
   }, 400);
 };
 
 // 處理滑鼠進入 (停留開始)
 const handleMouseEnter = () => {
+  emit('swipe', props.slotData.id); // 通知上層滑動事件 (保留舊邏輯)
   startHold();
 };
 

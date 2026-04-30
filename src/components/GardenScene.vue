@@ -31,23 +31,15 @@ const stopSwiping = () => { isSwiping.value = false; };
 const handleSwipe = (slotId) => {
   if (!isSwiping.value) return;
   const slotComp = slotRefs.value[slotId];
-  if (!slotComp) return;
+  if (slotComp) {
+    slotComp.triggerHarvest();
+  }
+};
 
-  const slotData = currentGarden.value[slotId];
-  if (slotData && slotData.status === 'ready') {
-    const flowerId = slotData.flowerId;
-    const flower = FLOWERS.find(f => f.id === flowerId);
-    
-    // 獲取起點座標
-    const el = slotComp.$el;
-    const rect = el.getBoundingClientRect();
-    const startX = rect.left + rect.width / 2;
-    const startY = rect.top + rect.height / 2;
-
-    // 執行實際採收邏輯
-    if (harvestFlower(slotId)) {
-      triggerFlyAnimation(flower, startX, startY);
-    }
+const handleHarvestAnimate = ({ slotId, flowerId, startX, startY }) => {
+  const flower = FLOWERS.find(f => f.id === flowerId);
+  if (flower) {
+    triggerFlyAnimation(flower, startX, startY);
   }
 };
 
@@ -143,6 +135,7 @@ onUnmounted(() => {
             :ref="el => slotRefs[slot.id] = el"
             :slot-data="slot" 
             @swipe="handleSwipe"
+            @harvest-animate="handleHarvestAnimate"
           />
         </div>
       </div>
