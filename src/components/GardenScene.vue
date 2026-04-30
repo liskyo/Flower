@@ -55,8 +55,9 @@ const triggerFlyAnimation = (flower, startX, startY) => {
   if (!basketRef.value) return;
   
   const basketRect = basketRef.value.getBoundingClientRect();
+  // 調整落點：讓花朵掉向花籃的「正上方開口處」，而不是正中心
   const endX = basketRect.left + basketRect.width / 2;
-  const endY = basketRect.top + basketRect.height / 2;
+  const endY = basketRect.top + basketRect.height * 0.2; // 落在偏上方
 
   const flyId = flyIdCounter++;
   const imgUrl = `/assets/flowers/${flower.country.toLowerCase()}/${flower.id}.png`;
@@ -247,16 +248,17 @@ onUnmounted(() => {
 
 /* 左下角花籃 */
 .basket-container {
-  position: absolute; bottom: 30px; left: 30px; z-index: 1500;
+  position: absolute; bottom: 15%; left: 15%; z-index: 1500;
   display: flex; flex-direction: column; align-items: center;
+  transform: scale(1.2); /* 讓花籃大一點 */
 }
 .basket-img {
-  font-size: 4rem; text-shadow: 2px 2px 0 rgba(0,0,0,0.3);
+  font-size: 5rem; text-shadow: 2px 2px 0 rgba(0,0,0,0.3);
 }
 .basket-label {
-  background: #2d3436; color: white; padding: 2px 8px; border-radius: 10px;
-  font-size: 0.8rem; font-weight: 900; border: 2px solid white; box-shadow: 0 2px 0 rgba(0,0,0,0.5);
-  margin-top: -10px; z-index: 2;
+  background: #2d3436; color: white; padding: 3px 10px; border-radius: 12px;
+  font-size: 0.85rem; font-weight: 900; border: 2px solid white; box-shadow: 0 3px 0 rgba(0,0,0,0.5);
+  margin-top: -15px; z-index: 2;
 }
 .shake { animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both; }
 @keyframes shake {
@@ -304,15 +306,16 @@ onUnmounted(() => {
   100% { transform: translateX(var(--endX)); }
 }
 @keyframes flyY {
-  0% { transform: translateY(var(--startY)) scale(1); }
-  30% { transform: translateY(calc(var(--startY) - 80px)) scale(1.2); } /* 拋高 */
-  100% { transform: translateY(var(--endY)) scale(0.3); opacity: 0; } /* 掉入縮小 */
+  0% { transform: translateY(var(--startY)) scale(1); opacity: 1; }
+  35% { transform: translateY(calc(var(--startY) - 100px)) scale(1.3); opacity: 1; } /* 拋高且變大 */
+  80% { transform: translateY(calc(var(--endY) - 20px)) scale(0.6); opacity: 1; } /* 掉落到開口時縮小 */
+  100% { transform: translateY(var(--endY)) scale(0); opacity: 0; } /* 瞬間消失模擬掉進去 */
 }
 
 @media (max-width: 1024px) {
   .absolute-garden-container { max-width: 450px; top: 55%; }
   .flowers-fixed-grid { width: 65%; }
   .action-cluster { bottom: 20px; right: 20px; transform: scale(0.85); transform-origin: bottom right; }
-  .basket-container { bottom: 20px; left: 20px; transform: scale(0.85); transform-origin: bottom left; }
+  .basket-container { bottom: 10%; left: 10%; transform: scale(1); transform-origin: bottom left; }
 }
 </style>
