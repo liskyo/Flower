@@ -36,9 +36,18 @@ const handleSwipe = (slotId) => {
   }
 };
 
-const handleHarvestAnimate = ({ slotId, flowerId, startX, startY }) => {
+const handleHarvestAnimate = ({ slotId, flowerId }) => {
   const flower = FLOWERS.find(f => f.id === flowerId);
-  if (flower) {
+  if (!flower) return;
+
+  const slotComp = slotRefs.value[slotId];
+  if (slotComp && slotComp.$el) {
+    // 從畫面上真正的格子取得座標，而不是依賴被隱藏的圖片
+    const rect = slotComp.$el.getBoundingClientRect();
+    const startX = rect.left + rect.width / 2;
+    // 拔起動畫會讓花往上飄，所以我們將起點 Y 軸往上調 50px，銜接拔起的位置
+    const startY = rect.top + rect.height / 2 - 50; 
+    
     triggerFlyAnimation(flower, startX, startY);
   }
 };
