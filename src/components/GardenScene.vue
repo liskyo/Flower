@@ -595,26 +595,28 @@ onUnmounted(() => {
   100% { transform: translateY(var(--endY)) scale(0); opacity: 0; } /* 瞬間消失模擬掉進去 */
 }
 
-/* --- 找到最下方的 @media 區段，將裡面的內容全數替換 --- */
+/* --- 找到最下方的 @media 區段，全數替換 --- */
 @media (max-width: 1024px) {
   .absolute-garden-container { 
     max-width: 100vw;
-    width: 80vw;           /* 雲朵稍微加寬 */
+    width: 85vw;           
     top: 55%; 
     left: 50%;             
     transform: translate(-50%, -50%);
-    aspect-ratio: 2.5 / 1; 
+    aspect-ratio: 2.2 / 1; 
   }
   
-  /* 將網格範圍縮小並置中，強迫花朵集中在雲朵內 */
+  /* 終極壓縮網格：強迫變大的花朵擠在雲朵中央 */
   .flowers-fixed-grid { 
-    width: 85%;            
-    height: 50%;           /* 壓縮高度，讓上下兩排花朵靠近 */
-    top: 50%;              /* 將原本的 40% 改為 50% 絕對置中 */
-    gap: 0px 0px;          /* 移除間隙，讓變大的花朵茂密重疊 */
+    width: 60%;            /* 從 85% 狠心縮小到 60% */
+    height: 55%;           
+    top: 50%; 
+    left: 50%; 
+    transform: translate(-50%, -50%);
+    gap: 0px;              /* 不留空隙 */
   }
   
-  /* 右下角按鈕群組 */
+  /* 功能按鈕確保貼緊右側安全區 */
   .action-cluster { 
     bottom: 20px; 
     right: max(15px, env(safe-area-inset-right)); 

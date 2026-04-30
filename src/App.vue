@@ -90,20 +90,17 @@ const doLogout = async () => {
 
         <!-- 導航邏輯 -->
         <main class="main-viewport">
-          <Transition name="pop" mode="out-in">
-            <StartScene 
-              v-if="currentTab === 'start'" 
-              @start="setTab('garden')" 
-            />
-          </Transition>
-
           <GardenScene 
             v-show="currentTab !== 'start'" 
             @change-tab="setTab"
           />
 
           <Transition name="pop" mode="out-in">
-            <FlowerCatalog v-if="currentTab === 'catalog'" @back="currentTab = 'garden'" />
+            <div v-if="currentTab === 'start'" class="start-scene-wrapper">
+              <StartScene @start="setTab('garden')" />
+            </div>
+            
+            <FlowerCatalog v-else-if="currentTab === 'catalog'" @back="currentTab = 'garden'" />
             <ShopOverlay v-else-if="currentTab === 'shop'" @back="currentTab = 'garden'" />
             <MapOverlay v-else-if="currentTab === 'map'" @back="currentTab = 'garden'" @select-country="currentTab = 'garden'"/>
             <InventoryOverlay v-else-if="currentTab === 'inventory'" @back="currentTab = 'garden'" />
@@ -115,6 +112,10 @@ const doLogout = async () => {
 </template>
 
 <style>
+.start-scene-wrapper {
+  position: absolute; inset: 0; z-index: 99999; background: #000;
+}
+
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap');
 
 * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; }
