@@ -78,17 +78,17 @@ const getLevelColorClass = (level) => {
 }
 .shop-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
 .shop-header h2 { 
-  font-size: 2.8rem; font-weight: 900; 
+  font-size: 1.8rem; font-weight: 900; 
   background: linear-gradient(45deg, #48dbfb, #0abde3); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
   filter: drop-shadow(0 2px 5px rgba(10, 189, 227, 0.5));
 }
-.close-btn { background: none; border: none; font-size: 2.5rem; cursor: pointer; transition: transform 0.2s; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); }
+.close-btn { background: none; border: none; font-size: 1.8rem; cursor: pointer; transition: transform 0.2s; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); }
 .close-btn:hover { transform: scale(1.1) rotate(90deg); }
-.diamond-display { font-size: 1.5rem; font-weight: bold; color: white; margin-bottom: 25px; padding: 10px 20px; background: rgba(255,255,255,0.1); border-radius: 15px; display: inline-block; border: 1px solid rgba(255,255,255,0.2); }
+.diamond-display { font-size: 1.1rem; font-weight: bold; color: white; margin-bottom: 15px; padding: 8px 16px; background: rgba(255,255,255,0.1); border-radius: 12px; display: inline-block; border: 1px solid rgba(255,255,255,0.2); }
 .diamond-val { color: #feca57; text-shadow: 0 0 10px rgba(254, 202, 87, 0.5); }
 .items-grid {
-  display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; overflow-y: auto;
-  padding-bottom: 50px; padding-right: 15px; flex: 1; min-height: 0; align-content: start;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; overflow-y: auto;
+  padding-bottom: 30px; padding-right: 10px; flex: 1; min-height: 0; align-content: start;
   grid-auto-rows: min-content;
 }
 .items-grid::-webkit-scrollbar { width: 8px; }
@@ -96,10 +96,10 @@ const getLevelColorClass = (level) => {
 
 .item-card {
   background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.02));
-  border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
-  padding: 25px; border-radius: 20px; display: flex; flex-direction: column; gap: 15px;
+  border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.3);
+  padding: 15px; border-radius: 15px; display: flex; flex-direction: column; gap: 10px;
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); position: relative; overflow: hidden;
-  min-height: 240px; justify-content: space-between;
+  min-height: 180px; justify-content: space-between;
 }
 
 /* Tier Colors */
@@ -117,12 +117,12 @@ const getLevelColorClass = (level) => {
 .item-card:hover { transform: translateY(-5px); border-color: rgba(255,255,255,0.5); box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5); }
 .item-card:hover::before { left: 150%; }
 
-.item-card h3 { color: #fff; font-size: 1.6rem; font-weight: 900; letter-spacing: 1px; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
-.item-card p { font-size: 1.05rem; flex-grow: 1; line-height: 1.6; color: #b2bec3; }
+.item-card h3 { color: #fff; font-size: 1.1rem; font-weight: 900; letter-spacing: 0.5px; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+.item-card p { font-size: 0.8rem; flex-grow: 1; line-height: 1.4; color: #b2bec3; }
 .buy-btn {
-  background: linear-gradient(to bottom, #f1c40f, #f39c12); border: none; padding: 15px; border-radius: 12px;
-  font-weight: 900; font-size: 1.2rem; cursor: pointer; color: #2d3436; 
-  box-shadow: 0 4px 15px rgba(243, 156, 18, 0.4), inset 0 2px 0 rgba(255,255,255,0.3);
+  background: linear-gradient(to bottom, #f1c40f, #f39c12); border: none; padding: 8px; border-radius: 8px;
+  font-weight: 900; font-size: 0.9rem; cursor: pointer; color: #2d3436; 
+  box-shadow: 0 3px 10px rgba(243, 156, 18, 0.4), inset 0 1px 0 rgba(255,255,255,0.3);
   transition: all 0.1s; text-align: center; margin-top: auto;
 }
 .buy-btn:active { transform: translateY(2px); box-shadow: 0 2px 5px rgba(243, 156, 18, 0.4), inset 0 0 0 rgba(255,255,255,0); }
@@ -133,9 +133,9 @@ const getLevelColorClass = (level) => {
 
 .item-card.is-locked { filter: grayscale(80%); opacity: 0.8; }
 .locked-btn {
-  background: rgba(0,0,0,0.5); padding: 15px; border-radius: 12px;
-  font-weight: 900; font-size: 1rem; color: #ff7675; text-align: center;
-  border: 2px dashed #ff7675; cursor: not-allowed; margin-top: auto;
+  background: rgba(0,0,0,0.5); padding: 8px; border-radius: 8px;
+  font-weight: 900; font-size: 0.75rem; color: #ff7675; text-align: center;
+  border: 1.5px dashed #ff7675; cursor: not-allowed; margin-top: auto;
 }
 
 @media (max-width: 600px) {

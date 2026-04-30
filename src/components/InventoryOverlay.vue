@@ -80,18 +80,18 @@ const useItem = (item) => {
 }
 .shop-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
 .shop-header h2 { 
-  font-size: 2.8rem; font-weight: 900; 
+  font-size: 1.8rem; font-weight: 900; 
   background: linear-gradient(45deg, #f1c40f, #e67e22); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
   filter: drop-shadow(0 2px 5px rgba(243, 156, 18, 0.5));
 }
-.close-btn { background: none; border: none; font-size: 2.5rem; cursor: pointer; transition: transform 0.2s; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); }
+.close-btn { background: none; border: none; font-size: 1.8rem; cursor: pointer; transition: transform 0.2s; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); }
 .close-btn:hover { transform: scale(1.1) rotate(90deg); }
 
-.empty-state { text-align: center; font-size: 1.5rem; color: #b2bec3; margin-top: 50px; font-weight: bold; }
+.empty-state { text-align: center; font-size: 1.1rem; color: #b2bec3; margin-top: 30px; font-weight: bold; }
 
 .items-grid {
-  display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; overflow-y: auto;
-  padding-bottom: 50px; padding-right: 15px; flex: 1; min-height: 0; align-content: start;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; overflow-y: auto;
+  padding-bottom: 30px; padding-right: 10px; flex: 1; min-height: 0; align-content: start;
   grid-auto-rows: min-content;
 }
 .items-grid::-webkit-scrollbar { width: 8px; }
@@ -99,10 +99,10 @@ const useItem = (item) => {
 
 .item-card {
   background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.02));
-  border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
-  padding: 25px; border-radius: 20px; display: flex; flex-direction: column; gap: 10px;
+  border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.3);
+  padding: 15px; border-radius: 15px; display: flex; flex-direction: column; gap: 8px;
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); position: relative; overflow: hidden;
-  min-height: 240px; justify-content: space-between;
+  min-height: 180px; justify-content: space-between;
 }
 
 .tier-epic { border-left: 5px solid #9b59b6; background: linear-gradient(135deg, rgba(155, 89, 182, 0.15), rgba(0,0,0,0)); }
@@ -115,14 +115,14 @@ const useItem = (item) => {
 .item-card:hover { transform: translateY(-5px); border-color: rgba(255,255,255,0.5); box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5); }
 .item-card:hover::before { left: 150%; }
 
-.item-card h3 { color: #fff; font-size: 1.6rem; font-weight: 900; letter-spacing: 1px; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
-.item-card p { font-size: 1.05rem; flex-grow: 1; line-height: 1.6; color: #b2bec3; }
-.item-count { font-size: 1.2rem; font-weight: bold; color: #f1c40f; text-shadow: 0 2px 4px rgba(0,0,0,0.5); margin-bottom: 10px; }
+.item-card h3 { color: #fff; font-size: 1.1rem; font-weight: 900; letter-spacing: 0.5px; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+.item-card p { font-size: 0.8rem; flex-grow: 1; line-height: 1.4; color: #b2bec3; }
+.item-count { font-size: 0.9rem; font-weight: bold; color: #f1c40f; text-shadow: 0 2px 4px rgba(0,0,0,0.5); margin-bottom: 5px; }
 
 .buy-btn {
-  background: linear-gradient(to bottom, #9b59b6, #8e44ad); border: none; padding: 15px; border-radius: 12px;
-  font-weight: 900; font-size: 1.2rem; cursor: pointer; color: #fff; 
-  box-shadow: 0 4px 15px rgba(155, 89, 182, 0.4), inset 0 2px 0 rgba(255,255,255,0.3);
+  background: linear-gradient(to bottom, #9b59b6, #8e44ad); border: none; padding: 8px; border-radius: 8px;
+  font-weight: 900; font-size: 0.9rem; cursor: pointer; color: #fff; 
+  box-shadow: 0 3px 10px rgba(155, 89, 182, 0.4), inset 0 1px 0 rgba(255,255,255,0.3);
   transition: all 0.1s; text-align: center; margin-top: auto;
 }
 .buy-btn:active { transform: translateY(2px); box-shadow: 0 2px 5px rgba(155, 89, 182, 0.4), inset 0 0 0 rgba(255,255,255,0); }

@@ -100,9 +100,9 @@ const handleSelect = (countryId) => {
 .close-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #c0392b; }
 
 .top-info { position: absolute; top: 20px; right: 20px; display: flex; flex-direction: column; align-items: flex-end; z-index: 10; gap: 10px; }
-.map-title { font-size: 2rem; font-weight: 900; color: white; text-shadow: 0 4px 0 rgba(0,0,0,0.5); }
-.diamond-display { background: rgba(0,0,0,0.6); padding: 8px 15px; border-radius: 15px; border: 2px solid rgba(255,255,255,0.2); font-weight: bold; color: white; }
-.diamond-val { color: #feca57; font-size: 1.2rem; }
+.map-title { font-size: 1.4rem; font-weight: 900; color: white; text-shadow: 0 3px 0 rgba(0,0,0,0.5); }
+.diamond-display { background: rgba(0,0,0,0.6); padding: 5px 12px; border-radius: 12px; border: 2px solid rgba(255,255,255,0.2); font-weight: bold; color: white; font-size: 0.9rem; }
+.diamond-val { color: #feca57; font-size: 1rem; }
 
 .map-container {
   width: 95vw; max-width: 1200px; aspect-ratio: 2 / 1; position: relative; margin-top: 100px;
@@ -142,13 +142,13 @@ const handleSelect = (countryId) => {
 .fade-label-enter-active, .fade-label-leave-active { transition: all 0.2s; }
 .fade-label-enter-from, .fade-label-leave-to { opacity: 0; transform: scale(0.9); }
 
-.country-label .name { font-weight: 900; font-size: 1.1rem; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
-.country-label .status { font-size: 0.8rem; margin-top: 5px; font-weight: bold; }
-.country-label .status.unlocked { color: #2ecc71; }
-.country-label .status.locked { color: #e74c3c; }
+.country-label-fixed .name { font-weight: 900; font-size: 0.9rem; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+.country-label-fixed .status { font-size: 0.7rem; margin-top: 3px; font-weight: bold; }
+.country-label-fixed .status.unlocked { color: #2ecc71; }
+.country-label-fixed .status.locked { color: #e74c3c; }
 
 .action-btn {
-  margin-top: 8px; width: 100%; padding: 6px; border-radius: 6px; font-weight: bold; font-size: 0.85rem;
+  margin-top: 6px; width: 100%; padding: 4px; border-radius: 6px; font-weight: bold; font-size: 0.75rem;
   background: linear-gradient(to bottom, #3498db, #2980b9); color: white; border: none; cursor: pointer;
   box-shadow: 0 2px 5px rgba(0,0,0,0.5);
 }

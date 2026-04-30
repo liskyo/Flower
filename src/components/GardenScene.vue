@@ -24,8 +24,33 @@ const slotRefs = ref([]);
 const isSwiping = ref(false);
 
 const basketRef = ref(null);
+const basketImgRef = ref(null);
+const basketCanvasRef = ref(null);
+const processedBasketSrc = ref(null);
 const flyingFlowers = ref([]);
 let flyIdCounter = 0;
+
+const processBasketImage = () => {
+  if (!basketImgRef.value || processedBasketSrc.value) return;
+  const img = basketImgRef.value;
+  const canvas = basketCanvasRef.value;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  canvas.width = img.naturalWidth;
+  canvas.height = img.naturalHeight;
+  ctx.drawImage(img, 0, 0);
+  try {
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const data = imageData.data;
+    for (let i = 0; i < data.length; i += 4) {
+      const r = data[i], g = data[i+1], b = data[i+2];
+      // 去除接近白色或淺灰色的背景 (包括假去背格子)
+      if ((r > 220 && g > 220 && b > 220)) data[i+3] = 0;
+    }
+    ctx.putImageData(imageData, 0, 0);
+    processedBasketSrc.value = canvas.toDataURL();
+  } catch (e) { processedBasketSrc.value = img.src; }
+};
 
 const sceneNames = {
   taiwan: ["台北 101", "阿里山", "民雄鬼屋", "台灣夜市"],
@@ -62,7 +87,7 @@ const spawnStormElement = () => {
 };
 
 const activeBuffsDisplay = computed(() => {
-  const now = Date.now();
+  const now = tickerTime.value; // 使用 tickerTime 驅動響應
   const items = [];
   if (state.activeBuffs?.sunnyDollUntil && now < state.activeBuffs.sunnyDollUntil)
     items.push({ icon: '☀️', name: '晴天娃娃', desc: '強制晴天效果', remain: Math.ceil((state.activeBuffs.sunnyDollUntil - now) / 60000) });
@@ -218,7 +243,7 @@ onUnmounted(() => {
     <div class="buff-bar" v-if="activeBuffsDisplay.length > 0">
       <div
         v-for="buff in activeBuffsDisplay" :key="buff.name"
-        class="buff-icon" @click="showBuffTooltip(buff)"
+        class="buff-icon" @click.stop="showBuffTooltip(buff)"
       >
         <span class="buff-emoji">{{ buff.icon }}</span>
         <span class="buff-remain">{{ buff.remain }}m</span>
@@ -269,8 +294,10 @@ onUnmounted(() => {
 
       <!-- 左下角：花籃 -->
       <div class="basket-container" ref="basketRef">
-        <img src="/assets/flower_basket.png" class="basket-img-real" onerror="this.style.display='none';this.nextElementSibling.style.display='block'" />
-        <div class="basket-img" style="display:none">🧵</div>
+        <img ref="basketImgRef" src="/flowerbasket.png" @load="processBasketImage" style="display:none" />
+        <canvas ref="basketCanvasRef" style="display:none"></canvas>
+        <img v-if="processedBasketSrc" :src="processedBasketSrc" class="basket-img-real" />
+        <div v-else class="basket-img">🧺</div>
         <div class="basket-label">花籃</div>
       </div>
 
