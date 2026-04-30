@@ -595,20 +595,43 @@ onUnmounted(() => {
   100% { transform: translateY(var(--endY)) scale(0); opacity: 0; } /* 瞬間消失模擬掉進去 */
 }
 
+/* --- 找到最下方的 @media 區段，將裡面的內容全數替換為以下設定 --- */
 @media (max-width: 1024px) {
   .absolute-garden-container { 
     max-width: 100vw;
-    width: 66vw;           /* 維持在螢幕約 2/3 寬度 */
+    width: 75vw;           /* 讓雲朵維持適當寬度 */
     top: 55%; 
-    left: 45%;             /* 稍微往左對齊，完美避開右側功能按鈕 */
+    left: 50%;             /* 恢復絕對置中，解決往左偏的問題 */
+    transform: translate(-50%, -50%);
     aspect-ratio: 2.2 / 1; 
   }
+  
+  /* 將網格範圍縮小，把花朵逼進雲朵正中間 */
   .flowers-fixed-grid { 
-    width: 90%;            
-    height: 80%; 
-    gap: 10px 4px;         
+    width: 75%;            /* 原本是 90%，縮小範圍防止花朵超出雲朵邊緣 */
+    height: 65%; 
+    gap: 0px 0px;          /* 移除間距，讓放大的花朵擁擠集中 */
   }
-  .action-cluster { bottom: 20px; right: 15px; transform: scale(0.85); transform-origin: bottom right; gap: 10px; }
-  .basket-container { bottom: 10%; left: 10%; transform: scale(1); transform-origin: bottom left; }
+  
+  /* 重新定義按鈕實體大小，解決 transform 縮放導致往左偏移的問題 */
+  .action-cluster { 
+    bottom: 20px; 
+    /* 自動適應手機螢幕的安全邊界 (瀏海) */
+    right: max(15px, env(safe-area-inset-right)); 
+    gap: 10px; 
+  }
+  
+  .action-btn { width: 55px; height: 55px; border-width: 3px; }
+  .action-btn .icon { font-size: 1.5rem; }
+  .action-btn .label { font-size: 0.65rem; bottom: -10px; }
+  
+  /* 各別微調按鈕比例，凸顯重要功能 */
+  .action-btn.map { width: 48px; height: 48px; }
+  .action-btn.map .icon { font-size: 1.2rem; }
+  .action-btn.catalog { width: 75px; height: 75px; } /* 圖鑑維持最大 */
+  .action-btn.shop { width: 52px; height: 52px; }
+  .action-btn.inventory { width: 48px; height: 48px; }
+  
+  .basket-container { bottom: 10%; left: max(10%, env(safe-area-inset-left)); }
 }
 </style>

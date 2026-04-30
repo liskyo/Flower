@@ -234,10 +234,11 @@ defineExpose({ triggerHarvest, getSlotStatus });
   display: flex; flex-direction: column; align-items: center; justify-content: center;
 }
 
+/* --- 找到這段並替換 --- */
 .flower-container-v3 {
   width: 100%; 
-  max-width: 65px; /* 比預設 55px 大，增加手指點擊範圍，又不會互相重疊 */
-  height: 65px;
+  max-width: 80px; /* 大幅增加極限尺寸，讓花朵更大更清楚 */
+  height: 80px;    /* 對應高度 */
   display: flex; align-items: center; justify-content: center;
   position: relative; transition: transform 0.3s ease;
   overflow: visible; z-index: 50;
