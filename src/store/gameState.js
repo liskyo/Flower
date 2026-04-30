@@ -139,6 +139,12 @@ export const harvestFlower = (slotId) => {
     slot.flowerId = null;
     slot.startTime = null;
     return true;
+  } else if (slot.status === 'withered') {
+    // 枯萎花朵清除，無獎勵
+    slot.status = 'empty';
+    slot.flowerId = null;
+    slot.startTime = null;
+    return false;
   }
   return false;
 };

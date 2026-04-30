@@ -17,13 +17,24 @@ const flower = computed(() => FLOWERS.find(f => f.id === props.slotData.flowerId
 const progress = ref(0);
 
 const growthScale = computed(() => {
-  if (props.slotData.status === 'ready') return 1;
+  if (props.slotData.status === 'ready' || props.slotData.status === 'withered') return 1;
   if (props.slotData.status === 'growing') return 0.3 + (progress.value / 100) * 0.7;
   return 0;
 });
 
+// 全域快取，避免切換場景時重複消耗 CPU 運算去背
+const globalImageCache = window.__FLOWER_IMG_CACHE__ || (window.__FLOWER_IMG_CACHE__ = new Map());
+
 const processImage = () => {
   if (!imgRef.value || processedSrc.value) return;
+  
+  if (!flower.value) return;
+  const cacheKey = `flower_${flower.value.id}`;
+  if (globalImageCache.has(cacheKey)) {
+    processedSrc.value = globalImageCache.get(cacheKey);
+    return;
+  }
+
   const img = imgRef.value;
   const canvas = canvasRef.value;
   if (!canvas) return;
@@ -39,16 +50,45 @@ const processImage = () => {
       if ((r > 230 && g > 230 && b > 230) || (r < 30 && g < 30 && b < 30)) data[i+3] = 0;
     }
     ctx.putImageData(imageData, 0, 0);
-    processedSrc.value = canvas.toDataURL();
+    const dataUrl = canvas.toDataURL();
+    processedSrc.value = dataUrl;
+    globalImageCache.set(cacheKey, dataUrl); // 存入快取
   } catch (e) { processedSrc.value = img.src; }
 };
 
+// 監聽花朵變化，若變化則重置去背狀態
+watch(() => props.slotData.flowerId, (newId) => {
+  if (newId) {
+    const cacheKey = `flower_${newId}`;
+    if (globalImageCache.has(cacheKey)) {
+      processedSrc.value = globalImageCache.get(cacheKey);
+    } else {
+      processedSrc.value = null; // 讓 @load 重新觸發 processImage
+    }
+  } else {
+    processedSrc.value = null;
+  }
+});
+
 const updateProgress = () => {
-  if (props.slotData.status === 'growing' && props.slotData.startTime && flower.value) {
+  if (props.slotData.startTime && flower.value) {
     const elapsed = (Date.now() - props.slotData.startTime) / 1000;
-    const p = Math.min((elapsed / flower.value.growthTime) * 100, 100);
-    progress.value = p;
-    if (p >= 100) props.slotData.status = 'ready';
+    
+    if (props.slotData.status === 'growing') {
+      const p = Math.min((elapsed / flower.value.growthTime) * 100, 100);
+      progress.value = p;
+      if (p >= 100) {
+        props.slotData.status = 'ready';
+      }
+    }
+    
+    // 獨立檢查枯萎 (超過 30 分鐘)
+    if (props.slotData.status === 'ready') {
+      const witherTime = flower.value.growthTime + 30 * 60; // 30 分鐘 = 1800 秒
+      if (elapsed >= witherTime) {
+        props.slotData.status = 'withered';
+      }
+    }
   }
 };
 
@@ -59,11 +99,12 @@ onUnmounted(() => { clearInterval(timer); clearTimeout(holdTimer.value); });
 // --- 改進的收割邏輯：停留即拔起 ---
 
 const startHold = () => {
-  if (props.slotData.status === 'ready' && !isHarvesting.value && !holdTimer.value) {
+  const status = props.slotData.status;
+  if ((status === 'ready' || status === 'withered') && !isHarvesting.value && !holdTimer.value) {
     isShaking.value = true;
     holdTimer.value = setTimeout(() => {
       pullUp();
-    }, 150); // 停留或按住 0.45 秒
+    }, 50); // 停留或按住 0.05 秒
   }
 };
 
@@ -82,12 +123,13 @@ const pullUp = () => {
   holdTimer.value = null;
 
   // 紀錄拔起前的資訊，給動畫使用
+  const currentStatus = props.slotData.status;
   const currentFlowerId = props.slotData.flowerId;
   const currentSlotId = props.slotData.id;
 
   setTimeout(() => {
-    // 拔起動畫結束時，取得圖片的座標位置
-    if (imgRef.value) {
+    // 只有 ready 狀態才會觸發飛入收集箱的動畫，withered 則只會消失
+    if (currentStatus === 'ready' && imgRef.value) {
       const rect = imgRef.value.getBoundingClientRect();
       const startX = rect.left + rect.width / 2;
       const startY = rect.top + rect.height / 2;
@@ -117,7 +159,12 @@ defineExpose({ triggerHarvest: pullUp });
 <template>
   <div 
     class="garden-slot" 
-    :class="{ 'can-harvest': slotData.status === 'ready', 'is-harvesting': isHarvesting, 'is-shaking': isShaking }"
+    :class="{ 
+      'can-harvest': slotData.status === 'ready' || slotData.status === 'withered', 
+      'is-harvesting': isHarvesting, 
+      'is-shaking': isShaking,
+      'is-withered': slotData.status === 'withered'
+    }"
     @mousedown="startHold"
     @mouseup="endHold"
     @mouseleave="endHold"
@@ -170,6 +217,13 @@ defineExpose({ triggerHarvest: pullUp });
 .final-flower-img {
   width: 100%; height: 100%; object-fit: contain;
   filter: drop-shadow(0 4px 0 rgba(0,0,0,0.1));
+  transition: filter 0.3s ease, opacity 0.3s ease;
+}
+
+/* 枯萎狀態視覺效果 */
+.is-withered .final-flower-img {
+  filter: grayscale(100%) sepia(80%) brightness(60%) contrast(1.2) hue-rotate(-50deg);
+  opacity: 0.85;
 }
 
 .is-shaking .flower-render-box { animation: nudge 0.3s ease-in-out infinite; }
