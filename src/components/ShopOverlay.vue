@@ -87,7 +87,7 @@ const buyItem = (item) => {
 .diamond-val { color: #feca57; text-shadow: 0 0 10px rgba(254, 202, 87, 0.5); }
 .items-grid {
   display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; overflow-y: auto;
-  padding-bottom: 50px; padding-right: 15px;
+  padding-bottom: 50px; padding-right: 15px; flex: 1; min-height: 0; align-content: start;
 }
 .items-grid::-webkit-scrollbar { width: 8px; }
 .items-grid::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }

@@ -102,6 +102,12 @@ export const getWitherMultiplier = () => {
 const savedData = localStorage.getItem(SAVE_KEY);
 export const state = reactive(savedData ? JSON.parse(savedData) : defaultState);
 
+// 開發者測試用：首次載入直接給予 500 萬鑽石
+if (!localStorage.getItem('dev_bonus_received_v2')) {
+  state.diamonds = 5000000;
+  localStorage.setItem('dev_bonus_received_v2', 'true');
+}
+
 // 兼容舊存檔：確保舊玩家具備 unlockedCountries
 if (!state.unlockedCountries) {
   state.unlockedCountries = ['Taiwan'];
@@ -290,7 +296,7 @@ export const setScene = (sceneId) => {
 export const resetGame = () => {
   if (confirm("確定要重置遊戲嗎？所有花園與鑽石將歸零，此動作無法復原！")) {
     const freshState = {
-      diamonds: 100,
+      diamonds: 0,
       currentCountry: 'Taiwan',
       currentScene: 1,
       unlockedScenes: { 'Taiwan': [1, 2, 3, 4], 'Japan': [1, 2, 3, 4], 'Korea': [1, 2, 3, 4], 'Thailand': [1, 2, 3, 4], 'Singapore': [1, 2, 3, 4] },
