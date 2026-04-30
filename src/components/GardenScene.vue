@@ -172,18 +172,19 @@ onUnmounted(() => {
 
     <!-- 飛行動畫層 -->
     <div class="flying-layer">
-      <img 
+      <div 
         v-for="flower in flyingFlowers" 
         :key="flower.id" 
-        :src="flower.url" 
-        class="flying-flower"
+        class="flying-flower-x"
         :style="{
           '--startX': `${flower.startX}px`,
-          '--startY': `${flower.startY}px`,
           '--endX': `${flower.endX}px`,
+          '--startY': `${flower.startY}px`,
           '--endY': `${flower.endY}px`
         }"
-      />
+      >
+        <img :src="flower.url" class="flying-flower-y" />
+      </div>
     </div>
   </div>
 </template>
@@ -295,10 +296,17 @@ onUnmounted(() => {
 
 /* 飛行動畫層 */
 .flying-layer { position: absolute; inset: 0; pointer-events: none; z-index: 5000; overflow: hidden; }
-.flying-flower {
-  position: absolute; top: 0; left: 0; width: 45px; height: 45px; object-fit: contain;
-  /* 拋物線動畫：X 軸線性，Y 軸使用 ease-in 加速落下 */
-  animation: flyX 0.6s linear forwards, flyY 0.6s ease-in forwards;
+
+/* 負責 X 軸水平等速移動 */
+.flying-flower-x {
+  position: absolute; top: 0; left: 0;
+  animation: flyX 0.6s linear forwards;
+}
+
+/* 負責 Y 軸垂直拋物線移動與縮放 */
+.flying-flower-y {
+  width: 45px; height: 45px; object-fit: contain;
+  animation: flyY 0.6s ease-in forwards;
 }
 
 @keyframes flyX {
