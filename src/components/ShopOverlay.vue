@@ -151,11 +151,11 @@ const getLevelColorClass = (level) => {
   .shop-overlay { padding: 20px; }
   .shop-header h2 { font-size: 1.8rem; }
   .diamond-display { font-size: 1.2rem; padding: 8px 15px; margin-bottom: 15px; }
-  .items-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; padding-right: 5px; }
-  .item-card { min-height: 180px; padding: 15px; gap: 8px; border-radius: 15px; }
-  .item-card h3 { font-size: 1rem; }
-  .item-card p { font-size: 0.8rem; }
-  .buy-btn { font-size: 0.9rem; padding: 10px; border-radius: 10px; }
-  .locked-btn { font-size: 0.8rem; padding: 10px; border-radius: 10px; }
+  .items-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; padding-right: 5px; }
+  .item-card { min-height: 240px; padding: 10px; gap: 4px; border-radius: 12px; }
+  .item-card h3 { font-size: 0.9rem; }
+  .item-card p { font-size: 0.7rem; }
+  .buy-btn { font-size: 0.8rem; padding: 6px; border-radius: 6px; }
+  .locked-btn { font-size: 0.7rem; padding: 6px; border-radius: 6px; }
 }
 </style>

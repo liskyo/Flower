@@ -9,11 +9,11 @@ const selectedCountry = ref(null);
 const formatNumber = (num) => new Intl.NumberFormat('en-US').format(num);
 
 const countries = [
-  { id: 'Taiwan', name: '台灣', x: 56, y: 76, flag: '🇹🇼' },
-  { id: 'Japan', name: '日本', x: 90, y: 33, flag: '🇯🇵' },
-  { id: 'Korea', name: '韓國', x: 64, y: 45, flag: '🇰🇷' },
-  { id: 'Thailand', name: '泰國', x: 45, y: 84, flag: '🇹🇭' },
-  { id: 'Singapore', name: '新加坡', x: 50, y: 85, flag: '🇸🇬' }
+  { id: 'Taiwan', name: '台灣', x: 56, y: 81, flag: '🇹🇼' },
+  { id: 'Japan', name: '日本', x: 90, y: 38, flag: '🇯🇵' },
+  { id: 'Korea', name: '韓國', x: 64, y: 50, flag: '🇰🇷' },
+  { id: 'Thailand', name: '泰國', x: 45, y: 88, flag: '🇹🇭' },
+  { id: 'Singapore', name: '新加坡', x: 50, y: 89, flag: '🇸🇬' }
 ];
 
 const handleSelect = (countryId) => {

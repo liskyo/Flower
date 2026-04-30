@@ -4,15 +4,95 @@
   "flag": "🇹🇭",
   "scenes": 4,
   "flowers": [
-    { "id": "th_s1_tomyum", "name": "冬蔭功花", "rarity": 1, "weight": 50, "price": 50, "scene": 1 },
-    { "id": "th_s1_tuk", "name": "嘟嘟車花", "rarity": 2, "weight": 30, "price": 100, "scene": 1 },
-    { "id": "th_s1_massage", "name": "泰式按摩花", "rarity": 3, "weight": 20, "price": 200, "scene": 1 },
-    { "id": "th_s2_elephant", "name": "大象花", "rarity": 1, "weight": 50, "price": 60, "scene": 2 },
-    { "id": "th_s2_temple", "name": "四面佛花", "rarity": 4, "weight": 10, "price": 500, "scene": 2 },
-    { "id": "th_s3_coconut", "name": "椰子花", "rarity": 1, "weight": 50, "price": 70, "scene": 3 },
-    { "id": "th_s3_mango", "name": "芒果糯米花", "rarity": 2, "weight": 40, "price": 150, "scene": 3 },
-    { "id": "th_s4_beach", "name": "普吉島沙灘花", "rarity": 2, "weight": 40, "price": 180, "scene": 4 },
-    { "id": "th_s4_lady", "name": "人妖秀花", "rarity": 3, "weight": 20, "price": 300, "scene": 4 },
-    { "id": "th_legendary", "name": "傳說·阿勃勒", "rarity": "Legendary", "weight": 1, "price": 20000, "scene": 0 }
+    {
+      "id": "th_s1_tomyum",
+      "name": "冬蔭功花",
+      "rarity": 1,
+      "weight": 50,
+      "price": 50,
+      "scene": 1,
+      "description": "這是一株來自 泰國 的珍貴花卉，散發著迷人的氣息。"
+    },
+    {
+      "id": "th_s1_tuk",
+      "name": "嘟嘟車花",
+      "rarity": 2,
+      "weight": 30,
+      "price": 100,
+      "scene": 1,
+      "description": "這是一株來自 泰國 的珍貴花卉，散發著迷人的氣息。"
+    },
+    {
+      "id": "th_s1_massage",
+      "name": "泰式按摩花",
+      "rarity": 3,
+      "weight": 20,
+      "price": 200,
+      "scene": 1,
+      "description": "這是一株來自 泰國 的珍貴花卉，散發著迷人的氣息。"
+    },
+    {
+      "id": "th_s2_elephant",
+      "name": "大象花",
+      "rarity": 1,
+      "weight": 50,
+      "price": 60,
+      "scene": 2,
+      "description": "這是一株來自 泰國 的珍貴花卉，散發著迷人的氣息。"
+    },
+    {
+      "id": "th_s2_temple",
+      "name": "四面佛花",
+      "rarity": 4,
+      "weight": 10,
+      "price": 500,
+      "scene": 2,
+      "description": "這是一株來自 泰國 的珍貴花卉，散發著迷人的氣息。"
+    },
+    {
+      "id": "th_s3_coconut",
+      "name": "椰子花",
+      "rarity": 1,
+      "weight": 50,
+      "price": 70,
+      "scene": 3,
+      "description": "這是一株來自 泰國 的珍貴花卉，散發著迷人的氣息。"
+    },
+    {
+      "id": "th_s3_mango",
+      "name": "芒果糯米花",
+      "rarity": 2,
+      "weight": 40,
+      "price": 150,
+      "scene": 3,
+      "description": "這是一株來自 泰國 的珍貴花卉，散發著迷人的氣息。"
+    },
+    {
+      "id": "th_s4_beach",
+      "name": "普吉島沙灘花",
+      "rarity": 2,
+      "weight": 40,
+      "price": 180,
+      "scene": 4,
+      "description": "這是一株來自 泰國 的珍貴花卉，散發著迷人的氣息。"
+    },
+    {
+      "id": "th_s4_lady",
+      "name": "人妖秀花",
+      "rarity": 3,
+      "weight": 20,
+      "price": 300,
+      "scene": 4,
+      "description": "這是一株來自 泰國 的珍貴花卉，散發著迷人的氣息。"
+    },
+    {
+      "id": "th_legendary",
+      "name": "傳說·阿勃勒",
+      "rarity": "Legendary",
+      "weight": 1,
+      "price": 20000,
+      "scene": 0,
+      "description": "這是一株來自 泰國 的珍貴花卉，散發著迷人的氣息。"
+    }
   ]
 }
