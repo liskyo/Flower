@@ -355,13 +355,17 @@ onUnmounted(() => {
 .scene-bg-wrapper { position: absolute; inset: 0; z-index: 0; overflow: hidden; }
 /* --- 找到這段並替換 --- */
 
-/* 1. 恢復背景原本的無限捲動動畫 */
+/* --- 找到這段並替換 --- */
 .scene-bg-full {
   position: absolute; top: 0; left: 0; height: 100%;
-  width: 300%; /* 3倍寬讓背景可循環 */
-  background-size: auto 100%; background-repeat: repeat-x;
+  width: 300%; 
+  
+  /* 👇 關鍵修改：將 auto 改為 100vw，強迫單張背景寬高剛好等於螢幕大小 */
+  background-size: 100vw 100%; 
+  
+  background-repeat: repeat-x;
   background-position: left center;
-  animation: scrollBg 80s linear infinite; /* 把捲動動畫加回來 */
+  animation: scrollBg 80s linear infinite;
   transition: background-image 0.5s ease;
 }
 
