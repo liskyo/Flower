@@ -114,7 +114,6 @@ const handleSelect = (countryId) => {
 
 .country-node {
   position: absolute; transform: translate(-50%, -50%); cursor: pointer; z-index: 5;
-  display: flex; flex-direction: column; align-items: center;
 }
 
 .hotspot {
@@ -127,12 +126,13 @@ const handleSelect = (countryId) => {
 .country-node.active .hotspot { background: #e74c3c; box-shadow: 0 0 20px #e74c3c, 0 0 40px #e74c3c; transform: scale(1.2); animation: pulse-active 1s infinite alternate; }
 
 .country-label {
+  position: absolute; top: 100%; left: 50%;
   background: rgba(0,0,0,0.85); border: 2px solid rgba(255,255,255,0.3); border-radius: 10px;
   padding: 8px 12px; color: white; margin-top: 10px; text-align: center;
-  transition: all 0.2s; opacity: 0; transform: translateY(10px) scale(0.9); white-space: nowrap; pointer-events: none;
+  transition: all 0.2s; opacity: 0; transform: translate(-50%, 10px) scale(0.9); white-space: nowrap; pointer-events: none;
   backdrop-filter: blur(5px); z-index: 100;
 }
-.country-label.show-label { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+.country-label.show-label { opacity: 1; transform: translate(-50%, 0) scale(1); pointer-events: auto; }
 .country-node.active .country-label.show-label { border-color: #e74c3c; }
 
 .country-label .name { font-weight: 900; font-size: 1.1rem; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }

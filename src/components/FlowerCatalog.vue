@@ -175,9 +175,12 @@ const processCatalogImage = (flower, e) => {
             </div>
 
             <div class="m-desc-box">
-              <p>這是一株來自 {{ selectedFlower.country }} 的珍貴花卉。</p>
-              <p v-if="selectedFlower.rarity >= 3">其獨特的能量場在深夜會發出微光。</p>
-              <p v-else>在陽光下會展現出迷人的色澤。</p>
+              <p v-if="selectedFlower.description">{{ selectedFlower.description }}</p>
+              <template v-else>
+                <p>這是一株來自 {{ selectedFlower.country }} 的珍貴花卉。</p>
+                <p v-if="getStars(selectedFlower.rarity) >= 3">其獨特的能量場在深夜會發出微光。</p>
+                <p v-else>在陽光下會展現出迷人的色澤。</p>
+              </template>
             </div>
           </div>
 
@@ -205,8 +208,9 @@ const processCatalogImage = (flower, e) => {
 
 .notebook-inner { flex: 1; padding: 15px 15px 15px 30px; display: flex; flex-direction: column; overflow: hidden; }
 .notebook-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px dashed #d1ccc0; padding-bottom: 5px; margin-bottom: 10px; }
-.title-area h1 { font-size: 1.2rem; margin: 0; font-family: 'ZCOOL KuaiLe', cursive; color: #57606f; }
-.page-indicator { font-weight: 900; color: #d1ccc0; font-size: 0.8rem; }
+.title-area { display: flex; align-items: center; gap: 8px; }
+.title-area h1 { font-size: 1.1rem; margin: 0; font-family: 'ZCOOL KuaiLe', cursive; color: #57606f; white-space: nowrap; }
+.page-indicator { font-weight: 900; color: #d1ccc0; font-size: 0.8rem; white-space: nowrap; }
 
 /* Grid View (仿圖3) */
 .items-grid-container { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
@@ -219,7 +223,7 @@ const processCatalogImage = (flower, e) => {
 .m-slot-header { background: #580f75; color: #fff; text-align: center; font-size: 0.75rem; font-weight: 900; padding: 2px 0; border-bottom: 2px solid #3c1a1a; letter-spacing: 1px; }
 
 .m-slot-body { flex: 1; position: relative; display: flex; align-items: center; justify-content: center; }
-.m-slot-id-badge { position: absolute; top: 4px; left: 4px; background: #000; color: #fff; font-size: 0.55rem; padding: 1px 4px; border-radius: 4px; font-weight: 900; border: 1px solid #fff; }
+.m-slot-id-badge { position: absolute; top: 2px; left: 2px; background: #000; color: #fff; font-size: 0.5rem; padding: 1px 3px; border-radius: 4px; font-weight: 900; border: 1px solid #fff; }
 
 .m-thumb { width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; }
 .hidden-source { display: none; }
@@ -233,7 +237,7 @@ const processCatalogImage = (flower, e) => {
 
 .m-placeholder .q-mark { font-size: 2rem; color: #bcaea0; font-weight: 900; }
 
-.m-slot-footer { background: #c87a27; color: #fff; display: flex; justify-content: space-between; align-items: center; padding: 2px 6px; font-size: 0.65rem; font-weight: 900; border-top: 2px solid #3c1a1a; }
+.m-slot-footer { background: #c87a27; color: #fff; display: flex; justify-content: space-between; align-items: center; padding: 1px 4px; font-size: 0.55rem; font-weight: 900; border-top: 2px solid #3c1a1a; }
 .m-f-label { text-shadow: 1px 1px 0 #000; }
 .m-f-val { text-shadow: 1px 1px 0 #000; }
 
