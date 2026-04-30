@@ -1,0 +1,362 @@
+[
+    {
+        "id": "fr_s1_001",
+        "name": "巴黎鐵塔花",
+        "rarity": 2,
+        "weight": 30,
+        "growthTime": 10,
+        "price": 30,
+        "country": "France",
+        "scene": 1
+    },
+    {
+        "id": "uk_s1_002",
+        "name": "大笨鐘花",
+        "rarity": 2,
+        "weight": 30,
+        "growthTime": 10,
+        "price": 30,
+        "country": "UK",
+        "scene": 1
+    },
+    {
+        "id": "us_s1_003",
+        "name": "自由女神花",
+        "rarity": 3,
+        "weight": 20,
+        "growthTime": 15,
+        "price": 60,
+        "country": "USA",
+        "scene": 1
+    },
+    {
+        "id": "eg_s1_004",
+        "name": "金字塔花",
+        "rarity": 3,
+        "weight": 20,
+        "growthTime": 15,
+        "price": 60,
+        "country": "Egypt",
+        "scene": 1
+    },
+    {
+        "id": "in_s1_005",
+        "name": "泰姬瑪哈陵花",
+        "rarity": 3,
+        "weight": 20,
+        "growthTime": 15,
+        "price": 60,
+        "country": "India",
+        "scene": 1
+    },
+    {
+        "id": "tr_s1_006",
+        "name": "藍色清真寺花",
+        "rarity": 2,
+        "weight": 30,
+        "growthTime": 10,
+        "price": 30,
+        "country": "Turkey",
+        "scene": 1
+    },
+    {
+        "id": "cn_s1_007",
+        "name": "中國古寺花",
+        "rarity": 2,
+        "weight": 30,
+        "growthTime": 10,
+        "price": 30,
+        "country": "China",
+        "scene": 1
+    },
+    {
+        "id": "jp_s1_008",
+        "name": "神社花",
+        "rarity": 2,
+        "weight": 30,
+        "growthTime": 10,
+        "price": 30,
+        "country": "Japan",
+        "scene": 1
+    },
+    {
+        "id": "jp_s1_009",
+        "name": "富士山花",
+        "rarity": 3,
+        "weight": 20,
+        "growthTime": 15,
+        "price": 60,
+        "country": "Japan",
+        "scene": 1
+    },
+    {
+        "id": "nl_s1_010",
+        "name": "風車村花",
+        "rarity": 1,
+        "weight": 50,
+        "growthTime": 5,
+        "price": 15,
+        "country": "Netherlands",
+        "scene": 1
+    },
+    {
+        "id": "cn_s1_011",
+        "name": "長城花",
+        "rarity": 3,
+        "weight": 20,
+        "growthTime": 15,
+        "price": 60,
+        "country": "China",
+        "scene": 1
+    },
+    {
+        "id": "jp_s1_012",
+        "name": "東京塔花",
+        "rarity": 2,
+        "weight": 30,
+        "growthTime": 10,
+        "price": 30,
+        "country": "Japan",
+        "scene": 1
+    },
+    {
+        "id": "cl_s1_013",
+        "name": "摩艾石像花",
+        "rarity": 3,
+        "weight": 20,
+        "growthTime": 15,
+        "price": 60,
+        "country": "Chile",
+        "scene": 1
+    },
+    {
+        "id": "uk_s1_014",
+        "name": "巨石陣花",
+        "rarity": 3,
+        "weight": 20,
+        "growthTime": 15,
+        "price": 60,
+        "country": "UK",
+        "scene": 1
+    },
+    {
+        "id": "pe_s1_015",
+        "name": "馬丘比丘花",
+        "rarity": 3,
+        "weight": 20,
+        "growthTime": 15,
+        "price": 60,
+        "country": "Peru",
+        "scene": 1
+    },
+    {
+        "id": "eg_s1_016",
+        "name": "獅身人面像花",
+        "rarity": 3,
+        "weight": 20,
+        "growthTime": 15,
+        "price": 60,
+        "country": "Egypt",
+        "scene": 1
+    },
+    {
+        "id": "fr_s1_017",
+        "name": "凱旋門花",
+        "rarity": 2,
+        "weight": 30,
+        "growthTime": 10,
+        "price": 30,
+        "country": "France",
+        "scene": 1
+    },
+    {
+        "id": "es_s1_018",
+        "name": "聖家堂花",
+        "rarity": 3,
+        "weight": 20,
+        "growthTime": 15,
+        "price": 60,
+        "country": "Spain",
+        "scene": 1
+    },
+    {
+        "id": "tr_s1_019",
+        "name": "圓頂清真寺花",
+        "rarity": 2,
+        "weight": 30,
+        "growthTime": 10,
+        "price": 30,
+        "country": "Turkey",
+        "scene": 1
+    },
+    {
+        "id": "gl_s1_020",
+        "name": "雪山花",
+        "rarity": 1,
+        "weight": 50,
+        "growthTime": 5,
+        "price": 15,
+        "country": "Global",
+        "scene": 1
+    },
+    {
+        "id": "it_s1_021",
+        "name": "比薩斜塔花",
+        "rarity": 2,
+        "weight": 30,
+        "growthTime": 10,
+        "price": 30,
+        "country": "Italy",
+        "scene": 1
+    },
+    {
+        "id": "uk_s1_022",
+        "name": "電話亭花",
+        "rarity": 1,
+        "weight": 50,
+        "growthTime": 5,
+        "price": 15,
+        "country": "UK",
+        "scene": 1
+    },
+    {
+        "id": "kr_s1_023",
+        "name": "韓屋花",
+        "rarity": 1,
+        "weight": 50,
+        "growthTime": 5,
+        "price": 15,
+        "country": "Korea",
+        "scene": 1
+    },
+    {
+        "id": "us_s1_024",
+        "name": "金門大橋花",
+        "rarity": 2,
+        "weight": 30,
+        "growthTime": 10,
+        "price": 30,
+        "country": "USA",
+        "scene": 1
+    },
+    {
+        "id": "my_s1_025",
+        "name": "雙子星塔花",
+        "rarity": 2,
+        "weight": 30,
+        "growthTime": 10,
+        "price": 30,
+        "country": "Malaysia",
+        "scene": 1
+    },
+    {
+        "id": "gl_s1_026",
+        "name": "岩石群花",
+        "rarity": 1,
+        "weight": 50,
+        "growthTime": 5,
+        "price": 15,
+        "country": "Global",
+        "scene": 1
+    },
+    {
+        "id": "nl_s1_027",
+        "name": "風車花",
+        "rarity": 1,
+        "weight": 50,
+        "growthTime": 5,
+        "price": 15,
+        "country": "Netherlands",
+        "scene": 1
+    },
+    {
+        "id": "it_s1_028",
+        "name": "羅馬神殿花",
+        "rarity": 2,
+        "weight": 30,
+        "growthTime": 10,
+        "price": 30,
+        "country": "Italy",
+        "scene": 1
+    },
+    {
+        "id": "ar_s1_029",
+        "name": "冰屋花",
+        "rarity": 1,
+        "weight": 50,
+        "growthTime": 5,
+        "price": 15,
+        "country": "Arctic",
+        "scene": 1
+    },
+    {
+        "id": "gl_s1_030",
+        "name": "燈塔花",
+        "rarity": 1,
+        "weight": 50,
+        "growthTime": 5,
+        "price": 15,
+        "country": "Global",
+        "scene": 1
+    },
+    {
+        "id": "it_s1_031",
+        "name": "羅馬競技場花",
+        "rarity": 3,
+        "weight": 20,
+        "growthTime": 15,
+        "price": 60,
+        "country": "Italy",
+        "scene": 1
+    },
+    {
+        "id": "au_s1_032",
+        "name": "雪梨歌劇院花",
+        "rarity": 3,
+        "weight": 20,
+        "growthTime": 15,
+        "price": 60,
+        "country": "Australia",
+        "scene": 1
+    },
+    {
+        "id": "us_s1_033",
+        "name": "白宮花",
+        "rarity": 2,
+        "weight": 30,
+        "growthTime": 10,
+        "price": 30,
+        "country": "USA",
+        "scene": 1
+    },
+    {
+        "id": "ru_s1_034",
+        "name": "克里姆林宮花",
+        "rarity": 2,
+        "weight": 30,
+        "growthTime": 10,
+        "price": 30,
+        "country": "Russia",
+        "scene": 1
+    },
+    {
+        "id": "th_s1_035",
+        "name": "泰國佛塔花",
+        "rarity": 2,
+        "weight": 30,
+        "growthTime": 10,
+        "price": 30,
+        "country": "Thailand",
+        "scene": 1
+    },
+    {
+        "id": "kh_s1_036",
+        "name": "吳哥窟花",
+        "rarity": 3,
+        "weight": 20,
+        "growthTime": 15,
+        "price": 60,
+        "country": "Cambodia",
+        "scene": 1
+    }
+]

@@ -1,0 +1,326 @@
+[
+  {
+    "id": "tw_s1_101",
+    "name": "101大樓花",
+    "rarity": 1,
+    "weight": 50,
+    "growthTime": 5,
+    "price": 15,
+    "scene": 1
+  },
+  {
+    "id": "tw_s1_boba",
+    "name": "珍奶花",
+    "rarity": 1,
+    "weight": 50,
+    "growthTime": 8,
+    "price": 25,
+    "scene": 1
+  },
+  {
+    "id": "tw_s1_ubike",
+    "name": "Ubike花",
+    "rarity": 2,
+    "weight": 40,
+    "growthTime": 12,
+    "price": 40,
+    "scene": 1
+  },
+  {
+    "id": "tw_s1_greenman",
+    "name": "小綠人花",
+    "rarity": 2,
+    "weight": 40,
+    "growthTime": 15,
+    "price": 55,
+    "scene": 1
+  },
+  {
+    "id": "tw_s1_claw",
+    "name": "夾娃娃機花",
+    "rarity": 3,
+    "weight": 30,
+    "growthTime": 20,
+    "price": 75,
+    "scene": 1
+  },
+  {
+    "id": "tw_s1_slipper",
+    "name": "藍白拖花",
+    "rarity": 3,
+    "weight": 30,
+    "growthTime": 25,
+    "price": 90,
+    "scene": 1
+  },
+  {
+    "id": "tw_s1_mailbox",
+    "name": "歪腰郵筒花",
+    "rarity": 4,
+    "weight": 20,
+    "growthTime": 35,
+    "price": 150,
+    "scene": 1
+  },
+  {
+    "id": "tw_s1_mrt",
+    "name": "捷運逼逼花",
+    "rarity": 4,
+    "weight": 20,
+    "growthTime": 45,
+    "price": 220,
+    "scene": 1
+  },
+  {
+    "id": "tw_s1_chicken",
+    "name": "雞排花",
+    "rarity": 5,
+    "weight": 10,
+    "growthTime": 60,
+    "price": 400,
+    "scene": 1
+  },
+  {
+    "id": "tw_s2_bear",
+    "name": "臺灣黑熊花",
+    "rarity": 1,
+    "weight": 50,
+    "growthTime": 10,
+    "price": 30,
+    "scene": 2
+  },
+  {
+    "id": "tw_s2_yushan",
+    "name": "玉山雪花",
+    "rarity": 1,
+    "weight": 50,
+    "growthTime": 15,
+    "price": 45,
+    "scene": 2
+  },
+  {
+    "id": "tw_s2_tree",
+    "name": "神木花",
+    "rarity": 2,
+    "weight": 40,
+    "growthTime": 22,
+    "price": 65,
+    "scene": 2
+  },
+  {
+    "id": "tw_s2_train",
+    "name": "森林小火車花",
+    "rarity": 2,
+    "weight": 40,
+    "growthTime": 28,
+    "price": 85,
+    "scene": 2
+  },
+  {
+    "id": "tw_s2_cloud",
+    "name": "雲海花",
+    "rarity": 3,
+    "weight": 30,
+    "growthTime": 35,
+    "price": 120,
+    "scene": 2
+  },
+  {
+    "id": "tw_s2_monkey",
+    "name": "獼猴花",
+    "rarity": 3,
+    "weight": 30,
+    "growthTime": 45,
+    "price": 180,
+    "scene": 2
+  },
+  {
+    "id": "tw_s2_magpie",
+    "name": "藍鵲花",
+    "rarity": 4,
+    "weight": 20,
+    "growthTime": 60,
+    "price": 300,
+    "scene": 2
+  },
+  {
+    "id": "tw_s2_salmon",
+    "name": "鉤吻鮭花",
+    "rarity": 4,
+    "weight": 20,
+    "growthTime": 80,
+    "price": 450,
+    "scene": 2
+  },
+  {
+    "id": "tw_s2_egg",
+    "name": "溫泉蛋花",
+    "rarity": 5,
+    "weight": 10,
+    "growthTime": 110,
+    "price": 700,
+    "scene": 2
+  },
+  {
+    "id": "tw_s3_lake",
+    "name": "日月潭水花",
+    "rarity": 1,
+    "weight": 50,
+    "growthTime": 12,
+    "price": 35,
+    "scene": 3
+  },
+  {
+    "id": "tw_s3_boat",
+    "name": "獨木舟花",
+    "rarity": 1,
+    "weight": 50,
+    "growthTime": 18,
+    "price": 50,
+    "scene": 3
+  },
+  {
+    "id": "tw_s3_bawan",
+    "name": "肉圓花",
+    "rarity": 2,
+    "weight": 40,
+    "growthTime": 25,
+    "price": 80,
+    "scene": 3
+  },
+  {
+    "id": "tw_s3_tofu",
+    "name": "臭豆腐花",
+    "rarity": 2,
+    "weight": 40,
+    "growthTime": 32,
+    "price": 110,
+    "scene": 3
+  },
+  {
+    "id": "tw_s3_mazu",
+    "name": "媽祖花",
+    "rarity": 3,
+    "weight": 30,
+    "growthTime": 45,
+    "price": 200,
+    "scene": 3
+  },
+  {
+    "id": "tw_s3_blocks",
+    "name": "筊杯花",
+    "rarity": 3,
+    "weight": 30,
+    "growthTime": 55,
+    "price": 280,
+    "scene": 3
+  },
+  {
+    "id": "tw_s3_lantern",
+    "name": "燈籠花",
+    "rarity": 4,
+    "weight": 20,
+    "growthTime": 75,
+    "price": 450,
+    "scene": 3
+  },
+  {
+    "id": "tw_s3_nezha",
+    "name": "三太子花",
+    "rarity": 4,
+    "weight": 20,
+    "growthTime": 100,
+    "price": 750,
+    "scene": 3
+  },
+  {
+    "id": "tw_s3_techno",
+    "name": "電音三太子花",
+    "rarity": 5,
+    "weight": 10,
+    "growthTime": 160,
+    "price": 1500,
+    "scene": 3
+  },
+  {
+    "id": "tw_s4_queen",
+    "name": "女王頭花",
+    "rarity": 1,
+    "weight": 50,
+    "growthTime": 15,
+    "price": 50,
+    "scene": 4
+  },
+  {
+    "id": "tw_s4_rock",
+    "name": "奇岩花",
+    "rarity": 1,
+    "weight": 50,
+    "growthTime": 22,
+    "price": 75,
+    "scene": 4
+  },
+  {
+    "id": "tw_s4_oden",
+    "name": "黑輪花",
+    "rarity": 2,
+    "weight": 40,
+    "growthTime": 30,
+    "price": 120,
+    "scene": 4
+  },
+  {
+    "id": "tw_s4_oyster",
+    "name": "蚵仔煎花",
+    "rarity": 2,
+    "weight": 40,
+    "growthTime": 40,
+    "price": 180,
+    "scene": 4
+  },
+  {
+    "id": "tw_s4_fish",
+    "name": "飛魚花",
+    "rarity": 3,
+    "weight": 30,
+    "growthTime": 55,
+    "price": 320,
+    "scene": 4
+  },
+  {
+    "id": "tw_s4_surf",
+    "name": "衝浪花",
+    "rarity": 3,
+    "weight": 30,
+    "growthTime": 70,
+    "price": 500,
+    "scene": 4
+  },
+  {
+    "id": "tw_s4_light",
+    "name": "燈塔花",
+    "rarity": 4,
+    "weight": 20,
+    "growthTime": 100,
+    "price": 900,
+    "scene": 4
+  },
+  {
+    "id": "tw_s4_cactus",
+    "name": "仙人掌花",
+    "rarity": 4,
+    "weight": 20,
+    "growthTime": 140,
+    "price": 1400,
+    "scene": 4
+  },
+  {
+    "id": "tw_s4_heart",
+    "name": "雙心石滬花",
+    "rarity": 5,
+    "weight": 10,
+    "growthTime": 200,
+    "price": 3000,
+    "scene": 4
+  }
+]

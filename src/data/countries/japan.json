@@ -1,0 +1,341 @@
+{
+  "id": "Japan",
+  "name": "日本",
+  "flag": "🇯🇵",
+  "scenes": 4,
+  "flowers": [
+    {
+      "id": "jp_s1_skytree",
+      "name": "晴空塔花",
+      "rarity": 1,
+      "weight": 50,
+      "growthTime": 5,
+      "price": 15,
+      "scene": 1
+    },
+    {
+      "id": "jp_s1_tower",
+      "name": "東京鐵塔花",
+      "rarity": 1,
+      "weight": 50,
+      "growthTime": 8,
+      "price": 25,
+      "scene": 1
+    },
+    {
+      "id": "jp_s1_hachiko",
+      "name": "忠犬小八花",
+      "rarity": 2,
+      "weight": 40,
+      "growthTime": 12,
+      "price": 40,
+      "scene": 1
+    },
+    {
+      "id": "jp_s1_lantern",
+      "name": "雷門燈籠花",
+      "rarity": 2,
+      "weight": 40,
+      "growthTime": 15,
+      "price": 55,
+      "scene": 1
+    },
+    {
+      "id": "jp_s1_vending",
+      "name": "自動販賣機花",
+      "rarity": 3,
+      "weight": 30,
+      "growthTime": 20,
+      "price": 75,
+      "scene": 1
+    },
+    {
+      "id": "jp_s1_onigiri",
+      "name": "飯糰花",
+      "rarity": 3,
+      "weight": 30,
+      "growthTime": 25,
+      "price": 90,
+      "scene": 1
+    },
+    {
+      "id": "jp_s1_train",
+      "name": "電車擠擠花",
+      "rarity": 4,
+      "weight": 20,
+      "growthTime": 35,
+      "price": 150,
+      "scene": 1
+    },
+    {
+      "id": "jp_s1_maid",
+      "name": "秋葉原女僕花",
+      "rarity": 4,
+      "weight": 20,
+      "growthTime": 45,
+      "price": 220,
+      "scene": 1
+    },
+    {
+      "id": "jp_s1_godzilla",
+      "name": "哥吉拉花",
+      "rarity": 5,
+      "weight": 10,
+      "growthTime": 60,
+      "price": 400,
+      "scene": 1
+    },
+    {
+      "id": "jp_s2_fuji",
+      "name": "富士山花",
+      "rarity": 1,
+      "weight": 50,
+      "growthTime": 10,
+      "price": 30,
+      "scene": 2
+    },
+    {
+      "id": "jp_s2_matcha",
+      "name": "抹茶花",
+      "rarity": 1,
+      "weight": 50,
+      "growthTime": 15,
+      "price": 45,
+      "scene": 2
+    },
+    {
+      "id": "jp_s2_torii",
+      "name": "鳥居花",
+      "rarity": 2,
+      "weight": 40,
+      "growthTime": 22,
+      "price": 65,
+      "scene": 2
+    },
+    {
+      "id": "jp_s2_geisha",
+      "name": "藝妓花",
+      "rarity": 2,
+      "weight": 40,
+      "growthTime": 28,
+      "price": 85,
+      "scene": 2
+    },
+    {
+      "id": "jp_s2_deer",
+      "name": "鹿仙貝花",
+      "rarity": 3,
+      "weight": 30,
+      "growthTime": 35,
+      "price": 120,
+      "scene": 2
+    },
+    {
+      "id": "jp_s2_mask",
+      "name": "狐狸面具花",
+      "rarity": 3,
+      "weight": 30,
+      "growthTime": 45,
+      "price": 180,
+      "scene": 2
+    },
+    {
+      "id": "jp_s2_bamboo",
+      "name": "嵐山竹林花",
+      "rarity": 4,
+      "weight": 20,
+      "growthTime": 60,
+      "price": 300,
+      "scene": 2
+    },
+    {
+      "id": "jp_s2_temple",
+      "name": "金閣寺花",
+      "rarity": 4,
+      "weight": 20,
+      "growthTime": 80,
+      "price": 450,
+      "scene": 2
+    },
+    {
+      "id": "jp_s2_wagashi",
+      "name": "和菓子花",
+      "rarity": 5,
+      "weight": 10,
+      "growthTime": 110,
+      "price": 700,
+      "scene": 2
+    },
+    {
+      "id": "jp_s3_snowman",
+      "name": "雪人花",
+      "rarity": 1,
+      "weight": 50,
+      "growthTime": 12,
+      "price": 35,
+      "scene": 3
+    },
+    {
+      "id": "jp_s3_lavender",
+      "name": "薰衣草花",
+      "rarity": 1,
+      "weight": 50,
+      "growthTime": 18,
+      "price": 50,
+      "scene": 3
+    },
+    {
+      "id": "jp_s3_crab",
+      "name": "螃蟹大餐花",
+      "rarity": 2,
+      "weight": 40,
+      "growthTime": 25,
+      "price": 80,
+      "scene": 3
+    },
+    {
+      "id": "jp_s3_melon",
+      "name": "夕張哈密瓜花",
+      "rarity": 2,
+      "weight": 40,
+      "growthTime": 32,
+      "price": 110,
+      "scene": 3
+    },
+    {
+      "id": "jp_s3_fox",
+      "name": "北海道狐狸花",
+      "rarity": 3,
+      "weight": 30,
+      "growthTime": 45,
+      "price": 200,
+      "scene": 3
+    },
+    {
+      "id": "jp_s3_ice",
+      "name": "流冰花",
+      "rarity": 3,
+      "weight": 30,
+      "growthTime": 55,
+      "price": 280,
+      "scene": 3
+    },
+    {
+      "id": "jp_s3_bear",
+      "name": "熊出沒花",
+      "rarity": 4,
+      "weight": 20,
+      "growthTime": 75,
+      "price": 450,
+      "scene": 3
+    },
+    {
+      "id": "jp_s3_night",
+      "name": "函館夜景花",
+      "rarity": 4,
+      "weight": 20,
+      "growthTime": 100,
+      "price": 750,
+      "scene": 3
+    },
+    {
+      "id": "jp_s3_ramen",
+      "name": "札幌拉麵花",
+      "rarity": 5,
+      "weight": 10,
+      "growthTime": 160,
+      "price": 1500,
+      "scene": 3
+    },
+    {
+      "id": "jp_s4_takoyaki",
+      "name": "章魚燒花",
+      "rarity": 1,
+      "weight": 50,
+      "growthTime": 15,
+      "price": 50,
+      "scene": 4
+    },
+    {
+      "id": "jp_s4_running",
+      "name": "跑步人花",
+      "rarity": 1,
+      "weight": 50,
+      "growthTime": 22,
+      "price": 75,
+      "scene": 4
+    },
+    {
+      "id": "jp_s4_osaka",
+      "name": "大阪城花",
+      "rarity": 2,
+      "weight": 40,
+      "growthTime": 30,
+      "price": 120,
+      "scene": 4
+    },
+    {
+      "id": "jp_s4_shisa",
+      "name": "風獅爺花",
+      "rarity": 2,
+      "weight": 40,
+      "growthTime": 40,
+      "price": 180,
+      "scene": 4
+    },
+    {
+      "id": "jp_s4_miyajima",
+      "name": "海上鳥居花",
+      "rarity": 3,
+      "weight": 30,
+      "growthTime": 55,
+      "price": 320,
+      "scene": 4
+    },
+    {
+      "id": "jp_s4_kushikatsu",
+      "name": "串炸花",
+      "rarity": 3,
+      "weight": 30,
+      "growthTime": 70,
+      "price": 500,
+      "scene": 4
+    },
+    {
+      "id": "jp_s4_whirlpool",
+      "name": "鳴門渦潮花",
+      "rarity": 4,
+      "weight": 20,
+      "growthTime": 100,
+      "price": 900,
+      "scene": 4
+    },
+    {
+      "id": "jp_s4_castle",
+      "name": "姬路城花",
+      "rarity": 4,
+      "weight": 20,
+      "growthTime": 140,
+      "price": 1400,
+      "scene": 4
+    },
+    {
+      "id": "jp_s4_onsen",
+      "name": "溫泉猴子花",
+      "rarity": 5,
+      "weight": 10,
+      "growthTime": 200,
+      "price": 3000,
+      "scene": 4
+    },
+    {
+      "id": "jp_legendary",
+      "name": "傳說·櫻花神",
+      "rarity": "Legendary",
+      "weight": 1,
+      "growthTime": 1800,
+      "price": 12000,
+      "scene": 0
+    }
+  ]
+}

@@ -1,0 +1,103 @@
+:root {
+  --primary: #6c5ce7;
+  --secondary: #a29bfe;
+  --accent: #fdcb6e;
+  --diamond: #00d2d3;
+  --gold: #f1c40f;
+  --silver: #bdc3c7;
+  --bronze: #cd7f32;
+  --bg-dark: #2d3436;
+  --glass: rgba(255, 255, 255, 0.1);
+  --glass-border: rgba(255, 255, 255, 0.2);
+  --text-light: #f5f6fa;
+  --text-dim: #b2bec3;
+  
+  --font-main: 'Outfit', 'Noto Sans TC', sans-serif;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: var(--font-main);
+  background: var(--bg-dark);
+  color: var(--text-light);
+  overflow: hidden; /* Prevent vertical scroll for the whole app */
+  height: 100vh;
+  width: 100vw;
+  user-select: none;
+}
+
+#app {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Glassmorphism Utility */
+.glass {
+  background: var(--glass);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+}
+
+/* Animations */
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+@keyframes pulse-glow {
+  0% { box-shadow: 0 0 5px rgba(255, 215, 0, 0.3); }
+  50% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.6); }
+  100% { box-shadow: 0 0 5px rgba(255, 215, 0, 0.3); }
+}
+
+@keyframes bloom {
+  from { transform: scale(0); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* Layout Utilities */
+.flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.horizontal-scroll {
+  display: flex;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+
+.horizontal-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.card-snap {
+  scroll-snap-align: center;
+  flex-shrink: 0;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  outline: none;
+  font-family: inherit;
+  transition: all 0.2s ease;
+}
+
+button:active {
+  transform: scale(0.95);
+}
