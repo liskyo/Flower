@@ -36,36 +36,32 @@ const handleSwipe = (slotId) => {
   }
 };
 
-const handleHarvestAnimate = ({ slotId, flowerId }) => {
+const handleHarvestAnimate = ({ slotId, flowerId, imgUrl }) => {
   const flower = FLOWERS.find(f => f.id === flowerId);
   if (!flower) return;
 
   const slotComp = slotRefs.value[slotId];
   if (slotComp && slotComp.$el) {
-    // 從畫面上真正的格子取得座標，而不是依賴被隱藏的圖片
     const rect = slotComp.$el.getBoundingClientRect();
     const startX = rect.left + rect.width / 2;
-    // 拔起動畫會讓花往上飄，所以我們將起點 Y 軸往上調 50px，銜接拔起的位置
     const startY = rect.top + rect.height / 2 - 50; 
     
-    triggerFlyAnimation(flower, startX, startY);
+    triggerFlyAnimation(flower, startX, startY, imgUrl);
   }
 };
 
-const triggerFlyAnimation = (flower, startX, startY) => {
+const triggerFlyAnimation = (flower, startX, startY, imgUrl) => {
   if (!basketRef.value) return;
   
   const basketRect = basketRef.value.getBoundingClientRect();
-  // 調整落點：讓花朵掉向花籃的「正上方開口處」，而不是正中心
   const endX = basketRect.left + basketRect.width / 2;
-  const endY = basketRect.top + basketRect.height * 0.2; // 落在偏上方
+  const endY = basketRect.top + basketRect.height * 0.2; 
 
   const flyId = flyIdCounter++;
-  const imgUrl = `/assets/flowers/${flower.country.toLowerCase()}/${flower.id}.png`;
-
+  
   flyingFlowers.value.push({
     id: flyId,
-    url: imgUrl,
+    url: imgUrl || `/assets/flowers/${flower.country.toLowerCase()}/${flower.id}.png`,
     startX, startY, endX, endY
   });
 

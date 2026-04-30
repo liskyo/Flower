@@ -91,7 +91,13 @@ const pullUp = () => {
       const rect = imgRef.value.getBoundingClientRect();
       const startX = rect.left + rect.width / 2;
       const startY = rect.top + rect.height / 2;
-      emit('harvest-animate', { slotId: currentSlotId, flowerId: currentFlowerId, startX, startY });
+      emit('harvest-animate', { 
+        slotId: currentSlotId, 
+        flowerId: currentFlowerId, 
+        startX, 
+        startY,
+        imgUrl: processedSrc.value || imgRef.value.src
+      });
     }
 
     harvestFlower(currentSlotId);
