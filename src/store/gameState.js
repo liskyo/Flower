@@ -22,7 +22,8 @@ const defaultState = {
     fertilizerMultiplier: 1
   },
   exp: 0,
-  level: 1
+  level: 1,
+  inventoryItems: {}
 };
 
 import { supabase } from '../supabase';
@@ -293,6 +294,14 @@ export const setScene = (sceneId) => {
   }
 };
 
+export const isSceneUnlocked = (country, scene) => {
+  if (scene === 1) return true; // Scene 1 is always unlocked
+  // To unlock scene N, we need all flowers from scene N-1 to have silver medal (qty >= 20)
+  const prevSceneFlowers = FLOWERS.filter(f => String(f.country).toLowerCase() === String(country).toLowerCase() && Number(f.scene) === scene - 1);
+  if (prevSceneFlowers.length === 0) return true; // fallback
+  return prevSceneFlowers.every(f => (state.inventory[f.id] || 0) >= 20);
+};
+
 export const resetGame = () => {
   if (confirm("確定要重置遊戲嗎？所有花園與鑽石將歸零，此動作無法復原！")) {
     const freshState = {
@@ -308,7 +317,8 @@ export const resetGame = () => {
       upgrades: { spawnRate: 0.5, maxSlots: 24 },
       activeBuffs: { sunnyDollUntil: null, rainUntil: null, rainMultiplier: 1, fertilizerUntil: null, fertilizerMultiplier: 1 },
       exp: 0,
-      level: 1
+      level: 1,
+      inventoryItems: {}
     };
     
     // 初始化各場景花園

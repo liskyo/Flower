@@ -25,18 +25,9 @@ const items = [
 const buyItem = (item) => {
   if (state.diamonds >= item.price) {
     state.diamonds -= item.price;
-    const now = Date.now();
-    
-    if (item.type === 'weather') {
-      state.activeBuffs.sunnyDollUntil = now + item.duration * 60 * 60 * 1000;
-    } else if (item.type === 'rain') {
-      state.activeBuffs.rainUntil = now + item.duration * 60 * 60 * 1000;
-      state.activeBuffs.rainMultiplier = item.multi;
-    } else if (item.type === 'fertilizer') {
-      state.activeBuffs.fertilizerUntil = now + item.duration * 60 * 60 * 1000;
-      state.activeBuffs.fertilizerMultiplier = item.multi;
-    }
-    alert(`成功購買並使用 ${item.name}！效果已立即套用。`);
+    if (!state.inventoryItems) state.inventoryItems = {};
+    state.inventoryItems[item.id] = (state.inventoryItems[item.id] || 0) + 1;
+    alert(`成功購買 ${item.name}！已放入道具箱中。`);
   } else {
     alert("鑽石不足！");
   }

@@ -6,6 +6,7 @@ import AuthModal from './components/AuthModal.vue';
 import StartScene from './components/StartScene.vue';
 import ShopOverlay from './components/ShopOverlay.vue';
 import MapOverlay from './components/MapOverlay.vue';
+import InventoryOverlay from './components/InventoryOverlay.vue';
 import { supabase } from './supabase';
 import { loadStateFromCloud, handleLogout, resetGame } from './store/gameState';
 
@@ -35,6 +36,11 @@ onMounted(async () => {
   setTimeout(() => {
     isLoading.value = false;
   }, 500);
+
+  // 請求通知權限
+  if ('Notification' in window && Notification.permission === 'default') {
+    Notification.requestPermission();
+  }
 });
 
 const setTab = (tab) => {
@@ -105,6 +111,10 @@ const doLogout = async () => {
               v-else-if="currentTab === 'map'" 
               @back="currentTab = 'garden'"
               @select-country="currentTab = 'garden'"
+            />
+            <InventoryOverlay
+              v-else-if="currentTab === 'inventory'"
+              @back="currentTab = 'garden'"
             />
             <div v-else @click="currentTab = 'garden'" class="placeholder-overlay">
               暫未開放，點擊返回

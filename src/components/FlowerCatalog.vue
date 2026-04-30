@@ -108,10 +108,10 @@ const processCatalogImage = (flower, e) => {
                     <span v-else>🌱</span>
                   </div>
                   <div class="m-medals">
-                    <!-- 模擬金銀銅牌 -->
-                    <div class="m-medal" :class="{ 'gold': getStars(flower.rarity) >= 4 }"></div>
-                    <div class="m-medal" :class="{ 'silver': getStars(flower.rarity) >= 3 }"></div>
-                    <div class="m-medal" :class="{ 'bronze': getStars(flower.rarity) >= 2 }"></div>
+                    <!-- 銅牌=10, 銀牌=20, 金牌=50 -->
+                    <div class="m-medal" :class="{ 'gold': (state.inventory[flower.id] || 0) >= 50 }"></div>
+                    <div class="m-medal" :class="{ 'silver': (state.inventory[flower.id] || 0) >= 20 }"></div>
+                    <div class="m-medal" :class="{ 'bronze': (state.inventory[flower.id] || 0) >= 10 }"></div>
                   </div>
                 </template>
                 <div v-else class="m-placeholder">

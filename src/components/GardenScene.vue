@@ -2,9 +2,22 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted, computed, nextTick } from 'vue';
-import { state, autoSpawn, setScene, getCurrentGarden, harvestFlower, getCurrentWeather } from '../store/gameState';
+import { state, autoSpawn, setScene, getCurrentGarden, harvestFlower, getCurrentWeather, isSceneUnlocked } from '../store/gameState';
 import { FLOWERS } from '../data/flowers';
 import GardenSlot from './GardenSlot.vue';
+
+// 啊音效 (base64 短声波)
+const popAudio = new Audio('data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAA' +
+  'EAAQAQAAAQABAAACABAAZGF0YU9vT18AAAAAAP//AAD+/wIA/v8CAP3/BAD9/wUA/f8F' +
+  'AP3/BAD+/wIA//8AAP//AQAAAP//AAAAAAAAAP8/AP8/AP8/AP8/AP8/AP8/AP8/AP8/');
+
+const playPop = () => {
+  try {
+    popAudio.currentTime = 0;
+    popAudio.volume = 0.5;
+    popAudio.play().catch(() => {});
+  } catch(e) {}
+};
 
 const emit = defineEmits(['change-tab']);
 const slotRefs = ref([]);
@@ -25,6 +38,7 @@ const currentSceneNames = computed(() => {
 
 let spawnTimer = null;
 let weatherTimer = null;
+let stormTimer = null;
 
 const currentWeather = ref(getCurrentWeather());
 
@@ -33,15 +47,61 @@ const getWeatherIcon = (id) => {
   return map[id] || '☀️';
 };
 
+const stormElements = ref([]);
+let stormIdCounter = 0;
+const spawnStormElement = () => {
+  const types = ['🌪️', '🌪️', '⚡', '⚡', '🌪️'];
+  const id = stormIdCounter++;
+  const fromTop = Math.random() < 0.5;
+  const y = fromTop ? `${Math.random() * 30}%` : `${60 + Math.random() * 30}%`;
+  stormElements.value.push({
+    id, icon: types[Math.floor(Math.random() * types.length)],
+    y, size: 1.5 + Math.random() * 2.5, duration: 3 + Math.random() * 4
+  });
+  setTimeout(() => { stormElements.value = stormElements.value.filter(e => e.id !== id); }, 8000);
+};
+
+const activeBuffsDisplay = computed(() => {
+  const now = Date.now();
+  const items = [];
+  if (state.activeBuffs?.sunnyDollUntil && now < state.activeBuffs.sunnyDollUntil)
+    items.push({ icon: '☀️', name: '晴天娃娃', desc: '強制晴天效果', remain: Math.ceil((state.activeBuffs.sunnyDollUntil - now) / 60000) });
+  if (state.activeBuffs?.rainUntil && now < state.activeBuffs.rainUntil)
+    items.push({ icon: '🌧️', name: '人造雨', desc: `生長速度 ${state.activeBuffs.rainMultiplier || 2} 倍`, remain: Math.ceil((state.activeBuffs.rainUntil - now) / 60000) });
+  if (state.activeBuffs?.fertilizerUntil && now < state.activeBuffs.fertilizerUntil)
+    items.push({ icon: '💩', name: '肥料效果', desc: `枯萎時間 ${state.activeBuffs.fertilizerMultiplier || 2} 倍`, remain: Math.ceil((state.activeBuffs.fertilizerUntil - now) / 60000) });
+  return items;
+});
+const buffTooltip = ref(null);
+const showBuffTooltip = (item) => { buffTooltip.value = buffTooltip.value?.name === item.name ? null : item; };
+const tickerTime = ref(Date.now());
+
 const startSwiping = () => { isSwiping.value = true; };
 const stopSwiping = () => { isSwiping.value = false; };
 
 const handleSwipe = (slotId) => {
   if (!isSwiping.value) return;
   const slotComp = slotRefs.value[slotId];
-  if (slotComp) {
-    slotComp.triggerHarvest();
-  }
+  if (slotComp) slotComp.triggerHarvest();
+};
+
+// Touch 滑動連續收成
+const handleTouchMove = (e) => {
+  const touch = e.touches[0];
+  if (!touch) return;
+  const el = document.elementFromPoint(touch.clientX, touch.clientY);
+  if (!el) return;
+  // 找到對應的 slot ref
+  Object.values(slotRefs.value).forEach(slotComp => {
+    if (!slotComp || !slotComp.$el) return;
+    if (slotComp.$el.contains(el) || slotComp.$el === el) {
+      const status = slotComp.getSlotStatus?.();
+      if (status === 'ready' || status === 'withered') {
+        slotComp.triggerHarvest();
+        playPop();
+      }
+    }
+  });
 };
 
 const handleHarvestAnimate = ({ slotId, flowerId, imgUrl }) => {
@@ -92,18 +152,21 @@ const bgImageStyle = computed(() => ({
 const currentGarden = computed(() => getCurrentGarden());
 
 onMounted(() => {
-  spawnTimer = setInterval(() => {
-    autoSpawn();
-  }, 1500);
-  
+  spawnTimer = setInterval(() => { autoSpawn(); }, 1500);
   weatherTimer = setInterval(() => {
     currentWeather.value = getCurrentWeather();
-  }, 5000); // 每 5 秒更新一次天氣
+    tickerTime.value = Date.now();
+  }, 5000);
+  // 暴風雨元素定期生成
+  stormTimer = setInterval(() => {
+    if (currentWeather.value?.id === 'storm') spawnStormElement();
+  }, 1200);
 });
 
 onUnmounted(() => {
   clearInterval(spawnTimer);
   clearInterval(weatherTimer);
+  clearInterval(stormTimer);
 });
 </script>
 
@@ -115,15 +178,25 @@ onUnmounted(() => {
     @mouseleave="stopSwiping"
     @touchstart="startSwiping"
     @touchend="stopSwiping"
+    @touchmove.prevent="handleTouchMove"
   >
     <div class="scene-bg-wrapper">
       <div class="scene-bg-full" :style="bgImageStyle"></div>
     </div>
 
+    <!-- 暴風雨飄移元素 -->
+    <div v-if="currentWeather.id === 'storm'" class="storm-layer">
+      <div
+        v-for="el in stormElements" :key="el.id"
+        class="storm-element"
+        :style="{ top: el.y, fontSize: el.size + 'rem', '--dur': el.duration + 's' }"
+      >{{ el.icon }}</div>
+    </div>
+
     <!-- 左上角：仿圖3的等級/資訊列 -->
     <div class="top-hud">
       <div class="level-box">
-        <div class="hud-title">{{ state.currentCountry === 'Taiwan' ? '台灣花園' : '日本花園' }}</div>
+        <div class="hud-title">{{ state.currentCountry === 'Taiwan' ? '台灣花園' : state.currentCountry === 'Japan' ? '日本花園' : state.currentCountry + '花園' }}</div>
         <div class="hud-level">Lv. {{ state.level || 1 }}</div>
         <div class="progress-bar">
           <div class="progress-fill" :style="{ width: `${((state.exp || 0) % 1000) / 10}%` }"></div>
@@ -141,21 +214,43 @@ onUnmounted(() => {
       </div>
     </div>
 
+    <!-- 作用中 Buff Icons -->
+    <div class="buff-bar" v-if="activeBuffsDisplay.length > 0">
+      <div
+        v-for="buff in activeBuffsDisplay" :key="buff.name"
+        class="buff-icon" @click="showBuffTooltip(buff)"
+      >
+        <span class="buff-emoji">{{ buff.icon }}</span>
+        <span class="buff-remain">{{ buff.remain }}m</span>
+      </div>
+      <Transition name="fade">
+        <div v-if="buffTooltip" class="buff-tooltip" @click="buffTooltip = null">
+          <strong>{{ buffTooltip.icon }} {{ buffTooltip.name }}</strong>
+          <span>{{ buffTooltip.desc }}</span>
+          <span>剩餘 {{ buffTooltip.remain }} 分鐘</span>
+        </div>
+      </Transition>
+    </div>
+
     <div class="scene-overlay-ui">
-      <!-- 天氣視覺特效層 -->
+      <!-- 天氣視覺特效層 (storm 外其他天氣第一片不動) -->
       <div class="weather-overlay" :class="currentWeather.id">
         <div class="rain-layer"></div>
       </div>
       <div class="landmark-nav">
-        <button 
-          v-for="(name, index) in currentSceneNames" 
-          :key="index" 
-          :class="{ active: state.currentScene === (index + 1) }"
-          @click="setScene(index + 1)"
-          class="landmark-btn"
-        >
-          {{ name }}
-        </button>
+        <template v-for="(name, index) in currentSceneNames" :key="index">
+          <button 
+            v-if="isSceneUnlocked(state.currentCountry, index + 1)"
+            :class="{ active: state.currentScene === (index + 1) }"
+            @click="setScene(index + 1)"
+            class="landmark-btn"
+          >
+            {{ name }}
+          </button>
+          <button v-else class="landmark-btn locked-scene" disabled>
+            🔒 {{ name }}
+          </button>
+        </template>
       </div>
       
       <div class="absolute-garden-container">
@@ -172,13 +267,14 @@ onUnmounted(() => {
         </div>
       </div>
 
-      <!-- 左下角：收集花籃 -->
+      <!-- 左下角：花籃 -->
       <div class="basket-container" ref="basketRef">
-        <div class="basket-img">🧺</div>
-        <div class="basket-label">收集箱</div>
+        <img src="/assets/flower_basket.png" class="basket-img-real" onerror="this.style.display='none';this.nextElementSibling.style.display='block'" />
+        <div class="basket-img" style="display:none">🧵</div>
+        <div class="basket-label">花籃</div>
       </div>
 
-      <!-- 右下角：功能按鍵群組 (仿圖3) -->
+      <!-- 右下角：功能按鍵群組 -->
       <div class="action-cluster">
         <button class="action-btn map" @click="emit('change-tab', 'map')">
           <span class="icon">🗺️</span>
@@ -191,6 +287,10 @@ onUnmounted(() => {
         <button class="action-btn shop" @click="emit('change-tab', 'shop')">
           <span class="icon">🛒</span>
           <span class="label">商店</span>
+        </button>
+        <button class="action-btn inventory" @click="emit('change-tab', 'inventory')">
+          <span class="icon">🎒</span>
+          <span class="label">道具</span>
         </button>
       </div>
     </div>
@@ -217,8 +317,56 @@ onUnmounted(() => {
 <style scoped>
 .garden-scene { position: absolute; inset: 0; width: 100vw; height: 100vh; overflow: hidden; }
 
-.scene-bg-wrapper { position: absolute; inset: 0; z-index: 0; }
-.scene-bg-full { position: absolute; inset: 0; background-size: cover; background-position: center; transition: background-image 0.5s ease; }
+.scene-bg-wrapper { position: absolute; inset: 0; z-index: 0; overflow: hidden; }
+.scene-bg-full {
+  position: absolute; top: 0; left: 0; height: 100%;
+  width: 300%; /* 3倍寬讓背景可循環 */
+  background-size: auto 100%; background-repeat: repeat-x;
+  background-position: left center;
+  animation: scrollBg 80s linear infinite;
+  transition: background-image 0.5s ease;
+}
+@keyframes scrollBg {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-33.333%); }
+}
+
+/* 暴風雨飄移層 */
+.storm-layer { position: absolute; inset: 0; z-index: 6; pointer-events: none; overflow: hidden; }
+.storm-element {
+  position: absolute; left: -10%;
+  animation: stormFly var(--dur, 5s) linear forwards;
+  opacity: 0.85; filter: drop-shadow(0 0 8px rgba(255,200,0,0.6));
+  white-space: nowrap;
+}
+@keyframes stormFly {
+  0% { left: -15%; opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { left: 110%; opacity: 0; }
+}
+
+/* 作用中 Buff 欄 */
+.buff-bar {
+  position: absolute; bottom: 160px; left: 15px; z-index: 3000;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.buff-icon {
+  display: flex; flex-direction: column; align-items: center;
+  background: rgba(0,0,0,0.7); border: 2px solid rgba(255,255,255,0.3);
+  border-radius: 12px; padding: 4px 8px; cursor: pointer;
+  transition: all 0.2s;
+}
+.buff-icon:hover { transform: scale(1.1); }
+.buff-emoji { font-size: 1.6rem; }
+.buff-remain { font-size: 0.6rem; color: #ffeaa7; font-weight: 900; }
+.buff-tooltip {
+  position: absolute; bottom: 0; left: 70px;
+  background: rgba(0,0,0,0.9); border: 2px solid #ffeaa7; border-radius: 10px;
+  padding: 8px 12px; color: white; min-width: 180px;
+  display: flex; flex-direction: column; gap: 3px; font-size: 0.85rem;
+}
+.buff-tooltip strong { font-size: 1rem; color: #ffeaa7; }
 
 .scene-overlay-ui { position: relative; z-index: 100; height: 100%; width: 100%; }
 
@@ -300,6 +448,7 @@ onUnmounted(() => {
   font-weight: 900; font-size: 0.8rem; box-shadow: 0 3px 0 #2d3436; cursor: pointer; transition: all 0.2s;
 }
 .landmark-btn.active { background: #ffd100; transform: translateY(2px); box-shadow: 0 1px 0 #2d3436; }
+.landmark-btn.locked-scene { background: #636e72; color: #b2bec3; cursor: not-allowed; opacity: 0.7; }
 
 /* 核心種植區 */
 .absolute-garden-container {
@@ -322,7 +471,11 @@ onUnmounted(() => {
 .basket-container {
   position: absolute; bottom: 15%; left: 15%; z-index: 1500;
   display: flex; flex-direction: column; align-items: center;
-  transform: scale(1.2); /* 讓花籃大一點 */
+  transform: scale(1.2);
+}
+.basket-img-real {
+  width: 80px; height: 80px; object-fit: contain;
+  filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.4));
 }
 .basket-img {
   font-size: 5rem; text-shadow: 2px 2px 0 rgba(0,0,0,0.3);
@@ -358,12 +511,12 @@ onUnmounted(() => {
   border: 2px solid white; white-space: nowrap;
 }
 
-/* 個別按鈕顏色 */
 .action-btn.map { background: #feca57; width: 60px; height: 60px; }
 .action-btn.map .icon { font-size: 1.4rem; }
 .action-btn.catalog { background: #ff6b6b; width: 85px; height: 85px; }
 .action-btn.catalog .icon { font-size: 2.2rem; }
 .action-btn.shop { background: #48dbfb; width: 65px; height: 65px; }
+.action-btn.inventory { background: #a29bfe; width: 60px; height: 60px; }
 
 /* 飛行動畫層 */
 .flying-layer { position: absolute; inset: 0; pointer-events: none; z-index: 5000; overflow: hidden; }

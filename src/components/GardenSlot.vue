@@ -78,6 +78,19 @@ watch(() => props.slotData.flowerId, (newId) => {
   }
 });
 
+// 通知：花朵長成
+let notifiedSlots = new Set();
+const sendGrowthNotification = () => {
+  if (notifiedSlots.has(props.slotData.id)) return;
+  notifiedSlots.add(props.slotData.id);
+  if ('Notification' in window && Notification.permission === 'granted') {
+    new Notification('🌸 花朵長成囉！', {
+      body: `${flower.value?.name || '你的花朵'} 已準備好採收！`,
+      icon: '/favicon.ico'
+    });
+  }
+};
+
 const updateProgress = () => {
   if (props.slotData.startTime && flower.value) {
     const { growthElapsed } = calculateEffectiveElapsedTime(props.slotData.startTime);
@@ -88,15 +101,17 @@ const updateProgress = () => {
       if (p >= 100) {
         props.slotData.status = 'ready';
         props.slotData.readyTime = Date.now();
+        sendGrowthNotification();
       }
+    } else {
+      notifiedSlots.delete(props.slotData.id); // 收成後清除記錄
     }
     
     // 獨立檢查枯萎 (真實時間 30 分鐘 * 肥料倍率)
     if (props.slotData.status === 'ready') {
-      // 若舊存檔無 readyTime，則以現在時間扣掉 30 分鐘作為預估，避免剛讀取就枯萎的落差
       const rTime = props.slotData.readyTime || (Date.now() - 1000); 
       const timeSinceReady = (Date.now() - rTime) / 1000;
-      const witherTime = (30 * 60) * getWitherMultiplier(); // 30 分鐘 = 1800 秒
+      const witherTime = (30 * 60) * getWitherMultiplier();
       if (timeSinceReady >= witherTime) {
         props.slotData.status = 'withered';
       }
@@ -108,7 +123,7 @@ let timer = null;
 onMounted(() => { timer = setInterval(updateProgress, 200); });
 onUnmounted(() => { clearInterval(timer); clearTimeout(holdTimer.value); });
 
-// --- 改進的收割邏輯：停留即拔起 ---
+// --- 收割邏輯 ---
 
 const startHold = () => {
   const status = props.slotData.status;
@@ -116,7 +131,7 @@ const startHold = () => {
     isShaking.value = true;
     holdTimer.value = setTimeout(() => {
       pullUp();
-    }, 50); // 停留或按住 0.05 秒
+    }, 50);
   }
 };
 
@@ -134,13 +149,11 @@ const pullUp = () => {
   isShaking.value = false;
   holdTimer.value = null;
 
-  // 紀錄拔起前的資訊，給動畫使用
   const currentStatus = props.slotData.status;
   const currentFlowerId = props.slotData.flowerId;
   const currentSlotId = props.slotData.id;
 
   setTimeout(() => {
-    // 只有 ready 狀態才會觸發飛入收集箱的動畫，withered 則只會消失
     if (currentStatus === 'ready' && imgRef.value) {
       const rect = imgRef.value.getBoundingClientRect();
       const startX = rect.left + rect.width / 2;
@@ -161,11 +174,20 @@ const pullUp = () => {
 
 // 處理滑鼠進入 (停留開始)
 const handleMouseEnter = () => {
-  emit('swipe', props.slotData.id); // 通知上層滑動事件 (保留舊邏輯)
+  emit('swipe', props.slotData.id);
   startHold();
 };
 
-defineExpose({ triggerHarvest: pullUp });
+// 供外部直接呼叫 (touchmove 滑動收成用)
+const triggerHarvest = () => {
+  if (props.slotData.status === 'ready' || props.slotData.status === 'withered') {
+    pullUp();
+  }
+};
+
+const getSlotStatus = () => props.slotData.status;
+
+defineExpose({ triggerHarvest, getSlotStatus });
 </script>
 
 <template>
