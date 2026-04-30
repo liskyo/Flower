@@ -1,0 +1,18 @@
+{
+  "id": "Korea",
+  "name": "韓國",
+  "flag": "🇰🇷",
+  "scenes": 4,
+  "flowers": [
+    { "id": "kr_s1_kimchi", "name": "泡菜花", "rarity": 1, "weight": 50, "price": 50, "scene": 1 },
+    { "id": "kr_s1_hanbok", "name": "韓服花", "rarity": 2, "weight": 30, "price": 100, "scene": 1 },
+    { "id": "kr_s1_bbq", "name": "燒肉花", "rarity": 3, "weight": 20, "price": 200, "scene": 1 },
+    { "id": "kr_s2_tower", "name": "首爾塔花", "rarity": 1, "weight": 50, "price": 60, "scene": 2 },
+    { "id": "kr_s2_kpop", "name": "女團花", "rarity": 2, "weight": 30, "price": 120, "scene": 2 },
+    { "id": "kr_s3_soju", "name": "燒酒花", "rarity": 1, "weight": 50, "price": 70, "scene": 3 },
+    { "id": "kr_s3_ginseng", "name": "人蔘花", "rarity": 4, "weight": 10, "price": 500, "scene": 3 },
+    { "id": "kr_s4_jeju", "name": "濟州島橘子花", "rarity": 2, "weight": 40, "price": 150, "scene": 4 },
+    { "id": "kr_s4_stone", "name": "石頭爺爺花", "rarity": 3, "weight": 20, "price": 300, "scene": 4 },
+    { "id": "kr_legendary", "name": "傳說·無窮花", "rarity": "Legendary", "weight": 1, "price": 20000, "scene": 0 }
+  ]
+}

@@ -4,18 +4,22 @@ import { state } from '../store/gameState';
 
 const emit = defineEmits(['back']);
 
+const formatNumber = (num) => {
+  return new Intl.NumberFormat('en-US').format(num);
+};
+
 const items = [
-  { id: 'sunnyDoll', name: '晴天娃娃', desc: '強制天氣變晴天 6 小時', price: 50, type: 'weather', duration: 6 },
-  { id: 'rain1', name: '人造雨一階', desc: '全域生長速度 2 倍 (1小時)', price: 100, type: 'rain', multi: 2, duration: 1 },
-  { id: 'rain2', name: '人造雨二階', desc: '全域生長速度 4 倍 (1小時)', price: 200, type: 'rain', multi: 4, duration: 1 },
-  { id: 'rain3', name: '人造雨三階', desc: '全域生長速度 6 倍 (1小時)', price: 400, type: 'rain', multi: 6, duration: 1 },
-  { id: 'rain4', name: '人造雨四階', desc: '全域生長速度 8 倍 (1小時)', price: 800, type: 'rain', multi: 8, duration: 1 },
-  { id: 'rain5', name: '人造雨五階', desc: '全域生長速度 10 倍 (1小時)', price: 1500, type: 'rain', multi: 10, duration: 1 },
-  { id: 'fert1', name: '肥料一階', desc: '全域枯萎時間延長 2 倍 (2小時)', price: 100, type: 'fertilizer', multi: 2, duration: 2 },
-  { id: 'fert2', name: '肥料二階', desc: '全域枯萎時間延長 4 倍 (2小時)', price: 200, type: 'fertilizer', multi: 4, duration: 2 },
-  { id: 'fert3', name: '肥料三階', desc: '全域枯萎時間延長 6 倍 (2小時)', price: 400, type: 'fertilizer', multi: 6, duration: 2 },
-  { id: 'fert4', name: '肥料四階', desc: '全域枯萎時間延長 8 倍 (2小時)', price: 800, type: 'fertilizer', multi: 8, duration: 2 },
-  { id: 'fert5', name: '肥料五階', desc: '全域枯萎時間延長 10 倍 (2小時)', price: 1500, type: 'fertilizer', multi: 10, duration: 2 }
+  { id: 'sunnyDoll', name: '☀️ 晴天娃娃', desc: '強制天氣變晴天 6 小時', price: 5000, type: 'weather', duration: 6 },
+  { id: 'rain1', name: '🌧️ 人造雨一階', desc: '全域生長速度 2 倍 (1小時)', price: 10000, type: 'rain', multi: 2, duration: 1 },
+  { id: 'rain2', name: '🌧️ 人造雨二階', desc: '全域生長速度 4 倍 (1小時)', price: 50000, type: 'rain', multi: 4, duration: 1 },
+  { id: 'rain3', name: '🌧️ 人造雨三階', desc: '全域生長速度 6 倍 (1小時)', price: 100000, type: 'rain', multi: 6, duration: 1 },
+  { id: 'rain4', name: '🌧️ 人造雨四階', desc: '全域生長速度 8 倍 (1小時)', price: 250000, type: 'rain', multi: 8, duration: 1 },
+  { id: 'rain5', name: '🌧️ 人造雨五階', desc: '全域生長速度 10 倍 (1小時)', price: 500000, type: 'rain', multi: 10, duration: 1 },
+  { id: 'fert1', name: '💩 肥料一階', desc: '枯萎時間延長 2 倍 (2小時)', price: 10000, type: 'fertilizer', multi: 2, duration: 2 },
+  { id: 'fert2', name: '💩 肥料二階', desc: '枯萎時間延長 4 倍 (2小時)', price: 50000, type: 'fertilizer', multi: 4, duration: 2 },
+  { id: 'fert3', name: '💩 肥料三階', desc: '枯萎時間延長 6 倍 (2小時)', price: 100000, type: 'fertilizer', multi: 6, duration: 2 },
+  { id: 'fert4', name: '💩 肥料四階', desc: '枯萎時間延長 8 倍 (2小時)', price: 250000, type: 'fertilizer', multi: 8, duration: 2 },
+  { id: 'fert5', name: '💩 肥料五階', desc: '枯萎時間延長 10 倍 (2小時)', price: 500000, type: 'fertilizer', multi: 10, duration: 2 }
 ];
 
 const buyItem = (item) => {
@@ -42,17 +46,17 @@ const buyItem = (item) => {
 <template>
   <div class="shop-overlay">
     <div class="shop-header">
-      <h2>🛒 道具商店</h2>
+      <h2>🛒 高級道具商店</h2>
       <button @click="emit('back')" class="close-btn">❌</button>
     </div>
-    <div class="diamond-display">💎 您的鑽石: {{ state.diamonds }}</div>
+    <div class="diamond-display">💎 您的鑽石: <span class="diamond-val">{{ formatNumber(state.diamonds) }}</span></div>
     
     <div class="items-grid">
       <div v-for="item in items" :key="item.id" class="item-card">
         <h3>{{ item.name }}</h3>
         <p>{{ item.desc }}</p>
         <button @click="buyItem(item)" :disabled="state.diamonds < item.price" class="buy-btn">
-          💎 {{ item.price }} 購買並使用
+          💎 {{ formatNumber(item.price) }}
         </button>
       </div>
     </div>
@@ -61,29 +65,51 @@ const buyItem = (item) => {
 
 <style scoped>
 .shop-overlay {
-  position: absolute; inset: 0; background: rgba(0,0,0,0.85); z-index: 8000;
-  display: flex; flex-direction: column; padding: 30px; color: white; backdrop-filter: blur(5px);
+  position: absolute; inset: 0; background: rgba(10, 15, 25, 0.7); z-index: 8000;
+  display: flex; flex-direction: column; padding: 40px; color: white; backdrop-filter: blur(15px);
 }
 .shop-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-.shop-header h2 { font-size: 2.5rem; font-weight: 900; color: #48dbfb; text-shadow: 0 4px 0 rgba(0,0,0,0.5); }
-.close-btn { background: none; border: none; font-size: 2.5rem; cursor: pointer; transition: transform 0.2s; }
-.close-btn:hover { transform: scale(1.1); }
-.diamond-display { font-size: 1.5rem; font-weight: bold; color: #ffeaa7; margin-bottom: 20px; }
+.shop-header h2 { 
+  font-size: 2.8rem; font-weight: 900; 
+  background: linear-gradient(45deg, #48dbfb, #0abde3); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 5px rgba(10, 189, 227, 0.5));
+}
+.close-btn { background: none; border: none; font-size: 2.5rem; cursor: pointer; transition: transform 0.2s; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); }
+.close-btn:hover { transform: scale(1.1) rotate(90deg); }
+.diamond-display { font-size: 1.5rem; font-weight: bold; color: white; margin-bottom: 25px; padding: 10px 20px; background: rgba(255,255,255,0.1); border-radius: 15px; display: inline-block; border: 1px solid rgba(255,255,255,0.2); }
+.diamond-val { color: #feca57; text-shadow: 0 0 10px rgba(254, 202, 87, 0.5); }
 .items-grid {
-  display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; overflow-y: auto;
-  padding-bottom: 40px;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; overflow-y: auto;
+  padding-bottom: 50px; padding-right: 15px;
 }
+.items-grid::-webkit-scrollbar { width: 8px; }
+.items-grid::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
+
 .item-card {
-  background: rgba(255,255,255,0.1); border: 2px solid rgba(255,255,255,0.3);
-  padding: 20px; border-radius: 15px; display: flex; flex-direction: column; gap: 10px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.02));
+  border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+  padding: 25px; border-radius: 20px; display: flex; flex-direction: column; gap: 15px;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); position: relative; overflow: hidden;
 }
-.item-card h3 { color: #feca57; font-size: 1.4rem; font-weight: 900; }
-.item-card p { font-size: 1rem; flex-grow: 1; line-height: 1.5; color: #dfe6e9; }
+.item-card::before {
+  content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
+  background: linear-gradient(to right, transparent, rgba(255,255,255,0.1), transparent);
+  transform: skewX(-20deg); transition: 0.5s;
+}
+.item-card:hover { transform: translateY(-5px); border-color: rgba(255,255,255,0.3); box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5); }
+.item-card:hover::before { left: 150%; }
+
+.item-card h3 { color: #fff; font-size: 1.6rem; font-weight: 900; letter-spacing: 1px; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+.item-card p { font-size: 1.05rem; flex-grow: 1; line-height: 1.6; color: #b2bec3; }
 .buy-btn {
-  background: #f1c40f; border: none; padding: 12px; border-radius: 8px;
-  font-weight: 900; font-size: 1rem; cursor: pointer; color: #2d3436; box-shadow: 0 4px 0 #d35400;
-  transition: transform 0.1s;
+  background: linear-gradient(to bottom, #f1c40f, #f39c12); border: none; padding: 15px; border-radius: 12px;
+  font-weight: 900; font-size: 1.2rem; cursor: pointer; color: #2d3436; 
+  box-shadow: 0 4px 15px rgba(243, 156, 18, 0.4), inset 0 2px 0 rgba(255,255,255,0.3);
+  transition: all 0.1s; text-align: center;
 }
-.buy-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #d35400; }
-.buy-btn:disabled { background: #95a5a6; box-shadow: 0 4px 0 #7f8c8d; cursor: not-allowed; opacity: 0.7; }
+.buy-btn:active { transform: translateY(2px); box-shadow: 0 2px 5px rgba(243, 156, 18, 0.4), inset 0 0 0 rgba(255,255,255,0); }
+.buy-btn:disabled { 
+  background: linear-gradient(to bottom, #7f8c8d, #636e72); color: #bdc3c7;
+  box-shadow: none; cursor: not-allowed; opacity: 0.6; 
+}
 </style>

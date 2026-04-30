@@ -7,13 +7,12 @@ const defaultState = {
   diamonds: 1000, // 給予一些初始鑽石方便測試
   currentCountry: 'Taiwan',
   currentScene: 1,
-  unlockedScenes: { 'Taiwan': [1, 2, 3, 4] },
+  unlockedScenes: { 'Taiwan': [1, 2, 3, 4], 'Japan': [1, 2, 3, 4], 'Korea': [1, 2, 3, 4], 'Thailand': [1, 2, 3, 4], 'Singapore': [1, 2, 3, 4] },
+  unlockedCountries: ['Taiwan'],
+  visitedCount: 1,
   inventory: {}, 
   medals: {},
-  gardens: {
-    'Taiwan_1': [], 'Taiwan_2': [], 'Taiwan_3': [], 'Taiwan_4': [],
-    'Japan_1': [], 'Japan_2': [], 'Japan_3': [], 'Japan_4': []
-  },
+  gardens: {},
   upgrades: { spawnRate: 0.5, maxSlots: 24 },
   activeBuffs: {
     sunnyDollUntil: null,
@@ -90,14 +89,31 @@ export const getWitherMultiplier = () => {
 };
 
 // 初始化各場景花園
-Object.keys(defaultState.gardens).forEach(key => {
-  defaultState.gardens[key] = Array.from({ length: 24 }, (_, i) => ({
-    id: i, flowerId: null, startTime: null, status: 'empty'
-  }));
+['Taiwan', 'Japan', 'Korea', 'Thailand', 'Singapore'].forEach(country => {
+  [1, 2, 3, 4].forEach(scene => {
+    defaultState.gardens[`${country}_${scene}`] = Array.from({ length: 24 }, (_, i) => ({
+      id: i, flowerId: null, startTime: null, status: 'empty'
+    }));
+  });
 });
 
 const savedData = localStorage.getItem(SAVE_KEY);
 export const state = reactive(savedData ? JSON.parse(savedData) : defaultState);
+
+// 兼容舊存檔：確保舊玩家具備 unlockedCountries
+if (!state.unlockedCountries) {
+  state.unlockedCountries = ['Taiwan'];
+  state.visitedCount = 1;
+  // 如果玩家的存檔正在日本，就補上解鎖狀態
+  if (state.currentCountry === 'Japan') {
+    state.unlockedCountries.push('Japan');
+    state.visitedCount = 2;
+  }
+}
+// 兼容舊存檔：確保新國家的 unlockedScenes 存在
+['Japan', 'Korea', 'Thailand', 'Singapore'].forEach(c => {
+  if (!state.unlockedScenes[c]) state.unlockedScenes[c] = [1, 2, 3, 4];
+});
 
 let currentUser = null;
 let saveTimeout = null;
@@ -255,18 +271,23 @@ export const resetGame = () => {
       diamonds: 100,
       currentCountry: 'Taiwan',
       currentScene: 1,
-      unlockedScenes: { 'Taiwan': [1, 2, 3, 4] },
+      unlockedScenes: { 'Taiwan': [1, 2, 3, 4], 'Japan': [1, 2, 3, 4], 'Korea': [1, 2, 3, 4], 'Thailand': [1, 2, 3, 4], 'Singapore': [1, 2, 3, 4] },
+      unlockedCountries: ['Taiwan'],
+      visitedCount: 1,
       inventory: {}, 
       medals: {},
       gardens: {},
-      upgrades: { spawnRate: 0.5, maxSlots: 24 }
+      upgrades: { spawnRate: 0.5, maxSlots: 24 },
+      activeBuffs: { sunnyDollUntil: null, rainUntil: null, rainMultiplier: 1, fertilizerUntil: null, fertilizerMultiplier: 1 }
     };
     
     // 初始化各場景花園
-    ['Taiwan_1', 'Taiwan_2', 'Taiwan_3', 'Taiwan_4', 'Japan_1', 'Japan_2', 'Japan_3', 'Japan_4'].forEach(key => {
-      freshState.gardens[key] = Array.from({ length: 24 }, (_, i) => ({
-        id: i, flowerId: null, startTime: null, status: 'empty'
-      }));
+    ['Taiwan', 'Japan', 'Korea', 'Thailand', 'Singapore'].forEach(country => {
+      [1, 2, 3, 4].forEach(scene => {
+        freshState.gardens[`${country}_${scene}`] = Array.from({ length: 24 }, (_, i) => ({
+          id: i, flowerId: null, startTime: null, status: 'empty'
+        }));
+      });
     });
 
     Object.assign(state, freshState);

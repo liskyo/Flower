@@ -1,0 +1,18 @@
+{
+  "id": "Singapore",
+  "name": "新加坡",
+  "flag": "🇸🇬",
+  "scenes": 4,
+  "flowers": [
+    { "id": "sg_s1_merlion", "name": "魚尾獅花", "rarity": 1, "weight": 50, "price": 50, "scene": 1 },
+    { "id": "sg_s1_mbs", "name": "金沙酒店花", "rarity": 2, "weight": 30, "price": 100, "scene": 1 },
+    { "id": "sg_s1_kaya", "name": "咖椰吐司花", "rarity": 3, "weight": 20, "price": 200, "scene": 1 },
+    { "id": "sg_s2_tree", "name": "天空樹花", "rarity": 4, "weight": 10, "price": 500, "scene": 2 },
+    { "id": "sg_s2_flyer", "name": "摩天輪花", "rarity": 1, "weight": 50, "price": 60, "scene": 2 },
+    { "id": "sg_s3_crab", "name": "辣椒螃蟹花", "rarity": 2, "weight": 40, "price": 150, "scene": 3 },
+    { "id": "sg_s3_bkt", "name": "肉骨茶花", "rarity": 1, "weight": 50, "price": 70, "scene": 3 },
+    { "id": "sg_s4_airport", "name": "星耀樟宜花", "rarity": 2, "weight": 40, "price": 180, "scene": 4 },
+    { "id": "sg_s4_zoo", "name": "夜間動物園花", "rarity": 3, "weight": 20, "price": 300, "scene": 4 },
+    { "id": "sg_legendary", "name": "傳說·卓錦萬代蘭", "rarity": "Legendary", "weight": 1, "price": 20000, "scene": 0 }
+  ]
+}

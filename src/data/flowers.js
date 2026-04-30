@@ -1,8 +1,11 @@
 // Import each country's data
 import taiwanData from './countries/taiwan.json';
 import japanData from './countries/japan.json';
+import koreaData from './countries/korea.json';
+import thailandData from './countries/thailand.json';
+import singaporeData from './countries/singapore.json';
 
-const countryDataList = [taiwanData, japanData];
+const countryDataList = [taiwanData, japanData, koreaData, thailandData, singaporeData];
 
 // 定義不同稀有度對應的生長時間 (單位：秒)
 const RARITY_GROWTH_TIME = {
