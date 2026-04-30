@@ -98,7 +98,7 @@ const handleSelect = (countryId) => {
 .diamond-val { color: #feca57; font-size: 1.2rem; }
 
 .map-container {
-  width: 95vw; max-width: 1200px; height: 75vh; position: relative; margin-top: 100px;
+  width: 95vw; max-width: 1200px; aspect-ratio: 2 / 1; position: relative; margin-top: 100px;
   background: #0f1c29; border-radius: 30px; overflow: hidden; border: 4px solid rgba(255,255,255,0.1);
   box-shadow: 0 20px 50px rgba(0,0,0,0.8), inset 0 0 100px rgba(0,0,0,0.5);
 }

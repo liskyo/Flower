@@ -146,4 +146,16 @@ const getLevelColorClass = (level) => {
   font-weight: 900; font-size: 1rem; color: #ff7675; text-align: center;
   border: 2px dashed #ff7675; cursor: not-allowed; margin-top: auto;
 }
+
+@media (max-width: 600px) {
+  .shop-overlay { padding: 20px; }
+  .shop-header h2 { font-size: 1.8rem; }
+  .diamond-display { font-size: 1.2rem; padding: 8px 15px; margin-bottom: 15px; }
+  .items-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; padding-right: 5px; }
+  .item-card { min-height: 180px; padding: 15px; gap: 8px; border-radius: 15px; }
+  .item-card h3 { font-size: 1rem; }
+  .item-card p { font-size: 0.8rem; }
+  .buy-btn { font-size: 0.9rem; padding: 10px; border-radius: 10px; }
+  .locked-btn { font-size: 0.8rem; padding: 10px; border-radius: 10px; }
+}
 </style>

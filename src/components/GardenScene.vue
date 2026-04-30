@@ -262,24 +262,33 @@ onUnmounted(() => {
   position: absolute; inset: 0; z-index: 5; pointer-events: none;
   transition: background 2s ease; overflow: hidden;
 }
-.weather-overlay.storm { background: rgba(10, 15, 30, 0.5); }
+.weather-overlay.storm { 
+  background: rgba(10, 15, 30, 0.6); 
+  animation: lightning 5s infinite;
+}
 .weather-overlay.cloudy { background: rgba(50, 55, 65, 0.35); }
 .weather-overlay.rainy { background: rgba(30, 45, 60, 0.25); }
 .weather-overlay.sunny { background: rgba(255, 230, 150, 0.1); }
 
 .rain-layer {
   position: absolute; inset: -20% -10%; 
-  background-image: radial-gradient(circle at 50% 50%, rgba(255,255,255,0.4) 1px, transparent 1px);
-  background-size: 20px 40px; background-position: 0 0;
+  background-image: linear-gradient(165deg, transparent 45%, rgba(255,255,255,0.4) 46%, transparent 47%);
+  background-size: 20px 80px; background-position: 0 0;
   animation: rainFall 0.4s linear infinite; opacity: 0;
-  transform: rotate(15deg);
 }
-.storm .rain-layer { opacity: 1; animation-duration: 0.2s; background-size: 10px 20px; }
-.rainy .rain-layer { opacity: 0.5; animation-duration: 0.5s; background-size: 15px 30px; }
+.storm .rain-layer { opacity: 1; animation-duration: 0.15s; background-size: 15px 60px; }
+.rainy .rain-layer { opacity: 0.6; animation-duration: 0.35s; background-size: 20px 80px; }
 
 @keyframes rainFall {
   0% { background-position: 0 0; }
-  100% { background-position: -20px 100vh; }
+  100% { background-position: -40px 100vh; }
+}
+@keyframes lightning {
+  0%, 90% { background-color: rgba(10, 15, 30, 0.6); }
+  92% { background-color: rgba(255, 255, 255, 0.2); }
+  94% { background-color: rgba(10, 15, 30, 0.6); }
+  96% { background-color: rgba(255, 255, 255, 0.4); }
+  100% { background-color: rgba(10, 15, 30, 0.6); }
 }
 
 /* Landmark Nav */
@@ -303,7 +312,7 @@ onUnmounted(() => {
   border-radius: 200px; overflow: hidden; opacity: 0.7; filter: drop-shadow(0 0 15px rgba(255,255,255,0.5)) blur(1px); z-index: 1;
 }
 .flowers-fixed-grid {
-  position: absolute; top: 48%; left: 50%; transform: translate(-50%, -50%);
+  position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%);
   width: 85%; height: 60%; z-index: 10; display: grid;
   grid-template-columns: repeat(8, 1fr); grid-template-rows: repeat(2, 1fr); gap: 10px 5px;
   align-items: center; justify-items: center;
@@ -350,11 +359,11 @@ onUnmounted(() => {
 }
 
 /* 個別按鈕顏色 */
-.action-btn.map { background: #feca57; width: 60px; height: 60px; margin-right: 15px; }
+.action-btn.map { background: #feca57; width: 60px; height: 60px; }
 .action-btn.map .icon { font-size: 1.4rem; }
 .action-btn.catalog { background: #ff6b6b; width: 85px; height: 85px; }
 .action-btn.catalog .icon { font-size: 2.2rem; }
-.action-btn.shop { background: #48dbfb; width: 65px; height: 65px; margin-right: 50px; margin-top: -20px; }
+.action-btn.shop { background: #48dbfb; width: 65px; height: 65px; }
 
 /* 飛行動畫層 */
 .flying-layer { position: absolute; inset: 0; pointer-events: none; z-index: 5000; overflow: hidden; }
@@ -384,8 +393,8 @@ onUnmounted(() => {
 
 @media (max-width: 1024px) {
   .absolute-garden-container { max-width: 450px; top: 55%; }
-  .flowers-fixed-grid { width: 65%; }
-  .action-cluster { bottom: 20px; right: 20px; transform: scale(0.85); transform-origin: bottom right; }
+  .flowers-fixed-grid { width: 75%; }
+  .action-cluster { bottom: 20px; right: 15px; transform: scale(0.85); transform-origin: bottom right; gap: 10px; }
   .basket-container { bottom: 10%; left: 10%; transform: scale(1); transform-origin: bottom left; }
 }
 </style>

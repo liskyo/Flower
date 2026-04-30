@@ -61,8 +61,8 @@ const doLogout = async () => {
       </div>
       
       <div v-else class="game-content">
-        <!-- 會員控制按鈕 -->
-        <div class="auth-control">
+        <!-- 會員控制按鈕 (僅在首頁顯示) -->
+        <div class="auth-control" v-show="currentTab === 'start'">
           <button v-if="!currentUser" @click="showAuth = true" class="auth-btn login">雲端登入</button>
           <div v-else class="user-badge">
             <span class="user-email" :title="currentUser.email">{{ currentUser.email.split('@')[0] }}</span>
@@ -128,18 +128,18 @@ body { background: #000; overflow: hidden; height: 100vh; width: 100vw; }
 }
 
 /* 登入按鈕區域 */
-.auth-control { position: absolute; bottom: 60px; left: 20px; z-index: 6000; display: flex; gap: 8px; }
+.auth-control { position: absolute; bottom: 20px; left: 20px; z-index: 6000; display: flex; gap: 6px; }
 .auth-btn {
-  padding: 6px 12px; border-radius: 20px; font-weight: 900; font-size: 0.85rem;
-  border: 3px solid #2d3436; cursor: pointer; box-shadow: 0 4px 0 #2d3436; color: white;
+  padding: 4px 10px; border-radius: 15px; font-weight: 900; font-size: 0.75rem;
+  border: 2px solid #2d3436; cursor: pointer; box-shadow: 0 3px 0 #2d3436; color: white;
 }
-.auth-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #2d3436; }
+.auth-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 #2d3436; }
 .auth-btn.login { background: #3498db; }
 .auth-btn.logout { background: #e74c3c; }
-.auth-btn.reset { background: #e67e22; padding: 6px 10px; }
+.auth-btn.reset { background: #e67e22; padding: 4px 8px; }
 
-.user-badge { display: flex; align-items: center; background: rgba(255,255,255,0.8); padding: 3px 5px 3px 12px; border-radius: 20px; border: 2px solid #2d3436; }
-.user-email { font-weight: 900; font-size: 0.8rem; color: #2d3436; max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.user-badge { display: flex; align-items: center; background: rgba(255,255,255,0.8); padding: 2px 4px 2px 10px; border-radius: 15px; border: 2px solid #2d3436; }
+.user-email { font-weight: 900; font-size: 0.7rem; color: #2d3436; max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 .fade-enter-active, .fade-leave-active { transition: opacity 0.3s; }
 .fade-enter-from, .fade-leave-to { opacity: 0; }

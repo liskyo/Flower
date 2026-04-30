@@ -210,7 +210,7 @@ const processCatalogImage = (flower, e) => {
 
 /* Grid View (仿圖3) */
 .items-grid-container { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
-.items-grid { display: grid; grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(3, 1fr); gap: 8px; height: 100%; }
+.items-grid { display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(2, 1fr); gap: 8px; height: 100%; }
 
 .m-slot { background: #fdf5e6; border: 2px solid #3c1a1a; border-radius: 6px; display: flex; flex-direction: column; overflow: hidden; cursor: pointer; transition: transform 0.1s; }
 .m-slot:active { transform: scale(0.97); }
