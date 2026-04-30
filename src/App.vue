@@ -91,7 +91,10 @@ const doLogout = async () => {
         <!-- 導航邏輯 -->
         <main class="main-viewport">
           <Transition name="pop" mode="out-in">
-            <StartScene v-if="currentTab === 'start'" @start="setTab('garden')" />
+            <StartScene 
+              v-if="currentTab === 'start'" 
+              @start="setTab('garden')" 
+            />
           </Transition>
 
           <GardenScene 
