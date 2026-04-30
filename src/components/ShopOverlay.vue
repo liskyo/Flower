@@ -41,6 +41,14 @@ const buyItem = (item) => {
     alert("鑽石不足！");
   }
 };
+
+const getLevelColorClass = (level) => {
+  if (level >= 15) return 'tier-legendary';
+  if (level >= 12) return 'tier-epic';
+  if (level >= 8) return 'tier-rare';
+  if (level >= 5) return 'tier-uncommon';
+  return 'tier-common';
+};
 </script>
 
 <template>
@@ -52,7 +60,9 @@ const buyItem = (item) => {
     <div class="diamond-display">💎 您的鑽石: <span class="diamond-val">{{ formatNumber(state.diamonds) }}</span></div>
     
     <div class="items-grid">
-      <div v-for="item in items" :key="item.id" class="item-card" :class="{ 'is-locked': (state.level || 1) < (item.reqLevel || 1) }">
+      <div v-for="item in items" :key="item.id" 
+           class="item-card" 
+           :class="[{ 'is-locked': (state.level || 1) < (item.reqLevel || 1) }, getLevelColorClass(item.reqLevel)]">
         <h3>{{ item.name }}</h3>
         <p>{{ item.desc }}</p>
         
@@ -88,6 +98,7 @@ const buyItem = (item) => {
 .items-grid {
   display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; overflow-y: auto;
   padding-bottom: 50px; padding-right: 15px; flex: 1; min-height: 0; align-content: start;
+  grid-auto-rows: min-content;
 }
 .items-grid::-webkit-scrollbar { width: 8px; }
 .items-grid::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
@@ -97,13 +108,22 @@ const buyItem = (item) => {
   border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
   padding: 25px; border-radius: 20px; display: flex; flex-direction: column; gap: 15px;
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); position: relative; overflow: hidden;
+  min-height: 240px; justify-content: space-between;
 }
+
+/* Tier Colors */
+.tier-common { border-left: 5px solid #a4b0be; }
+.tier-uncommon { border-left: 5px solid #2ed573; background: linear-gradient(135deg, rgba(46, 213, 115, 0.1), rgba(0,0,0,0)); }
+.tier-rare { border-left: 5px solid #1e90ff; background: linear-gradient(135deg, rgba(30, 144, 255, 0.1), rgba(0,0,0,0)); }
+.tier-epic { border-left: 5px solid #9b59b6; background: linear-gradient(135deg, rgba(155, 89, 182, 0.15), rgba(0,0,0,0)); }
+.tier-legendary { border-left: 5px solid #f1c40f; background: linear-gradient(135deg, rgba(241, 196, 15, 0.2), rgba(0,0,0,0)); box-shadow: 0 0 15px rgba(241, 196, 15, 0.3); }
+
 .item-card::before {
   content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
   background: linear-gradient(to right, transparent, rgba(255,255,255,0.1), transparent);
   transform: skewX(-20deg); transition: 0.5s;
 }
-.item-card:hover { transform: translateY(-5px); border-color: rgba(255,255,255,0.3); box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5); }
+.item-card:hover { transform: translateY(-5px); border-color: rgba(255,255,255,0.5); box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5); }
 .item-card:hover::before { left: 150%; }
 
 .item-card h3 { color: #fff; font-size: 1.6rem; font-weight: 900; letter-spacing: 1px; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
@@ -112,7 +132,7 @@ const buyItem = (item) => {
   background: linear-gradient(to bottom, #f1c40f, #f39c12); border: none; padding: 15px; border-radius: 12px;
   font-weight: 900; font-size: 1.2rem; cursor: pointer; color: #2d3436; 
   box-shadow: 0 4px 15px rgba(243, 156, 18, 0.4), inset 0 2px 0 rgba(255,255,255,0.3);
-  transition: all 0.1s; text-align: center;
+  transition: all 0.1s; text-align: center; margin-top: auto;
 }
 .buy-btn:active { transform: translateY(2px); box-shadow: 0 2px 5px rgba(243, 156, 18, 0.4), inset 0 0 0 rgba(255,255,255,0); }
 .buy-btn:disabled { 
@@ -124,6 +144,6 @@ const buyItem = (item) => {
 .locked-btn {
   background: rgba(0,0,0,0.5); padding: 15px; border-radius: 12px;
   font-weight: 900; font-size: 1rem; color: #ff7675; text-align: center;
-  border: 2px dashed #ff7675; cursor: not-allowed;
+  border: 2px dashed #ff7675; cursor: not-allowed; margin-top: auto;
 }
 </style>
