@@ -189,7 +189,8 @@ onMounted(() => {
     currentWeather.value = getCurrentWeather();
     tickerTime.value = Date.now();
   }, 5000);
-  // 暴風雨元素定期生成
+  
+  // 👇 補上：暴風雨專用的龍捲風生成計時器
   stormTimer = setInterval(() => {
     if (currentWeather.value?.id === 'storm') spawnStormElement();
   }, 1200);
@@ -198,7 +199,7 @@ onMounted(() => {
 onUnmounted(() => {
   clearInterval(spawnTimer);
   clearInterval(weatherTimer);
-  clearInterval(stormTimer);
+  clearInterval(stormTimer); // 👇 補上：記得清除計時器
 });
 </script>
 
@@ -217,14 +218,6 @@ onUnmounted(() => {
       <div class="scene-bg-full" :style="bgImageStyle"></div>
     </div>
 
-    <!-- 暴風雨飄移元素 -->
-    <div v-if="currentWeather.id === 'storm'" class="storm-layer">
-      <div
-        v-for="el in stormElements" :key="el.id"
-        class="storm-element"
-        :style="{ top: el.y, fontSize: el.size + 'rem', '--dur': el.duration + 's' }"
-      >{{ el.icon }}</div>
-    </div>
 
     <!-- 左上角：仿圖3的等級/資訊列 -->
     <div class="top-hud">
@@ -266,9 +259,11 @@ onUnmounted(() => {
     </div>
 
     <div class="scene-overlay-ui">
-      <!-- 天氣視覺特效層 (storm 外其他天氣第一片不動) -->
+      <!-- 天氣視覺特效層 -->
       <div class="weather-overlay" :class="currentWeather.id">
         <div class="rain-layer"></div>
+        <!-- 👇 修改條件：暴風雨、小雨、陰天 都會有這個濾鏡層 -->
+        <div v-if="['storm', 'rainy', 'cloudy'].includes(currentWeather.id)" class="water-drop-filter"></div>
       </div>
       <div class="landmark-nav">
         <template v-for="(name, index) in currentSceneNames" :key="index">
@@ -375,11 +370,40 @@ onUnmounted(() => {
   transition: background-image 0.5s ease;
 }
 
-/* 2. 暴風雨飄移層：保留 z-index 提高的修正，確保閃電和龍捲風不會被 UI 蓋住 */
-.storm-layer { 
-  position: absolute; inset: 0; z-index: 105; pointer-events: none; overflow: hidden; 
+/* 預設水滴濾鏡效果 (暴風雨：高模糊、快水滴) */
+.water-drop-filter {
+  position: absolute; inset: 0; pointer-events: none; z-index: 10;
+  
+  background-image:
+    radial-gradient(4px 5px at 15% 25%, rgba(255,255,255,0.7) 0%, transparent 80%),
+    radial-gradient(5px 6px at 85% 15%, rgba(255,255,255,0.5) 0%, transparent 80%),
+    radial-gradient(3px 4px at 45% 65%, rgba(255,255,255,0.6) 0%, transparent 80%),
+    radial-gradient(6px 8px at 75% 75%, rgba(255,255,255,0.4) 0%, transparent 80%),
+    radial-gradient(2px 3px at 20% 80%, rgba(255,255,255,0.5) 0%, transparent 80%);
+  background-size: 150px 150px; 
+  
+  backdrop-filter: blur(1.5px) contrast(1.1); 
+  animation: dropSlide 5s linear infinite;
 }
 
+@keyframes dropSlide {
+  0% { background-position: 0 0; }
+  100% { background-position: 0 150px; } 
+}
+
+/* 👇 新增：小雨狀態下的濾鏡 (微弱水滴、低模糊) */
+.rainy .water-drop-filter {
+  opacity: 0.5;
+  backdrop-filter: blur(0.5px) contrast(1.05); /* 降低模糊，讓花朵維持清晰 */
+  animation-duration: 10s; /* 水滴滑落速度變慢 */
+}
+
+/* 👇 新增：陰天狀態下的濾鏡 (純起霧，沒有水滴) */
+.cloudy .water-drop-filter {
+  background-image: none; /* 隱藏水滴 */
+  backdrop-filter: blur(1.2px) contrast(1.0); /* 單純玻璃起霧感 */
+  background-color: rgba(255, 255, 255, 0.05); /* 加上極淡的白霧 */
+}
 
 /* 2. 新的動畫寫法：只移動「背景圖片的定位」，不再拉扯整個區塊 */
 @keyframes scrollBg {
@@ -388,15 +412,7 @@ onUnmounted(() => {
   to { background-position: -3000px 0; } 
 }
 
-/* 3. 暴風雨飄移層：將 z-index 從 6 提高到 105，確保不被天氣濾鏡或 UI 蓋住 */
-.storm-layer { 
-  position: absolute; inset: 0; z-index: 105; pointer-events: none; overflow: hidden; 
-}.storm-element {
-  position: absolute; left: -10%;
-  animation: stormFly var(--dur, 5s) linear forwards;
-  opacity: 0.85; filter: drop-shadow(0 0 8px rgba(255,200,0,0.6));
-  white-space: nowrap;
-}
+
 @keyframes stormFly {
   0% { left: -15%; opacity: 0; }
   10% { opacity: 1; }
@@ -482,9 +498,8 @@ onUnmounted(() => {
   background-size: 20px 80px; background-position: 0 0;
   animation: rainFall 0.4s linear infinite; opacity: 0;
 }
-.storm .rain-layer { opacity: 1; animation-duration: 0.15s; background-size: 15px 60px; }
+.storm .rain-layer { opacity: 0; display: none; } /* 👈 徹底隱藏暴風雨的滿天白線 */
 .rainy .rain-layer { opacity: 0.6; animation-duration: 0.35s; background-size: 20px 80px; }
-
 @keyframes rainFall {
   0% { background-position: 0 0; }
   100% { background-position: -40px 100vh; }
