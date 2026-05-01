@@ -500,8 +500,11 @@ onUnmounted(() => {
   animation: rainFall 0.4s linear infinite; opacity: 0;
 }
 .storm .rain-layer { opacity: 0; display: none; } /* 👈 徹底隱藏暴風雨的滿天白線 */
-.rainy .rain-layer { opacity: 0.6; animation-duration: 0.35s; background-size: 20px 80px; }
-@keyframes rainFall {
+/* --- 找到這行並替換 --- */
+.rainy .rain-layer { 
+  opacity: 0; 
+  display: none; /* 徹底隱藏小雨的線條，只保留水滴濾鏡 */
+}@keyframes rainFall {
   0% { background-position: 0 0; }
   100% { background-position: -40px 100vh; }
 }
@@ -661,6 +664,13 @@ onUnmounted(() => {
   .action-btn.shop { width: 52px; height: 52px; }
   .action-btn.inventory { width: 48px; height: 48px; }
   
-  .basket-container { bottom: 10%; left: max(10%, env(safe-area-inset-left)); }
-}
+/* 👇 2. 將花籃容器盡可能往左下角推 */
+  .basket-container { 
+    bottom: 15px; /* 原本是 10%，改用絕對像素壓到最底部 */
+    left: max(15px, env(safe-area-inset-left)); /* 緊貼左側安全區 */
+  }}
+  .basket-img-real {
+    width: 65px !important;  /* 強制覆寫原本的 80px，縮小花籃圖片 */
+    height: 65px !important; 
+  }
 </style>
