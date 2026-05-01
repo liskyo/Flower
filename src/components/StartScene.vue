@@ -1,5 +1,6 @@
 <script setup>
 import { onMounted, ref } from 'vue';
+import { resetGame } from '../store/gameState';
 
 const emit = defineEmits(['start']);
 const isVisible = ref(false);
@@ -12,6 +13,11 @@ onMounted(() => {
 
 const handleStart = () => {
   emit('start');
+};
+
+const handleReset = (e) => {
+  e.stopPropagation(); // 避免觸發 handleStart
+  resetGame();
 };
 </script>
 
@@ -27,6 +33,10 @@ const handleStart = () => {
     
     <div class="version-info">
       Ver. 2.0.0
+    </div>
+    
+    <div class="reset-container">
+      <button class="reset-btn" @click="handleReset">重置遊戲</button>
     </div>
   </div>
 </template>
@@ -87,5 +97,18 @@ const handleStart = () => {
   0% { transform: scale(1); opacity: 1; }
   50% { transform: scale(1.05); opacity: 0.7; }
   100% { transform: scale(1); opacity: 1; }
+}
+
+.reset-container {
+  position: absolute; bottom: 10px; right: 10px;
+}
+.reset-btn {
+  background: rgba(255, 255, 255, 0.2); border: 1px solid rgba(255, 255, 255, 0.5);
+  color: white; padding: 5px 15px; border-radius: 5px; cursor: pointer;
+  font-size: 0.8rem; font-weight: 900; backdrop-filter: blur(2px);
+  transition: all 0.2s;
+}
+.reset-btn:hover {
+  background: rgba(231, 76, 60, 0.6); border-color: #e74c3c;
 }
 </style>

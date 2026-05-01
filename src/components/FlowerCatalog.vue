@@ -298,7 +298,7 @@ const processCatalogImage = (flower, e) => {
 
 .swipe-text { font-weight: 900; color: #747d8c; font-size: 0.75rem; }
 
-.notebook-close-btn { position: absolute; bottom: -10px; right: -5px; width: 65px; height: 65px; background: #e74c3c; border: 4px solid #2d3436; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; z-index: 1000; box-shadow: 0 5px 0 #c0392b; transition: all 0.2s; }
+.notebook-close-btn { position: absolute; bottom: -10px; right: -25px; width: 65px; height: 65px; background: #e74c3c; border: 4px solid #2d3436; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; z-index: 1000; box-shadow: 0 5px 0 #c0392b; transition: all 0.2s; }
 .notebook-close-btn:active { transform: translateY(3px); box-shadow: 0 2px 0 #c0392b; }
 
 .x-icon { font-size: 1.3rem; color: white; font-weight: 900; }
