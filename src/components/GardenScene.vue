@@ -388,9 +388,8 @@ onUnmounted(() => {
   width: 200%;   
   height: 100%;
   
-  /* 修改：改用 50% cover 並對齊底部，防止拉伸變形 */
-  background-size: 50% cover; 
-  background-position: center bottom;
+  /* 讓一張圖的寬度剛好佔滿一個螢幕 (50%) */
+  background-size: 50% 100%; 
   background-repeat: repeat-x; 
   
   /* 改用 transform 進行動畫，手機瀏覽器 100% 完美支援且不破圖 */

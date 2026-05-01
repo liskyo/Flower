@@ -264,18 +264,18 @@ const processCatalogImage = (flower, e) => {
 .page-indicator { font-weight: 900; color: #d1ccc0; font-size: 0.8rem; white-space: nowrap; }
 
 .items-grid-container { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
-.items-grid { display: grid; grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(3, 1fr); gap: 10px; height: 100%; }
+.items-grid { display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(2, 1fr); gap: 8px; height: 100%; }
 
 .m-slot { background: #fdf5e6; border: 2px solid #3c1a1a; border-radius: 6px; display: flex; flex-direction: column; overflow: hidden; cursor: pointer; transition: transform 0.1s; }
 .m-slot:active { transform: scale(0.97); }
 .m-slot.locked { filter: grayscale(100%); opacity: 0.7; }
 
-.m-slot-header { background: #580f75; color: #fff; text-align: center; font-size: 0.75rem; font-weight: 900; padding: 4px 0; border-bottom: 2px solid #3c1a1a; letter-spacing: 1px; }
+.m-slot-header { background: #580f75; color: #fff; text-align: center; font-size: 0.75rem; font-weight: 900; padding: 2px 0; border-bottom: 2px solid #3c1a1a; letter-spacing: 1px; }
 
 .m-slot-body { flex: 1; position: relative; display: flex; align-items: center; justify-content: center; }
 .m-slot-id-badge { position: absolute; top: 2px; left: 2px; background: #000; color: #fff; font-size: 0.5rem; padding: 1px 3px; border-radius: 4px; font-weight: 900; border: 1px solid #fff; }
 
-.m-thumb { width: 70px; height: 70px; display: flex; align-items: center; justify-content: center; }
+.m-thumb { width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; }
 .hidden-source { display: none; }
 .m-img { width: 100%; height: 100%; object-fit: contain; }
 
@@ -285,9 +285,9 @@ const processCatalogImage = (flower, e) => {
 .m-medal.silver { background: #bdc3c7; }
 .m-medal.bronze { background: #cd7f32; }
 
-.m-placeholder .q-mark { font-size: 2.5rem; color: #bcaea0; font-weight: 900; }
+.m-placeholder .q-mark { font-size: 2rem; color: #bcaea0; font-weight: 900; }
 
-.m-slot-footer { background: #c87a27; color: #fff; display: flex; justify-content: space-between; align-items: center; padding: 3px 6px; font-size: 0.65rem; font-weight: 900; border-top: 2px solid #3c1a1a; }
+.m-slot-footer { background: #c87a27; color: #fff; display: flex; justify-content: space-between; align-items: center; padding: 1px 4px; font-size: 0.55rem; font-weight: 900; border-top: 2px solid #3c1a1a; }
 .m-f-label { text-shadow: 1px 1px 0 #000; }
 .m-f-val { text-shadow: 1px 1px 0 #000; }
 
