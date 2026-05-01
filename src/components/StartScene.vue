@@ -42,6 +42,7 @@ const handleStart = () => {
   z-index: 50; cursor: pointer; opacity: 0; transition: opacity 0.8s ease-in-out;
   overflow: hidden;
 }
+</style>
 
 .start-scene.visible {
   opacity: 1;

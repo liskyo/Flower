@@ -360,14 +360,19 @@ onUnmounted(() => {
 /* --- 找到這段並替換 --- */
 
 /* GardenScene.vue */
+/* 1. 回歸正常的 100% 寬度 */
 .scene-bg-full {
-  position: absolute; top: 0; left: 0; height: 100%;
-  width: 300%; 
-  /* 關鍵修正：確保每一張圖片的寬度剛好等於螢幕寬度 (300% 的 1/3) */
-  background-size: 33.333% 100%; 
-  background-repeat: repeat-x;
-  background-position: left center;
+  position: absolute; top: 0; left: 0;
+  width: 100%;   /* 只要 100% 滿版就好，不再撐大 DOM 區塊 */
+  height: 100%;
+  
+  /* 維持這張精美原圖的比例：高度滿版，寬度等比自動縮放 */
+  background-size: auto 100%; 
+  background-repeat: repeat-x; /* 開啟橫向無限循環拼貼 */
+  
+  /* 呼叫背景滑動動畫 */
   animation: scrollBg 80s linear infinite;
+  transition: background-image 0.5s ease;
 }
 
 /* 2. 暴風雨飄移層：保留 z-index 提高的修正，確保閃電和龍捲風不會被 UI 蓋住 */
@@ -376,9 +381,11 @@ onUnmounted(() => {
 }
 
 
+/* 2. 新的動畫寫法：只移動「背景圖片的定位」，不再拉扯整個區塊 */
 @keyframes scrollBg {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-33.333%); }
+  from { background-position: 0 0; }
+  /* 設一個夠大的像素讓它持續往左滑動，repeat-x 會自動在右邊補上新圖 */
+  to { background-position: -3000px 0; } 
 }
 
 /* 3. 暴風雨飄移層：將 z-index 從 6 提高到 105，確保不被天氣濾鏡或 UI 蓋住 */
