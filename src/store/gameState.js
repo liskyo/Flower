@@ -44,42 +44,26 @@ export const getCurrentWeather = () => {
   return WEATHER_TYPES[cycleIndex];
 };
 
+export const getCurrentSpawnMultiplier = () => {
+  const weather = getCurrentWeather();
+  const weatherSpeed = weather.speed;
+  
+  let rainSpeed = 1.0;
+  if (state.activeBuffs?.rainUntil && Date.now() < state.activeBuffs.rainUntil) {
+    rainSpeed = state.activeBuffs?.rainMultiplier || 1;
+  }
+  
+  return weatherSpeed * rainSpeed;
+};
+
 export const calculateEffectiveElapsedTime = (startTime) => {
   const now = Date.now();
   if (!startTime || now <= startTime) return { growthElapsed: 0, realElapsed: 0 };
 
-  let totalGrowthSeconds = 0;
-  let cursor = startTime;
-
-  while (cursor < now) {
-    const nextWeatherBoundary = Math.ceil((cursor + 1) / WEATHER_CYCLE_MS) * WEATHER_CYCLE_MS;
-    const sunnyEnd = (state.activeBuffs?.sunnyDollUntil > cursor) ? state.activeBuffs.sunnyDollUntil : Infinity;
-    const rainEnd = (state.activeBuffs?.rainUntil > cursor) ? state.activeBuffs.rainUntil : Infinity;
-
-    let nextTransition = Math.min(now, nextWeatherBoundary, sunnyEnd, rainEnd);
-
-    let weatherSpeed = 1.0;
-    if (cursor < sunnyEnd) {
-      weatherSpeed = 1.1; // sunny
-    } else {
-      const cycleIndex = Math.floor(cursor / WEATHER_CYCLE_MS) % 4;
-      weatherSpeed = WEATHER_TYPES[cycleIndex].speed;
-    }
-
-    let rainSpeed = 1.0;
-    if (cursor < rainEnd) {
-      rainSpeed = state.activeBuffs?.rainMultiplier || 1;
-    }
-
-    const segmentDuration = (nextTransition - cursor) / 1000;
-    totalGrowthSeconds += segmentDuration * weatherSpeed * rainSpeed;
-
-    cursor = nextTransition;
-  }
-
+  const elapsedSeconds = (now - startTime) / 1000;
   return {
-    growthElapsed: totalGrowthSeconds,
-    realElapsed: (now - startTime) / 1000
+    growthElapsed: elapsedSeconds, // 生長速度現在固定為 1.0 (3秒長大)，加成移至生成間隔
+    realElapsed: elapsedSeconds
   };
 };
 

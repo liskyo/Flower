@@ -2,7 +2,7 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted, computed, nextTick } from 'vue';
-import { state, autoSpawn, setScene, getCurrentGarden, harvestFlower, getCurrentWeather, isSceneUnlocked } from '../store/gameState';
+import { state, autoSpawn, setScene, getCurrentGarden, harvestFlower, getCurrentWeather, isSceneUnlocked, getCurrentSpawnMultiplier } from '../store/gameState';
 import { FLOWERS } from '../data/flowers';
 import GardenSlot from './GardenSlot.vue';
 
@@ -66,6 +66,20 @@ let weatherTimer = null;
 let stormTimer = null;
 
 const currentWeather = ref(getCurrentWeather());
+const spawnMultiplier = ref(getCurrentSpawnMultiplier());
+
+const startSpawnTimer = () => {
+  const baseInterval = 30000;
+  const multiplier = getCurrentSpawnMultiplier();
+  spawnMultiplier.value = multiplier;
+  
+  const currentInterval = baseInterval / multiplier;
+  
+  spawnTimer = setTimeout(() => {
+    autoSpawn();
+    startSpawnTimer();
+  }, currentInterval);
+};
 
 const getWeatherIcon = (id) => {
   const map = { storm: '⛈️', cloudy: '☁️', rainy: '🌧️', sunny: '☀️' };
@@ -184,9 +198,10 @@ const bgImageStyle = computed(() => ({
 const currentGarden = computed(() => getCurrentGarden());
 
 onMounted(() => {
-  spawnTimer = setInterval(() => { autoSpawn(); }, 30000);
+  startSpawnTimer();
   weatherTimer = setInterval(() => {
     currentWeather.value = getCurrentWeather();
+    spawnMultiplier.value = getCurrentSpawnMultiplier();
     tickerTime.value = Date.now();
   }, 5000);
   
@@ -197,7 +212,7 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
-  clearInterval(spawnTimer);
+  clearTimeout(spawnTimer);
   clearInterval(weatherTimer);
   clearInterval(stormTimer); // 👇 補上：記得清除計時器
 });
@@ -236,7 +251,7 @@ onUnmounted(() => {
       <div class="weather-icon-large">{{ getWeatherIcon(currentWeather.id) }}</div>
       <div class="weather-info">
         <div class="weather-name">{{ currentWeather.name }}</div>
-        <div class="weather-speed">生長 {{ Math.round(currentWeather.speed * 100) }}%</div>
+        <div class="weather-speed">生成效率 {{ Math.round(spawnMultiplier * 100) }}%</div>
       </div>
     </div>
 
