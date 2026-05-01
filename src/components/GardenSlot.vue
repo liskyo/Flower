@@ -107,11 +107,11 @@ const updateProgress = () => {
       notifiedSlots.delete(props.slotData.id); // 收成後清除記錄
     }
     
-    // 獨立檢查枯萎 (真實時間 30 分鐘 * 肥料倍率)
+    // 獨立檢查枯萎 (真實時間 3 小時 * 肥料倍率)
     if (props.slotData.status === 'ready') {
       const rTime = props.slotData.readyTime || (Date.now() - 1000); 
       const timeSinceReady = (Date.now() - rTime) / 1000;
-      const witherTime = (30 * 60) * getWitherMultiplier();
+      const witherTime = (3 * 60 * 60) * getWitherMultiplier();
       if (timeSinceReady >= witherTime) {
         props.slotData.status = 'withered';
       }

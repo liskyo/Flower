@@ -9,12 +9,12 @@ const countryDataList = [taiwanData, japanData, koreaData, thailandData, singapo
 
 // 定義不同稀有度對應的生長時間 (單位：秒)
 const RARITY_GROWTH_TIME = {
-  1: 5 * 60,           // 1星：5分鐘
-  2: 15 * 60,          // 2星：15分鐘
-  3: 30 * 60,          // 3星：30分鐘
-  4: 60 * 60,          // 4星：1小時
-  5: 120 * 60,         // 5星：2小時
-  "Legendary": 240 * 60 // 傳說：4小時
+  1: 3,
+  2: 3,
+  3: 3,
+  4: 3,
+  5: 3,
+  "Legendary": 3
 };
 
 // Flatten all flowers and add the 'country' property automatically, overriding growthTime

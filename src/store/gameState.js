@@ -258,10 +258,11 @@ export const harvestFlower = (slotId) => {
 };
 
 // 檢查是否已解鎖某國家所有的非傳說花朵
-export const hasCollectedAllCountryFlowers = (countryId) => {
+// 檢查是否已達到該國家所有非傳說花朵銀牌 (數量 >= 20)
+export const hasSilverMedalForAllCountryFlowers = (countryId) => {
   const countryFlowers = FLOWERS.filter(f => String(f.country).toLowerCase() === String(countryId).toLowerCase() && f.rarity !== 'Legendary');
   if (countryFlowers.length === 0) return false;
-  return countryFlowers.every(f => (state.inventory[f.id] || 0) > 0);
+  return countryFlowers.every(f => (state.inventory[f.id] || 0) >= 20);
 };
 
 export const autoSpawn = () => {
@@ -269,20 +270,24 @@ export const autoSpawn = () => {
   const emptySlots = garden.filter(s => s.status === 'empty');
   if (emptySlots.length === 0) return;
 
+  // 隨機抽一格
   const slot = emptySlots[Math.floor(Math.random() * emptySlots.length)];
   const pool = getFlowersForCurrentScene();
-  const legendaries = FLOWERS.filter(f => f.rarity === 'Legendary' && hasCollectedAllCountryFlowers(f.country));
+  const canSpawnLegendary = hasSilverMedalForAllCountryFlowers(state.currentCountry);
+  const legendaries = FLOWERS.filter(f => f.rarity === 'Legendary' && String(f.country).toLowerCase() === String(state.currentCountry).toLowerCase());
 
   let finalPool = [...pool];
-  if (Math.random() < 0.01 && legendaries.length > 0) finalPool = [...legendaries];
+  
+  // 隨機決定是否嘗試生成傳說 (1% 機率嘗試)
+  if (canSpawnLegendary && legendaries.length > 0 && Math.random() < 0.01) {
+    finalPool = [...legendaries];
+  }
 
   if (finalPool.length > 0) {
-    // 【新增防呆】確保傳說花朵權重最低
     const getWeight = (rarity) => {
-      if (rarity === 'Legendary') return 1; // 傳說機率最低 (權重1)
-
+      if (rarity === 'Legendary') return 1;
       const r = parseInt(rarity) || 1;
-      if (r === 1) return 100; // 1星機率最高 (權重100)
+      if (r === 1) return 100;
       if (r === 2) return 50;
       if (r === 3) return 20;
       if (r === 4) return 5;
@@ -290,12 +295,10 @@ export const autoSpawn = () => {
       return 100;
     };
 
-    // 計算總權重
     const totalWeight = finalPool.reduce((sum, flower) => sum + getWeight(flower.rarity), 0);
     let randomVal = Math.random() * totalWeight;
-    let selectedFlower = finalPool[0]; // 預設值
+    let selectedFlower = finalPool[0];
 
-    // 依權重抽取
     for (const flower of finalPool) {
       randomVal -= getWeight(flower.rarity);
       if (randomVal <= 0) {

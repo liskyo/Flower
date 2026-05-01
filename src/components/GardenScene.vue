@@ -184,7 +184,7 @@ const bgImageStyle = computed(() => ({
 const currentGarden = computed(() => getCurrentGarden());
 
 onMounted(() => {
-  spawnTimer = setInterval(() => { autoSpawn(); }, 1500);
+  spawnTimer = setInterval(() => { autoSpawn(); }, 30000);
   weatherTimer = setInterval(() => {
     currentWeather.value = getCurrentWeather();
     tickerTime.value = Date.now();

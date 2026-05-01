@@ -1,28 +1,41 @@
 <script setup>
 import { computed, ref, onMounted } from 'vue';
-import { state, hasCollectedAllCountryFlowers } from '../store/gameState';
-import { FLOWERS } from '../data/flowers';
+import { state, hasSilverMedalForAllCountryFlowers } from '../store/gameState';
+import { FLOWERS, COUNTRIES } from '../data/flowers';
 
 const emit = defineEmits(['back']);
+
+// 分籤邏輯
+const selectedCountry = ref('Taiwan');
+const categories = computed(() => [
+  ...COUNTRIES.map(c => ({ id: c.id, name: c.name })),
+  { id: 'Legendary', name: '傳說' }
+]);
 
 // 分頁邏輯
 const currentPage = ref(0);
 const itemsPerPage = 6;
+
 const visibleFlowers = computed(() => {
   return FLOWERS.filter(f => {
-    if (f.rarity === 'Legendary') {
-      return (state.inventory[f.id] || 0) > 0 || hasCollectedAllCountryFlowers(f.country);
+    if (selectedCountry.value === 'Legendary') {
+      return f.rarity === 'Legendary' && ((state.inventory[f.id] || 0) > 0 || hasSilverMedalForAllCountryFlowers(f.country));
     }
-    return true;
+    return String(f.country).toLowerCase() === selectedCountry.value.toLowerCase() && f.rarity !== 'Legendary';
   });
 });
 
-const totalPages = computed(() => Math.ceil(visibleFlowers.value.length / itemsPerPage));
+const totalPages = computed(() => Math.max(1, Math.ceil(visibleFlowers.value.length / itemsPerPage)));
 
 const paginatedFlowers = computed(() => {
   const start = currentPage.value * itemsPerPage;
   return visibleFlowers.value.slice(start, start + itemsPerPage);
 });
+
+const selectCountry = (id) => {
+  selectedCountry.value = id;
+  currentPage.value = 0;
+};
 
 // 詳情彈窗
 const selectedFlower = ref(null);
@@ -44,7 +57,7 @@ const getGlowClass = (rarity) => {
   return '';
 };
 
-// --- 圖片去背組件邏輯 (封裝在內部) ---
+// --- 圖片去背組件邏輯 ---
 const processedImages = ref({});
 const processCatalogImage = (flower, e) => {
   const img = e.target;
@@ -70,6 +83,19 @@ const processCatalogImage = (flower, e) => {
 
 <template>
   <div class="catalog-overlay">
+    <!-- 側邊標籤欄 -->
+    <div class="catalog-tabs">
+      <button 
+        v-for="cat in categories" 
+        :key="cat.id"
+        class="tab-btn"
+        :class="{ active: selectedCountry === cat.id, 'legendary-tab': cat.id === 'Legendary' }"
+        @click="selectCountry(cat.id)"
+      >
+        {{ cat.name }}
+      </button>
+    </div>
+
     <div class="notebook-shell">
       <div class="spiral-binding">
         <div v-for="i in 15" :key="i" class="ring"></div>
@@ -79,7 +105,7 @@ const processCatalogImage = (flower, e) => {
         <div class="notebook-header">
           <div class="title-area">
             <span class="book-icon">📖</span>
-            <h1>收集圖鑑</h1>
+            <h1>{{ categories.find(c => c.id === selectedCountry)?.name }}圖鑑</h1>
           </div>
           <div class="page-indicator">{{ currentPage + 1 }} / {{ totalPages }}</div>
         </div>
@@ -92,7 +118,7 @@ const processCatalogImage = (flower, e) => {
               :class="{ locked: !isCollected(flower.id) }"
               @click="openDetail(flower)"
             >
-              <div class="m-slot-header">{{ flower.name }}</div>
+              <div class="m-slot-header" :class="getGlowClass(flower.rarity)">{{ flower.name }}</div>
               
               <div class="m-slot-body">
                 <div class="m-slot-id-badge">NMI-{{ flower.id.split('_').pop() }}</div>
@@ -104,11 +130,10 @@ const processCatalogImage = (flower, e) => {
                       class="hidden-source" 
                       @load="processCatalogImage(flower, $event)"
                     />
-                    <img :src="processedImages[flower.id] || ''" class="m-img" v-if="processedImages[flower.id]" />
+                    <img :src="processedImages[flower.id] || ''" class="m-img" :class="getGlowClass(flower.rarity)" v-if="processedImages[flower.id]" />
                     <span v-else>🌱</span>
                   </div>
                   <div class="m-medals">
-                    <!-- 銅牌=10, 銀牌=20, 金牌=50 -->
                     <div class="m-medal" :class="{ 'gold': (state.inventory[flower.id] || 0) >= 50 }"></div>
                     <div class="m-medal" :class="{ 'silver': (state.inventory[flower.id] || 0) >= 20 }"></div>
                     <div class="m-medal" :class="{ 'bronze': (state.inventory[flower.id] || 0) >= 10 }"></div>
@@ -127,7 +152,6 @@ const processCatalogImage = (flower, e) => {
           </div>
         </div>
 
-        <!-- 翻頁導覽 -->
         <div class="footer-hint">
           <button @click="prevPage" :disabled="currentPage === 0" class="arrow-btn prev">◀</button>
           <div class="swipe-text">左右翻頁 ({{ currentPage + 1 }}/{{ totalPages }})</div>
@@ -141,7 +165,7 @@ const processCatalogImage = (flower, e) => {
       </button>
     </div>
 
-    <!-- 詳情彈窗 (仿圖4) -->
+    <!-- 詳情彈窗 -->
     <Transition name="zoom">
       <div v-if="selectedFlower" class="m-modal-overlay" @click.self="closeDetail">
         <div class="m-modal-card">
@@ -160,7 +184,12 @@ const processCatalogImage = (flower, e) => {
                 <div class="m-stat-box">
                   <div class="m-stat-head">稀有度</div>
                   <div class="m-stat-body rarity">
-                    <span v-for="s in 5" :key="s" :class="{ active: s <= getStars(selectedFlower.rarity) }">★</span>
+                    <template v-if="selectedFlower.rarity === 'Legendary'">
+                      <span class="legendary-label">金色 Legend</span>
+                    </template>
+                    <template v-else>
+                      <span v-for="s in 5" :key="s" :class="{ active: s <= getStars(selectedFlower.rarity) }">★</span>
+                    </template>
                   </div>
                 </div>
                 <div class="m-stat-box">
@@ -199,9 +228,31 @@ const processCatalogImage = (flower, e) => {
   position: fixed; inset: 0; z-index: 5000; background: rgba(0,0,0,0.85);
   display: flex; align-items: center; justify-content: center;
 }
+
+/* 標籤欄樣式 */
+.catalog-tabs {
+  display: flex; flex-direction: column; gap: 8px; margin-right: -10px; z-index: 5;
+}
+.tab-btn {
+  background: #d1ccc0; border: 3px solid #2d3436; border-right: none;
+  border-radius: 12px 0 0 12px; padding: 12px 15px; font-weight: 900;
+  cursor: pointer; transition: all 0.2s; color: #2d3436; font-size: 0.9rem;
+  box-shadow: -4px 4px 0 rgba(0,0,0,0.3);
+}
+.tab-btn.active {
+  background: #fdf6e3; transform: translateX(5px); padding-right: 20px;
+}
+.tab-btn.legendary-tab {
+  background: #6b2122; color: #ffeaa7;
+}
+.tab-btn.legendary-tab.active {
+  background: #6b2122; color: #fff; border-color: #ffeaa7;
+}
+
 .notebook-shell {
   position: relative; width: 95vw; max-width: 440px; height: 85vh;
   background: #fdf6e3; border-radius: 15px; box-shadow: 12px 12px 0 rgba(0,0,0,0.3); display: flex;
+  border: 4px solid #2d3436;
 }
 .spiral-binding { position: absolute; left: -15px; top: 20px; bottom: 20px; display: flex; flex-direction: column; justify-content: space-around; z-index: 100; }
 .ring { width: 32px; height: 10px; background: linear-gradient(to bottom, #bdc3c7, #2c3e50); border-radius: 10px; border: 1.5px solid #2d3436; }
@@ -212,20 +263,19 @@ const processCatalogImage = (flower, e) => {
 .title-area h1 { font-size: 1.1rem; margin: 0; font-family: 'ZCOOL KuaiLe', cursive; color: #57606f; white-space: nowrap; }
 .page-indicator { font-weight: 900; color: #d1ccc0; font-size: 0.8rem; white-space: nowrap; }
 
-/* Grid View (仿圖3) */
 .items-grid-container { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
-.items-grid { display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(2, 1fr); gap: 8px; height: 100%; }
+.items-grid { display: grid; grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(3, 1fr); gap: 10px; height: 100%; }
 
 .m-slot { background: #fdf5e6; border: 2px solid #3c1a1a; border-radius: 6px; display: flex; flex-direction: column; overflow: hidden; cursor: pointer; transition: transform 0.1s; }
 .m-slot:active { transform: scale(0.97); }
 .m-slot.locked { filter: grayscale(100%); opacity: 0.7; }
 
-.m-slot-header { background: #580f75; color: #fff; text-align: center; font-size: 0.75rem; font-weight: 900; padding: 2px 0; border-bottom: 2px solid #3c1a1a; letter-spacing: 1px; }
+.m-slot-header { background: #580f75; color: #fff; text-align: center; font-size: 0.75rem; font-weight: 900; padding: 4px 0; border-bottom: 2px solid #3c1a1a; letter-spacing: 1px; }
 
 .m-slot-body { flex: 1; position: relative; display: flex; align-items: center; justify-content: center; }
 .m-slot-id-badge { position: absolute; top: 2px; left: 2px; background: #000; color: #fff; font-size: 0.5rem; padding: 1px 3px; border-radius: 4px; font-weight: 900; border: 1px solid #fff; }
 
-.m-thumb { width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; }
+.m-thumb { width: 70px; height: 70px; display: flex; align-items: center; justify-content: center; }
 .hidden-source { display: none; }
 .m-img { width: 100%; height: 100%; object-fit: contain; }
 
@@ -235,18 +285,16 @@ const processCatalogImage = (flower, e) => {
 .m-medal.silver { background: #bdc3c7; }
 .m-medal.bronze { background: #cd7f32; }
 
-.m-placeholder .q-mark { font-size: 2rem; color: #bcaea0; font-weight: 900; }
+.m-placeholder .q-mark { font-size: 2.5rem; color: #bcaea0; font-weight: 900; }
 
-.m-slot-footer { background: #c87a27; color: #fff; display: flex; justify-content: space-between; align-items: center; padding: 1px 4px; font-size: 0.55rem; font-weight: 900; border-top: 2px solid #3c1a1a; }
+.m-slot-footer { background: #c87a27; color: #fff; display: flex; justify-content: space-between; align-items: center; padding: 3px 6px; font-size: 0.65rem; font-weight: 900; border-top: 2px solid #3c1a1a; }
 .m-f-label { text-shadow: 1px 1px 0 #000; }
 .m-f-val { text-shadow: 1px 1px 0 #000; }
 
-/* 翻頁導覽 */
 .footer-hint { display: flex; justify-content: space-between; align-items: center; padding: 8px 10px 0; border-top: 2px dashed #d1ccc0; position: relative; }
 .arrow-btn { background: #fff; border: 2px solid #2d3436; border-radius: 50%; width: 38px; height: 38px; cursor: pointer; font-weight: 900; display: flex; align-items: center; justify-content: center; font-size: 1rem; transition: all 0.2s; box-shadow: 0 4px 0 #2d3436; }
 .arrow-btn:active:not(:disabled) { transform: translateY(2px); box-shadow: 0 2px 0 #2d3436; }
 .arrow-btn:disabled { opacity: 0.2; cursor: not-allowed; }
-.arrow-btn.next { margin-right: 45px; }
 
 .swipe-text { font-weight: 900; color: #747d8c; font-size: 0.75rem; }
 
@@ -256,7 +304,6 @@ const processCatalogImage = (flower, e) => {
 .x-icon { font-size: 1.3rem; color: white; font-weight: 900; }
 .btn-text { font-size: 0.6rem; color: white; font-weight: 900; }
 
-/* 詳情彈窗 (仿圖4) */
 .m-modal-overlay { position: fixed; inset: 0; z-index: 6000; background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center; }
 .m-modal-card { width: 320px; background: #fffdf5; border: 3px solid #2d3436; border-radius: 12px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 10px 20px rgba(0,0,0,0.5); position: relative; }
 
@@ -277,6 +324,16 @@ const processCatalogImage = (flower, e) => {
 .m-stat-head { background: #b94b59; color: #fff; font-size: 0.65rem; font-weight: 900; padding: 2px 6px; border-bottom: 2px solid #2d3436; }
 .m-stat-body { padding: 4px 6px; font-size: 0.9rem; font-weight: 900; color: #2d3436; text-align: center; }
 .m-stat-body.rarity { color: #f1c40f; text-shadow: 1px 1px 0 #d35400; font-size: 0.8rem; }
+
+.legendary-label {
+  color: #f1c40f; font-weight: 900; font-size: 0.9rem; text-transform: uppercase;
+  animation: shineText 2s infinite;
+}
+@keyframes shineText {
+  0% { text-shadow: 0 0 5px #f1c40f; }
+  50% { text-shadow: 0 0 20px #fff, 0 0 30px #f1c40f; }
+  100% { text-shadow: 0 0 5px #f1c40f; }
+}
 
 .m-desc-box { background: #bc4b5b; border-radius: 8px; padding: 12px; color: #fff; font-size: 0.85rem; font-weight: 900; line-height: 1.5; position: relative; border: 2px solid #2d3436; }
 .m-desc-box::before { content: ''; position: absolute; inset: 4px; border: 1px dashed rgba(255,255,255,0.5); pointer-events: none; border-radius: 4px; }
@@ -303,5 +360,17 @@ const processCatalogImage = (flower, e) => {
   60% { filter: drop-shadow(0 0 15px #00ff00); }
   80% { filter: drop-shadow(0 0 15px #0000ff); }
   100% { filter: drop-shadow(0 0 15px #8b00ff); }
+}
+
+@media (max-width: 600px) {
+  .catalog-tabs {
+    margin-right: -5px;
+  }
+  .tab-btn {
+    padding: 8px 10px; font-size: 0.75rem;
+  }
+  .items-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 </style>
