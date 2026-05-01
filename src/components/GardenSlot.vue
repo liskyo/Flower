@@ -236,9 +236,11 @@ defineExpose({ triggerHarvest, getSlotStatus });
 
 /* --- 找到這段並替換 --- */
 .flower-container-v3 {
-  width: 85px;       /* 強制放大尺寸 */
-  height: 85px; 
-  max-width: none;   /* 移除所有最高寬度限制，讓它大膽滿出來 */
+  width: 100%; 
+  max-width: 75px; 
+  /* 👇 關鍵修改：拔掉固定的 height，改用 aspect-ratio 讓高度自動跟隨寬度 */
+  aspect-ratio: 1 / 1; 
+  height: auto;        
   display: flex; align-items: center; justify-content: center;
   position: relative; transition: transform 0.3s ease;
   overflow: visible; z-index: 50;

@@ -351,21 +351,23 @@ onUnmounted(() => {
   inset: 0; 
   width: 100vw; height: 100vh; overflow: hidden; 
 }
-.scene-bg-wrapper { position: absolute; inset: 0; z-index: 0; overflow: hidden; }
-/* --- 找到這段並替換 --- */
+/* --- 找到這三段並替換 --- */
+.scene-bg-wrapper { 
+  position: absolute; inset: 0; z-index: 0; overflow: hidden; 
+  background-color: #87CEEB; /* 加上天空底色，以防圖片載入前閃爍 */
+}
 
-/* GardenScene.vue */
-/* 1. 回歸正常的 100% 寬度 */
 .scene-bg-full {
   position: absolute; top: 0; left: 0;
-  width: 100%;   /* 只要 100% 滿版就好，不再撐大 DOM 區塊 */
+  /* 👇 終極解法：把畫布做成螢幕的兩倍寬 (200%) */
+  width: 200%;   
   height: 100%;
   
-  /* 維持這張精美原圖的比例：高度滿版，寬度等比自動縮放 */
-  background-size: auto 100%; 
-  background-repeat: repeat-x; /* 開啟橫向無限循環拼貼 */
+  /* 讓一張圖的寬度剛好佔滿一個螢幕 (50%) */
+  background-size: 50% 100%; 
+  background-repeat: repeat-x; 
   
-  /* 呼叫背景滑動動畫 */
+  /* 改用 transform 進行動畫，手機瀏覽器 100% 完美支援且不破圖 */
   animation: scrollBg 80s linear infinite;
   transition: background-image 0.5s ease;
 }
@@ -405,11 +407,10 @@ onUnmounted(() => {
   background-color: rgba(255, 255, 255, 0.05); /* 加上極淡的白霧 */
 }
 
-/* 2. 新的動畫寫法：只移動「背景圖片的定位」，不再拉扯整個區塊 */
 @keyframes scrollBg {
-  from { background-position: 0 0; }
-  /* 設一個夠大的像素讓它持續往左滑動，repeat-x 會自動在右邊補上新圖 */
-  to { background-position: -3000px 0; } 
+  0% { transform: translateX(0); }
+  /* 向左移動一個螢幕的寬度，完美達成無縫接軌循環 */
+  100% { transform: translateX(-50%); } 
 }
 
 
@@ -622,25 +623,25 @@ onUnmounted(() => {
   100% { transform: translateY(var(--endY)) scale(0); opacity: 0; } /* 瞬間消失模擬掉進去 */
 }
 
-/* --- 找到最下方的 @media 區段，全數替換 --- */
+/* --- 找到 @media 裡面的這兩段並替換 --- */
 @media (max-width: 1024px) {
   .absolute-garden-container { 
     max-width: 100vw;
-    width: 85vw;           
-    top: 55%; 
-    left: 50%;             
+    width: 88vw;           /* 讓雲朵夠寬 */
+    top: 56%;              /* 避開上方選單 */
+    left: 45%;             /* 稍微偏左，完美閃避右側的圖鑑按鈕 */
     transform: translate(-50%, -50%);
-    aspect-ratio: 2.2 / 1; 
+    aspect-ratio: 2.3 / 1; 
   }
   
-  /* 終極壓縮網格：強迫變大的花朵擠在雲朵中央 */
+  /* 控制網格大小，確保絕對不會超出雲朵邊界 */
   .flowers-fixed-grid { 
-    width: 60%;            /* 從 85% 狠心縮小到 60% */
-    height: 55%;           
+    width: 82%;            /* 網格寬度小於雲朵範圍 */
+    height: 65%;           /* 網格高度小於雲朵範圍 */
     top: 50%; 
     left: 50%; 
     transform: translate(-50%, -50%);
-    gap: 0px;              /* 不留空隙 */
+    gap: 2px 4px;          /* 保留微小間距，茂密又整齊 */
   }
   
   /* 功能按鈕確保貼緊右側安全區 */
