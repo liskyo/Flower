@@ -33,7 +33,7 @@ const handleStart = () => {
 
 <style scoped>
 .start-scene {
-  position: fixed; /* 👈 關鍵：從 absolute 改成 fixed */
+  position: fixed; /* 👈 關鍵修改在這裡 */
   inset: 0; 
   background: url('/background.png') no-repeat center center; 
   background-size: cover; 
@@ -42,7 +42,6 @@ const handleStart = () => {
   z-index: 50; cursor: pointer; opacity: 0; transition: opacity 0.8s ease-in-out;
   overflow: hidden;
 }
-</style>
 
 .start-scene.visible {
   opacity: 1;

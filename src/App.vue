@@ -112,16 +112,25 @@ const doLogout = async () => {
 </template>
 
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap');
+
+
 .start-scene-wrapper {
   position: absolute; inset: 0; z-index: 99999; background: #000;
 }
 
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap');
+
+/* 👇 剛剛修改的 html, body 放這裡 */
+html, body { 
+  margin: 0; padding: 0; width: 100%; height: 100%; 
+  background: #000; overflow: hidden; 
+}
+.game-container { 
+  height: 100%; width: 100%; position: relative; 
+}
 
 * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; }
-body { background: #000; overflow: hidden; height: 100vh; width: 100vw; }
 
-.game-container { height: 100vh; width: 100vw; position: relative; }
 .game-content { height: 100%; width: 100%; position: relative; }
 .main-viewport { height: 100%; width: 100%; position: relative; }
 
