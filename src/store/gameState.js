@@ -23,7 +23,8 @@ const defaultState = {
   },
   exp: 0,
   level: 1,
-  inventoryItems: {}
+  inventoryItems: {},
+  lastActiveTime: Date.now()
 };
 
 import { supabase } from '../supabase';
@@ -262,7 +263,6 @@ export const autoSpawn = () => {
 
   let finalPool = [...pool];
   
-  // 隨機決定是否嘗試生成傳說 (1% 機率嘗試)
   if (canSpawnLegendary && legendaries.length > 0 && Math.random() < 0.01) {
     finalPool = [...legendaries];
   }
@@ -296,6 +296,33 @@ export const autoSpawn = () => {
     slot.status = 'growing';
   }
 };
+
+// 離線生成補償
+export const catchUpSpawning = () => {
+  const now = Date.now();
+  const lastTime = state.lastActiveTime || now;
+  const elapsedMs = now - lastTime;
+  
+  // 以當前倍率計算間隔
+  const multiplier = getCurrentSpawnMultiplier();
+  const intervalMs = 30000 / multiplier;
+  
+  const numCycles = Math.floor(elapsedMs / intervalMs);
+  
+  if (numCycles > 0) {
+    console.log(`離線補償生成：${numCycles} 次`);
+    for (let i = 0; i < Math.min(numCycles, 16); i++) { // 最多補償 16 次 (滿園)
+      autoSpawn();
+    }
+  }
+  
+  state.lastActiveTime = now;
+};
+
+// 定期更新最後活動時間
+setInterval(() => {
+  state.lastActiveTime = Date.now();
+}, 10000);
 
 export const setScene = (sceneId) => {
   state.currentScene = Number(sceneId);

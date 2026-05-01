@@ -2,7 +2,7 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted, computed, nextTick } from 'vue';
-import { state, autoSpawn, setScene, getCurrentGarden, harvestFlower, getCurrentWeather, isSceneUnlocked, getCurrentSpawnMultiplier } from '../store/gameState';
+import { state, autoSpawn, setScene, getCurrentGarden, harvestFlower, getCurrentWeather, isSceneUnlocked, getCurrentSpawnMultiplier, catchUpSpawning } from '../store/gameState';
 import { FLOWERS } from '../data/flowers';
 import GardenSlot from './GardenSlot.vue';
 
@@ -67,6 +67,12 @@ let stormTimer = null;
 
 const currentWeather = ref(getCurrentWeather());
 const spawnMultiplier = ref(getCurrentSpawnMultiplier());
+
+const handleVisibilityChange = () => {
+  if (document.visibilityState === 'visible') {
+    catchUpSpawning();
+  }
+};
 
 const startSpawnTimer = () => {
   const baseInterval = 30000;
@@ -198,6 +204,9 @@ const bgImageStyle = computed(() => ({
 const currentGarden = computed(() => getCurrentGarden());
 
 onMounted(() => {
+  catchUpSpawning();
+  document.addEventListener('visibilitychange', handleVisibilityChange);
+  
   startSpawnTimer();
   weatherTimer = setInterval(() => {
     currentWeather.value = getCurrentWeather();
@@ -212,6 +221,7 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
+  document.removeEventListener('visibilitychange', handleVisibilityChange);
   clearTimeout(spawnTimer);
   clearInterval(weatherTimer);
   clearInterval(stormTimer); // 👇 補上：記得清除計時器
@@ -378,8 +388,9 @@ onUnmounted(() => {
   width: 200%;   
   height: 100%;
   
-  /* 讓一張圖的寬度剛好佔滿一個螢幕 (50%) */
-  background-size: 50% 100%; 
+  /* 修改：改用 50% cover 並對齊底部，防止拉伸變形 */
+  background-size: 50% cover; 
+  background-position: center bottom;
   background-repeat: repeat-x; 
   
   /* 改用 transform 進行動畫，手機瀏覽器 100% 完美支援且不破圖 */
