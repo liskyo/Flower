@@ -61,7 +61,6 @@ const currentSceneNames = computed(() => {
   return sceneNames[state.currentCountry.toLowerCase()] || ["場景 1", "場景 2", "場景 3", "場景 4"];
 });
 
-let spawnTimer = null;
 let weatherTimer = null;
 let stormTimer = null;
 
@@ -75,16 +74,8 @@ const handleVisibilityChange = () => {
 };
 
 const startSpawnTimer = () => {
-  const baseInterval = 30000;
-  const multiplier = getCurrentSpawnMultiplier();
-  spawnMultiplier.value = multiplier;
-  
-  const currentInterval = baseInterval / multiplier;
-  
-  spawnTimer = setTimeout(() => {
-    autoSpawn();
-    startSpawnTimer();
-  }, currentInterval);
+  // 該邏輯已移至 gameState.js 的全域 setInterval 中處理
+  spawnMultiplier.value = getCurrentSpawnMultiplier();
 };
 
 const getWeatherIcon = (id) => {
@@ -222,9 +213,8 @@ onMounted(() => {
 
 onUnmounted(() => {
   document.removeEventListener('visibilitychange', handleVisibilityChange);
-  clearTimeout(spawnTimer);
   clearInterval(weatherTimer);
-  clearInterval(stormTimer); // 👇 補上：記得清除計時器
+  clearInterval(stormTimer); 
 });
 </script>
 

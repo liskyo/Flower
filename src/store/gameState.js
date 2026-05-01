@@ -24,7 +24,8 @@ const defaultState = {
   exp: 0,
   level: 1,
   inventoryItems: {},
-  lastActiveTime: Date.now()
+  lastActiveTime: Date.now(),
+  lastSpawnTimes: {} // 紀錄每個花園的獨立生成時間
 };
 
 import { supabase } from '../supabase';
@@ -48,12 +49,12 @@ export const getCurrentWeather = () => {
 export const getCurrentSpawnMultiplier = () => {
   const weather = getCurrentWeather();
   const weatherSpeed = weather.speed;
-  
+
   let rainSpeed = 1.0;
   if (state.activeBuffs?.rainUntil && Date.now() < state.activeBuffs.rainUntil) {
     rainSpeed = state.activeBuffs?.rainMultiplier || 1;
   }
-  
+
   return weatherSpeed * rainSpeed;
 };
 
@@ -79,9 +80,11 @@ export const getWitherMultiplier = () => {
 // 初始化各場景花園
 ['Taiwan', 'Japan', 'Korea', 'Thailand', 'Singapore'].forEach(country => {
   [1, 2, 3, 4].forEach(scene => {
-    defaultState.gardens[`${country}_${scene}`] = Array.from({ length: 24 }, (_, i) => ({
+    const key = `${country}_${scene}`;
+    defaultState.gardens[key] = Array.from({ length: 24 }, (_, i) => ({
       id: i, flowerId: null, startTime: null, status: 'empty'
     }));
+    defaultState.lastSpawnTimes[key] = Date.now();
   });
 });
 
@@ -107,6 +110,11 @@ if (!state.unlockedCountries) {
 // 兼容舊存檔：確保新國家的 unlockedScenes 存在
 ['Japan', 'Korea', 'Thailand', 'Singapore'].forEach(c => {
   if (!state.unlockedScenes[c]) state.unlockedScenes[c] = [1, 2, 3, 4];
+  // 確保補上計時器結構
+  [1, 2, 3, 4].forEach(s => {
+    const key = `${c}_${s}`;
+    if (!state.lastSpawnTimes[key]) state.lastSpawnTimes[key] = Date.now();
+  });
 });
 
 let currentUser = null;
@@ -254,35 +262,38 @@ export const autoSpawn = (targetCountry = null, targetScene = null) => {
   const country = targetCountry || state.currentCountry;
   const scene = targetScene || state.currentScene;
   const gardenKey = `${country}_${scene}`;
-  
+
   if (!state.gardens[gardenKey]) return;
   const garden = state.gardens[gardenKey].slice(0, 16);
   const emptySlots = garden.filter(s => s.status === 'empty');
   if (emptySlots.length === 0) return;
 
   const slot = emptySlots[Math.floor(Math.random() * emptySlots.length)];
-  
+
+  // 更新該花園的最後生成時間，避免重複計算
+  state.lastSpawnTimes[gardenKey] = Date.now();
+
   // 獲取該場景的花池
   const pool = FLOWERS.filter(f => f.country === country && (f.scene === scene || f.scene === 0) && f.rarity !== 'Legendary');
-  
+
   const canSpawnLegendary = hasSilverMedalForAllCountryFlowers(country);
   const legendaries = FLOWERS.filter(f => f.rarity === 'Legendary' && String(f.country).toLowerCase() === String(country).toLowerCase());
 
   let finalPool = [...pool];
-  
+
   if (canSpawnLegendary && legendaries.length > 0 && Math.random() < 0.01) {
     finalPool = [...legendaries];
   }
 
   if (finalPool.length > 0) {
     const getWeight = (rarity) => {
-      if (rarity === 'Legendary') return 1;
+      if (rarity === 'Legendary') return 3;
       const r = parseInt(rarity) || 1;
       if (r === 1) return 100;
       if (r === 2) return 50;
-      if (r === 3) return 20;
-      if (r === 4) return 5;
-      if (r === 5) return 1;
+      if (r === 3) return 30;
+      if (r === 4) return 20;
+      if (r === 5) return 10;
       return 100;
     };
 
@@ -304,38 +315,43 @@ export const autoSpawn = (targetCountry = null, targetScene = null) => {
   }
 };
 
-// 離線生成補償 (全域：所有國家/場景)
+// 離線生成補償 (分場景獨立計算)
 export const catchUpSpawning = () => {
   const now = Date.now();
-  const lastTime = state.lastActiveTime || now;
-  const elapsedMs = now - lastTime;
-  
   const multiplier = getCurrentSpawnMultiplier();
   const intervalMs = 30000 / multiplier;
-  
-  const numCycles = Math.floor(elapsedMs / intervalMs);
-  
-  if (numCycles > 0) {
-    console.log(`全域離線補償開始：${numCycles} 個週期`);
-    
-    // 遍歷所有已初始化的花園
-    Object.keys(state.gardens).forEach(gardenKey => {
-      const [country, sceneStr] = gardenKey.split('_');
-      const scene = parseInt(sceneStr);
-      
-      // 每個花園都執行補償
-      for (let i = 0; i < Math.min(numCycles, 16); i++) {
-        autoSpawn(country, scene);
+
+  Object.keys(state.gardens).forEach(gardenKey => {
+    const [country, sceneStr] = gardenKey.split('_');
+    const scene = parseInt(sceneStr);
+
+    // 檢查國家與場景是否已解鎖
+    const isCountryUnlocked = state.unlockedCountries.includes(country);
+    const isSceneUnlockedNow = isSceneUnlocked(country, scene);
+
+    if (isCountryUnlocked && isSceneUnlockedNow) {
+      const lastTime = state.lastSpawnTimes[gardenKey] || state.lastActiveTime || now;
+      const elapsedMs = now - lastTime;
+      const numCycles = Math.floor(elapsedMs / intervalMs);
+
+      if (numCycles > 0) {
+        console.log(`${gardenKey} 背景生成：${numCycles} 個週期`);
+        // 限制單次補償上限避免卡頓
+        for (let i = 0; i < Math.min(numCycles, 16); i++) {
+          autoSpawn(country, scene);
+        }
       }
-    });
-  }
-  
+      // 更新計時器
+      state.lastSpawnTimes[gardenKey] = now;
+    }
+  });
+
   state.lastActiveTime = now;
 };
 
-// 定期更新最後活動時間
+// 全域背景計時器：每 10 秒執行一次補償檢查 (實現背景成長)
 setInterval(() => {
-  state.lastActiveTime = Date.now();
+  catchUpSpawning();
 }, 10000);
 
 export const setScene = (sceneId) => {
