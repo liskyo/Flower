@@ -46,7 +46,10 @@ const openDetail = (flower) => {
 };
 const closeDetail = () => { selectedFlower.value = null; };
 
-const getStars = (rarity) => (rarity === 'Legendary' ? 5 : parseInt(rarity) || 1);
+const getStars = (rarity) => {
+  if (rarity === 'Legendary') return 0; // 傳說級不顯示星星，顯示 Legend 標籤
+  return parseInt(rarity) || 1;
+};
 const nextPage = () => { if (currentPage.value < totalPages.value - 1) currentPage.value++; };
 const prevPage = () => { if (currentPage.value > 0) currentPage.value--; };
 
@@ -188,7 +191,7 @@ const processCatalogImage = (flower, e) => {
                       <span class="legendary-label">金色 Legend</span>
                     </template>
                     <template v-else>
-                      <span v-for="s in 5" :key="s" :class="{ active: s <= getStars(selectedFlower.rarity) }">★</span>
+                      <span v-for="s in getStars(selectedFlower.rarity)" :key="s" class="active">★</span>
                     </template>
                   </div>
                 </div>
@@ -346,22 +349,6 @@ const processCatalogImage = (flower, e) => {
 .zoom-enter-active { animation: zoom 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
 @keyframes zoom { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
-.glow-silver { filter: drop-shadow(0 0 10px silver); }
-.glow-gold { animation: pulseGold 2s infinite alternate; }
-.glow-rainbow { animation: rainbowGlow 2s infinite alternate; }
-@keyframes pulseGold {
-  from { filter: drop-shadow(0 0 10px #f1c40f); transform: scale(1); }
-  to { filter: drop-shadow(0 0 20px #f39c12); transform: scale(1.05); }
-}
-@keyframes rainbowGlow {
-  0% { filter: drop-shadow(0 0 15px #ff0000); }
-  20% { filter: drop-shadow(0 0 15px #ff7f00); }
-  40% { filter: drop-shadow(0 0 15px #ffff00); }
-  60% { filter: drop-shadow(0 0 15px #00ff00); }
-  80% { filter: drop-shadow(0 0 15px #0000ff); }
-  100% { filter: drop-shadow(0 0 15px #8b00ff); }
-}
-
 @media (max-width: 600px) {
   .catalog-tabs {
     margin-right: -5px;
@@ -369,8 +356,24 @@ const processCatalogImage = (flower, e) => {
   .tab-btn {
     padding: 8px 10px; font-size: 0.75rem;
   }
-  .items-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
+  /* 移除手機版 2 欄限制，維持 3 欄格式 */
+}
+.m-stat-body.rarity span.active { color: #f1c40f; text-shadow: 0 0 5px rgba(241,196,15,0.5); font-size: 1.2rem; }
+
+.glow-silver { animation: shine-silver 2s infinite alternate; }
+.glow-gold { animation: shine-gold 2s infinite alternate; }
+.glow-rainbow { animation: glow-pulse 2s infinite alternate; }
+
+@keyframes shine-silver {
+  from { filter: drop-shadow(0 0 5px rgba(192, 192, 192, 0.5)); }
+  to { filter: drop-shadow(0 0 15px rgba(192, 192, 192, 1)); }
+}
+@keyframes shine-gold {
+  from { filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.5)); }
+  to { filter: drop-shadow(0 0 25px rgba(255, 215, 0, 1)); }
+}
+@keyframes glow-pulse {
+  from { filter: drop-shadow(0 0 10px #ff00de) hue-rotate(0deg); }
+  to { filter: drop-shadow(0 0 30px #00d4ff) hue-rotate(360deg); }
 }
 </style>

@@ -250,16 +250,23 @@ export const hasSilverMedalForAllCountryFlowers = (countryId) => {
   return countryFlowers.every(f => (state.inventory[f.id] || 0) >= 20);
 };
 
-export const autoSpawn = () => {
-  const garden = getCurrentGarden().slice(0, 16);
+export const autoSpawn = (targetCountry = null, targetScene = null) => {
+  const country = targetCountry || state.currentCountry;
+  const scene = targetScene || state.currentScene;
+  const gardenKey = `${country}_${scene}`;
+  
+  if (!state.gardens[gardenKey]) return;
+  const garden = state.gardens[gardenKey].slice(0, 16);
   const emptySlots = garden.filter(s => s.status === 'empty');
   if (emptySlots.length === 0) return;
 
-  // 隨機抽一格
   const slot = emptySlots[Math.floor(Math.random() * emptySlots.length)];
-  const pool = getFlowersForCurrentScene();
-  const canSpawnLegendary = hasSilverMedalForAllCountryFlowers(state.currentCountry);
-  const legendaries = FLOWERS.filter(f => f.rarity === 'Legendary' && String(f.country).toLowerCase() === String(state.currentCountry).toLowerCase());
+  
+  // 獲取該場景的花池
+  const pool = FLOWERS.filter(f => f.country === country && (f.scene === scene || f.scene === 0) && f.rarity !== 'Legendary');
+  
+  const canSpawnLegendary = hasSilverMedalForAllCountryFlowers(country);
+  const legendaries = FLOWERS.filter(f => f.rarity === 'Legendary' && String(f.country).toLowerCase() === String(country).toLowerCase());
 
   let finalPool = [...pool];
   
@@ -297,23 +304,30 @@ export const autoSpawn = () => {
   }
 };
 
-// 離線生成補償
+// 離線生成補償 (全域：所有國家/場景)
 export const catchUpSpawning = () => {
   const now = Date.now();
   const lastTime = state.lastActiveTime || now;
   const elapsedMs = now - lastTime;
   
-  // 以當前倍率計算間隔
   const multiplier = getCurrentSpawnMultiplier();
   const intervalMs = 30000 / multiplier;
   
   const numCycles = Math.floor(elapsedMs / intervalMs);
   
   if (numCycles > 0) {
-    console.log(`離線補償生成：${numCycles} 次`);
-    for (let i = 0; i < Math.min(numCycles, 16); i++) { // 最多補償 16 次 (滿園)
-      autoSpawn();
-    }
+    console.log(`全域離線補償開始：${numCycles} 個週期`);
+    
+    // 遍歷所有已初始化的花園
+    Object.keys(state.gardens).forEach(gardenKey => {
+      const [country, sceneStr] = gardenKey.split('_');
+      const scene = parseInt(sceneStr);
+      
+      // 每個花園都執行補償
+      for (let i = 0; i < Math.min(numCycles, 16); i++) {
+        autoSpawn(country, scene);
+      }
+    });
   }
   
   state.lastActiveTime = now;

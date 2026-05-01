@@ -259,20 +259,21 @@ defineExpose({ triggerHarvest, getSlotStatus });
   transition: filter 0.3s ease, opacity 0.3s ease;
 }
 
-.glow-silver { filter: drop-shadow(0 0 10px silver) !important; }
-.glow-gold { animation: pulseGold 2s infinite alternate !important; }
-.glow-rainbow { animation: rainbowGlow 2s infinite alternate !important; }
-@keyframes pulseGold {
-  from { filter: drop-shadow(0 0 10px #f1c40f); transform: scale(1); }
-  to { filter: drop-shadow(0 0 20px #f39c12); transform: scale(1.05); }
+.glow-silver { animation: shine-silver 2s infinite alternate !important; }
+.glow-gold { animation: shine-gold 2s infinite alternate !important; }
+.glow-rainbow { animation: glow-pulse 2s infinite alternate !important; }
+
+@keyframes shine-silver {
+  from { filter: drop-shadow(0 0 5px rgba(192, 192, 192, 0.5)); }
+  to { filter: drop-shadow(0 0 15px rgba(192, 192, 192, 1)); }
 }
-@keyframes rainbowGlow {
-  0% { filter: drop-shadow(0 0 15px #ff0000); }
-  20% { filter: drop-shadow(0 0 15px #ff7f00); }
-  40% { filter: drop-shadow(0 0 15px #ffff00); }
-  60% { filter: drop-shadow(0 0 15px #00ff00); }
-  80% { filter: drop-shadow(0 0 15px #0000ff); }
-  100% { filter: drop-shadow(0 0 15px #8b00ff); }
+@keyframes shine-gold {
+  from { filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.5)); }
+  to { filter: drop-shadow(0 0 25px rgba(255, 215, 0, 1)); }
+}
+@keyframes glow-pulse {
+  from { filter: drop-shadow(0 0 10px #ff00de) hue-rotate(0deg); }
+  to { filter: drop-shadow(0 0 30px #00d4ff) hue-rotate(360deg); }
 }
 
 /* 枯萎狀態視覺效果 */
