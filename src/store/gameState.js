@@ -107,6 +107,11 @@ if (!state.unlockedCountries) {
     state.visitedCount = 2;
   }
 }
+// 👇 新增這行：確保 lastSpawnTimes 存在，防止讀取舊存檔時報錯
+if (!state.lastSpawnTimes) {
+  state.lastSpawnTimes = {};
+}
+
 // 兼容舊存檔：確保新國家的 unlockedScenes 存在
 ['Japan', 'Korea', 'Thailand', 'Singapore'].forEach(c => {
   if (!state.unlockedScenes[c]) state.unlockedScenes[c] = [1, 2, 3, 4];
