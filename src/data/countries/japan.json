@@ -11,7 +11,7 @@
       "growthTime": 5,
       "price": 15,
       "scene": 1,
-      "description": "這是一株來自 日本 的珍貴花卉，散發著迷人的氣息。"
+      "description": "長得特別高，如果碰到電線會發出劈啪聲，據說會把雲戳破。"
     },
     {
       "id": "jp_s1_tower",
@@ -20,7 +20,7 @@
       "growthTime": 8,
       "price": 25,
       "scene": 1,
-      "description": "這是一株來自 日本 的珍貴花卉，散發著迷人的氣息。"
+      "description": "經典的紅白色調，頂端偶爾會發射電波，據說能接收外星人的點餐外送信號。"
     },
     {
       "id": "jp_s1_hachiko",
@@ -29,7 +29,7 @@
       "growthTime": 12,
       "price": 40,
       "scene": 1,
-      "description": "這是一株來自 日本 的珍貴花卉，散發著迷人的氣息。"
+      "description": "非常忠心，就算你三個月沒打開遊戲，它也會一直在花盆裡等你（然後默默枯萎）。"
     },
     {
       "id": "jp_s1_lantern",
@@ -38,7 +38,7 @@
       "growthTime": 15,
       "price": 55,
       "scene": 1,
-      "description": "這是一株來自 日本 的珍貴花卉，散發著迷人的氣息。"
+      "description": "紅通通的巨大花朵，底下總是擠滿了想跟它合照的小蟲子。"
     },
     {
       "id": "jp_s1_vending",
@@ -47,7 +47,7 @@
       "growthTime": 20,
       "price": 75,
       "scene": 1,
-      "description": "這是一株來自 日本 的珍貴花卉，散發著迷人的氣息。"
+      "description": "只要投入硬幣，就會吐出熱騰騰的玉米濃湯罐頭，是冬天花園裡的救星。"
     },
     {
       "id": "jp_s1_onigiri",
@@ -56,7 +56,7 @@
       "growthTime": 25,
       "price": 90,
       "scene": 1,
-      "description": "這是一株來自 日本 的珍貴花卉，散發著迷人的氣息。"
+      "description": "外面包著酥脆的海苔，裡面通常是梅子口味，但偶爾會抽到芥末地雷。"
     },
     {
       "id": "jp_s1_train",
@@ -65,7 +65,7 @@
       "growthTime": 35,
       "price": 150,
       "scene": 1,
-      "description": "這是一株來自 日本 的珍貴花卉，散發著迷人的氣息。"
+      "description": "這朵花的每一片花瓣都緊緊貼在一起，似乎連呼吸都很困難。"
     },
     {
       "id": "jp_s1_maid",
@@ -74,7 +74,7 @@
       "growthTime": 45,
       "price": 220,
       "scene": 1,
-      "description": "這是一株來自 日本 的珍貴花卉，散發著迷人的氣息。"
+      "description": "會對著路過的蝴蝶說「主人，歡迎回家」，並在花粉上用糖漿畫愛心。"
     },
     {
       "id": "jp_s1_godzilla",
@@ -83,7 +83,7 @@
       "growthTime": 60,
       "price": 400,
       "scene": 1,
-      "description": "這是一株來自 日本 的珍貴花卉，散發著迷人的氣息。"
+      "description": "偶爾會從花心噴出藍色原子吐息，把旁邊的花都烤焦，非常難伺候。"
     },
     {
       "id": "jp_s2_fuji",
@@ -92,7 +92,7 @@
       "growthTime": 10,
       "price": 30,
       "scene": 2,
-      "description": "這是一株來自 日本 的珍貴花卉，散發著迷人的氣息。"
+      "description": "頂部總是覆蓋著白雪，據說在夢裡看到它、老鷹和茄子就會中樂透。"
     },
     {
       "id": "jp_s2_matcha",
@@ -101,7 +101,7 @@
       "growthTime": 15,
       "price": 45,
       "scene": 2,
-      "description": "這是一株來自 日本 的珍貴花卉，散發著迷人的氣息。"
+      "description": "帶有深邃的茶香與微苦，據說是文青與茶道愛好者的最愛。"
     },
     {
       "id": "jp_s2_torii",
@@ -110,7 +110,7 @@
       "growthTime": 22,
       "price": 65,
       "scene": 2,
-      "description": "這是一株來自 日本 的珍貴花卉，散發著迷人的氣息。"
+      "description": "紅色的柱狀結構，據說是神明與人類世界的通道，不過目前只有螞蟻會走過去。"
     },
     {
       "id": "jp_s2_geisha",
@@ -119,7 +119,7 @@
       "growthTime": 28,
       "price": 85,
       "scene": 2,
-      "description": "這是一株來自 日本 的珍貴花卉，散發著迷人的氣息。"
+      "description": "姿態優雅，臉上塗著厚厚的白粉，據說會偷偷在半夜彈三味線。"
     },
     {
       "id": "jp_s2_deer",
@@ -128,7 +128,7 @@
       "growthTime": 35,
       "price": 120,
       "scene": 2,
-      "description": "這是一株來自 日本 的珍貴花卉，散發著迷人的氣息。"
+      "description": "只要拿在手上，就會吸引一群看似溫馴實則凶暴的小鹿把你包圍。"
     },
     {
       "id": "jp_s2_mask",
@@ -137,7 +137,7 @@
       "growthTime": 45,
       "price": 180,
       "scene": 2,
-      "description": "這是一株來自 日本 的珍貴花卉，散發著迷人的氣息。"
+      "description": "帶著神祕的笑容，戴上它據說能聽懂小動物說話，但通常都是在罵髒話。"
     },
     {
       "id": "jp_s2_bamboo",
@@ -146,7 +146,7 @@
       "growthTime": 60,
       "price": 300,
       "scene": 2,
-      "description": "這是一株來自 日本 的珍貴花卉，散發著迷人的氣息。"
+      "description": "生長得非常茂密，風吹過時會發出沙沙聲，是拍武俠片的最佳背景。"
     },
     {
       "id": "jp_s2_temple",
@@ -155,7 +155,7 @@
       "growthTime": 80,
       "price": 450,
       "scene": 2,
-      "description": "這是一株來自 日本 的珍貴花卉，散發著迷人的氣息。"
+      "description": "表面貼滿了金箔，在陽光下閃閃發光，常常因為太亮而閃瞎蜜蜂的眼睛。"
     },
     {
       "id": "jp_s2_wagashi",
@@ -164,7 +164,7 @@
       "growthTime": 110,
       "price": 700,
       "scene": 2,
-      "description": "這是一株來自 日本 的珍貴花卉，散發著迷人的氣息。"
+      "description": "精緻得像藝術品，但吃起來除了甜還是甜，配上苦澀的抹茶花剛剛好。"
     },
     {
       "id": "jp_s1_snowman",
@@ -173,7 +173,7 @@
       "growthTime": 12,
       "price": 35,
       "scene": 1,
-      "description": "這是一株來自 日本 的珍貴花卉，散發著迷人的氣息。"
+      "description": "有著兩顆煤炭眼睛和胡蘿蔔鼻子，如果在夏天種出來會立刻融化成一攤水。"
     },
     {
       "id": "jp_s1_lavender",
@@ -182,7 +182,7 @@
       "growthTime": 18,
       "price": 50,
       "scene": 1,
-      "description": "這是一株來自 日本 的珍貴花卉，散發著迷人的氣息。"
+      "description": "具有強效催眠作用，採收時很容易不小心睡著，醒來發現花已經被蟲吃光了。"
     },
     {
       "id": "jp_s1_crab",
@@ -191,7 +191,7 @@
       "growthTime": 25,
       "price": 80,
       "scene": 1,
-      "description": "這是一株來自 日本 的珍貴花卉，散發著迷人的氣息。"
+      "description": "花瓣像巨大的蟹螯，不僅看起來好吃，還會用夾子把試圖偷吃的小鳥夾走。"
     },
     {
       "id": "jp_s1_melon",
@@ -200,7 +200,7 @@
       "growthTime": 32,
       "price": 110,
       "scene": 1,
-      "description": "這是一株來自 日本 的珍貴花卉，散發著迷人的氣息。"
+      "description": "表面有著細緻的網紋，據說是花園裡最昂貴的品種，吃一口就等於吃掉一個便當。"
     },
     {
       "id": "jp_s1_fox",
@@ -209,7 +209,7 @@
       "growthTime": 45,
       "price": 200,
       "scene": 1,
-      "description": "這是一株來自 日本 的珍貴花卉，散發著迷人的氣息。"
+      "description": "毛茸茸的橘色花朵，據說如果在雪地裡餵牠吃東西，牠會回送你一塊石頭。"
     },
     {
       "id": "jp_s1_ice",
@@ -218,7 +218,7 @@
       "growthTime": 55,
       "price": 280,
       "scene": 1,
-      "description": "這是一株來自 日本 的珍貴花卉，散發著迷人的氣息。"
+      "description": "非常冰冷，碰一下手指就會黏在上面，是夏天用來當冷氣的絕佳替代品。"
     },
     {
       "id": "jp_s1_bear",
@@ -227,7 +227,7 @@
       "growthTime": 75,
       "price": 450,
       "scene": 1,
-      "description": "這是一株來自 日本 的珍貴花卉，散發著迷人的氣息。"
+      "description": "長得像一塊警告標語，告訴你附近有熊，但其實這朵花自己就是一隻偽裝的熊。"
     },
     {
       "id": "jp_s1_night",
@@ -236,7 +236,7 @@
       "growthTime": 100,
       "price": 750,
       "scene": 1,
-      "description": "這是一株來自 日本 的珍貴花卉，散發著迷人的氣息。"
+      "description": "花瓣上閃爍著百萬顆微小的燈光，美到讓人忘記自己其實還在加班。"
     },
     {
       "id": "jp_s1_ramen",
@@ -245,7 +245,7 @@
       "growthTime": 160,
       "price": 1500,
       "scene": 1,
-      "description": "這是一株來自 日本 的珍貴花卉，散發著迷人的氣息。"
+      "description": "湯頭濃郁，上面還放著奶油和玉米，吃完後絕對會口渴想喝冰水。"
     },
     {
       "id": "jp_s2_takoyaki",
@@ -254,7 +254,7 @@
       "growthTime": 15,
       "price": 50,
       "scene": 2,
-      "description": "這是一株來自 日本 的珍貴花卉，散發著迷人的氣息。"
+      "description": "圓滾滾的，裡面包著一小塊章魚腳，剛採收時非常燙嘴，請小心食用。"
     },
     {
       "id": "jp_s2_running",
@@ -263,7 +263,7 @@
       "growthTime": 22,
       "price": 75,
       "scene": 2,
-      "description": "這是一株來自 日本 的珍貴花卉，散發著迷人的氣息。"
+      "description": "雙手高舉、永遠在奔跑的姿態，是拍照打卡的最佳背景板。"
     },
     {
       "id": "jp_s2_osaka",
@@ -272,7 +272,7 @@
       "growthTime": 30,
       "price": 120,
       "scene": 2,
-      "description": "這是一株來自 日本 的珍貴花卉，散發著迷人的氣息。"
+      "description": "雄偉壯觀，周圍還有一圈護城河，想採收必須先搭乘小船過河。"
     },
     {
       "id": "jp_s2_shisa",
@@ -281,7 +281,7 @@
       "growthTime": 40,
       "price": 180,
       "scene": 2,
-      "description": "這是一株來自 日本 的珍貴花卉，散發著迷人的氣息。"
+      "description": "張著大嘴，據說能吞下所有的災厄，但常常不小心吞下旁邊無辜的雜草。"
     },
     {
       "id": "jp_s2_miyajima",
@@ -290,7 +290,7 @@
       "growthTime": 55,
       "price": 320,
       "scene": 2,
-      "description": "這是一株來自 日本 的珍貴花卉，散發著迷人的氣息。"
+      "description": "長在水中央，退潮時可以走近觀賞，漲潮時只能看著它發呆。"
     },
     {
       "id": "jp_s2_kushikatsu",
@@ -299,7 +299,7 @@
       "growthTime": 70,
       "price": 500,
       "scene": 2,
-      "description": "這是一株來自 日本 的珍貴花卉，散發著迷人的氣息。"
+      "description": "不管什麼東西裹上麵包粉炸過都會變成這朵花，記住：沾醬只能沾一次！"
     },
     {
       "id": "jp_s2_whirlpool",
@@ -308,7 +308,7 @@
       "growthTime": 100,
       "price": 900,
       "scene": 2,
-      "description": "這是一株來自 日本 的珍貴花卉，散發著迷人的氣息。"
+      "description": "花心呈現巨大的漩渦狀，盯著看太久會有被吸進去的錯覺，容易頭暈。"
     },
     {
       "id": "jp_s2_castle",
@@ -317,7 +317,7 @@
       "growthTime": 140,
       "price": 1400,
       "scene": 2,
-      "description": "這是一株來自 日本 的珍貴花卉，散發著迷人的氣息。"
+      "description": "潔白無瑕，被稱為「白鷺城」，但因為太白了，常常被鳥類當作廁所標靶。"
     },
     {
       "id": "jp_s2_onsen",
@@ -326,7 +326,7 @@
       "growthTime": 200,
       "price": 3000,
       "scene": 2,
-      "description": "這是一株來自 日本 的珍貴花卉，散發著迷人的氣息。"
+      "description": "一隻頭上頂著毛巾的猴子泡在熱水裡，表情看起來比你還像在放假。"
     },
     {
       "id": "jp_s3_kappa",
@@ -335,7 +335,7 @@
       "growthTime": 12,
       "price": 40,
       "scene": 3,
-      "description": "這是一株來自 日本 的珍貴花卉，散發著迷人的氣息。"
+      "description": "頭頂有個盤子，裡面必須隨時裝水，不然就會枯萎。最喜歡的肥料是小黃瓜。"
     },
     {
       "id": "jp_s3_kasa",
@@ -344,7 +344,7 @@
       "growthTime": 15,
       "price": 50,
       "scene": 3,
-      "description": "這是一株來自 日本 的珍貴花卉，散發著迷人的氣息。"
+      "description": "只有一隻眼睛和一條腿，下雨天會自己撐開，是忘記帶傘時的備用方案。"
     },
     {
       "id": "jp_s3_chochin",
@@ -353,7 +353,7 @@
       "growthTime": 18,
       "price": 60,
       "scene": 3,
-      "description": "這是一株來自 日本 的珍貴花卉，散發著迷人的氣息。"
+      "description": "破掉的舊燈籠長出長長的舌頭，半夜會發出微光，專門用來嚇唬早起尿尿的人。"
     },
     {
       "id": "jp_s3_hitotsume",
@@ -362,7 +362,7 @@
       "growthTime": 20,
       "price": 65,
       "scene": 3,
-      "description": "這是一株來自 日本 的珍貴花卉，散發著迷人的氣息。"
+      "description": "長得像個小和尚，但臉上只有一隻大眼睛，據說最討厭玩捉迷藏，因為根本沒法躲。"
     },
     {
       "id": "jp_s3_dorotabo",
@@ -371,7 +371,7 @@
       "growthTime": 22,
       "price": 70,
       "scene": 3,
-      "description": "這是一株來自 日本 的珍貴花卉，散發著迷人的氣息。"
+      "description": "從泥巴裡冒出來，只有上半身，會一直喊著「把田還給我」，是個不折不扣的地縛靈地主。"
     },
     {
       "id": "jp_s3_lanternghost",
@@ -380,7 +380,7 @@
       "growthTime": 25,
       "price": 80,
       "scene": 3,
-      "description": "這是一株來自 日本 的珍貴花卉，散發著迷人的氣息。"
+      "description": "提著燈籠在暗處徘徊，其實只是個高度近視，在找自己掉在路上的眼鏡。"
     },
     {
       "id": "jp_s3_tengu",
@@ -389,7 +389,7 @@
       "growthTime": 30,
       "price": 100,
       "scene": 3,
-      "description": "這是一株來自 日本 的珍貴花卉，散發著迷人的氣息。"
+      "description": "長著長長的紅鼻子，拿著羽毛扇，據說被牠扇一下就會被吹到北海道去。"
     },
     {
       "id": "jp_s3_nekomata",
@@ -398,7 +398,7 @@
       "growthTime": 35,
       "price": 120,
       "scene": 3,
-      "description": "這是一株來自 日本 的珍貴花卉，散發著迷人的氣息。"
+      "description": "活太久的老貓變成的妖怪，有兩條尾巴，專長是把主人桌上的水杯推到地上。"
     },
     {
       "id": "jp_s3_rokurokubi",
@@ -407,7 +407,7 @@
       "growthTime": 40,
       "price": 140,
       "scene": 3,
-      "description": "這是一株來自 日本 的珍貴花卉，散發著迷人的氣息。"
+      "description": "白天看起來像個普通美女，半夜脖子會伸得無限長去偷吃冰箱裡的布丁。"
     },
     {
       "id": "jp_s3_noppera",
@@ -416,7 +416,7 @@
       "growthTime": 45,
       "price": 160,
       "scene": 3,
-      "description": "這是一株來自 日本 的珍貴花卉，散發著迷人的氣息。"
+      "description": "臉上一片空白，什麼都沒有。好處是出門不用化妝，缺點是吃麵會找不到嘴巴。"
     },
     {
       "id": "jp_s3_hone",
@@ -425,7 +425,7 @@
       "growthTime": 50,
       "price": 180,
       "scene": 3,
-      "description": "這是一株來自 日本 的珍貴花卉，散發著迷人的氣息。"
+      "description": "提著牡丹燈籠的美女，走近一看才發現是具白骨。但因為身材太苗條，還是很受歡迎。"
     },
     {
       "id": "jp_s3_yukionna",
@@ -434,7 +434,7 @@
       "growthTime": 60,
       "price": 250,
       "scene": 3,
-      "description": "這是一株來自 日本 的珍貴花卉，散發著迷人的氣息。"
+      "description": "在風雪中出現的美麗女子，會把旅人凍成冰塊。夏天時只能躲在冷凍庫裡避暑。"
     },
     {
       "id": "jp_s3_hannya",
@@ -443,7 +443,7 @@
       "growthTime": 70,
       "price": 300,
       "scene": 3,
-      "description": "這是一株來自 日本 的珍貴花卉，散發著迷人的氣息。"
+      "description": "充滿嫉妒與怨恨的女鬼面具，頭上有兩個角，據說最討厭看到別人在放閃。"
     },
     {
       "id": "jp_s3_kuchisake",
@@ -452,7 +452,7 @@
       "growthTime": 80,
       "price": 350,
       "scene": 3,
-      "description": "這是一株來自 日本 的珍貴花卉，散發著迷人的氣息。"
+      "description": "戴著口罩問你「我漂亮嗎？」答不漂亮會被剪刀剪，答漂亮她會脫下口罩說「這樣呢？」...這根本是個無解的陷阱題。"
     },
     {
       "id": "jp_s3_sadako",
@@ -461,7 +461,7 @@
       "growthTime": 90,
       "price": 400,
       "scene": 3,
-      "description": "這是一株來自 日本 的珍貴花卉，散發著迷人的氣息。"
+      "description": "長髮披肩，會從電視機爬出來。現在因為大家都改看手機，她卡在螢幕裡出不來，覺得很委屈。"
     },
     {
       "id": "jp_s3_kyuubi",
@@ -470,7 +470,7 @@
       "growthTime": 120,
       "price": 600,
       "scene": 3,
-      "description": "這是一株來自 日本 的珍貴花卉，散發著迷人的氣息。"
+      "description": "擁有九條毛茸茸的大尾巴，法力高強。最大的困擾是冬天會靜電，而且每天要花很多時間梳毛。"
     },
     {
       "id": "jp_s3_shutendoji",
@@ -479,7 +479,7 @@
       "growthTime": 150,
       "price": 800,
       "scene": 3,
-      "description": "這是一株來自 日本 的珍貴花卉，散發著迷人的氣息。"
+      "description": "日本最著名的鬼王之一，嗜酒如命。這朵花永遠散發著濃濃的清酒味，採收後嚴禁酒駕。"
     },
     {
       "id": "jp_s3_orochi",
@@ -488,7 +488,7 @@
       "growthTime": 200,
       "price": 1500,
       "scene": 3,
-      "description": "這是一株來自 日本 的珍貴花卉，散發著迷人的氣息。"
+      "description": "擁有八個頭和八條尾巴的巨大怪獸。要一次餵飽八個嘴巴讓它常常面臨破產危機。"
     },
     {
       "id": "jp_s4_candyapple",
@@ -497,7 +497,7 @@
       "growthTime": 10,
       "price": 35,
       "scene": 4,
-      "description": "這是一株來自 日本 的珍貴花卉，散發著迷人的氣息。"
+      "description": "整顆蘋果裹上紅色糖衣，雖然好看，但一口咬下去通常會先崩斷一顆牙齒。"
     },
     {
       "id": "jp_s4_yoyo",
@@ -506,7 +506,7 @@
       "growthTime": 12,
       "price": 40,
       "scene": 4,
-      "description": "這是一株來自 日本 的珍貴花卉，散發著迷人的氣息。"
+      "description": "裝著水的彩色氣球，用橡皮筋吊著。帶回家後過兩天就會消風變成一塊難看的橡膠。"
     },
     {
       "id": "jp_s4_taiyaki",
@@ -515,7 +515,7 @@
       "growthTime": 15,
       "price": 50,
       "scene": 4,
-      "description": "這是一株來自 日本 的珍貴花卉，散發著迷人的氣息。"
+      "description": "雖然叫鯛魚燒，但裡面絕對沒有鯛魚。這是一個長久以來欺騙小孩的巨大謊言。"
     },
     {
       "id": "jp_s4_yakisoba",
@@ -524,7 +524,7 @@
       "growthTime": 18,
       "price": 60,
       "scene": 4,
-      "description": "這是一株來自 日本 的珍貴花卉，散發著迷人的氣息。"
+      "description": "伴隨著鐵板滋滋聲和濃郁醬汁味的邪惡食物，如果在半夜聞到香味，那肯定是萬惡的宵夜誘惑。"
     },
     {
       "id": "jp_s4_cottoncandy",
@@ -533,7 +533,7 @@
       "growthTime": 20,
       "price": 70,
       "scene": 4,
-      "description": "這是一株來自 日本 的珍貴花卉，散發著迷人的氣息。"
+      "description": "印著動漫角色的塑膠袋才是本體，裡面的棉花糖只是順便附送的空氣甜點。"
     },
     {
       "id": "jp_s4_uchiwa",
@@ -542,7 +542,7 @@
       "growthTime": 25,
       "price": 85,
       "scene": 4,
-      "description": "這是一株來自 日本 的珍貴花卉，散發著迷人的氣息。"
+      "description": "上面寫著「祭」字的紙扇。雖然搧起來風不大，但拿在手上感覺自己就像個祭典達人。"
     },
     {
       "id": "jp_s4_yukata",
@@ -551,7 +551,7 @@
       "growthTime": 30,
       "price": 110,
       "scene": 4,
-      "description": "這是一株來自 日本 的珍貴花卉，散發著迷人的氣息。"
+      "description": "夏天祭典的標準配備，穿起來雖然很熱又不好走路，但為了拍照打卡，大家還是會努力撐住。"
     },
     {
       "id": "jp_s4_geta",
@@ -560,7 +560,7 @@
       "growthTime": 35,
       "price": 130,
       "scene": 4,
-      "description": "這是一株來自 日本 的珍貴花卉，散發著迷人的氣息。"
+      "description": "走起路來會發出喀喀喀的聲音，雖然很吵但很有氣氛。穿久了腳趾縫絕對會破皮。"
     },
     {
       "id": "jp_s4_kakigori",
@@ -569,7 +569,7 @@
       "growthTime": 40,
       "price": 150,
       "scene": 4,
-      "description": "這是一株來自 日本 的珍貴花卉，散發著迷人的氣息。"
+      "description": "其實所有顏色的糖漿味道都一樣，只是視覺上的騙局，但大家還是會因為顏色而猶豫半天。"
     },
     {
       "id": "jp_s4_poi",
@@ -578,7 +578,7 @@
       "growthTime": 45,
       "price": 170,
       "scene": 4,
-      "description": "這是一株來自 日本 的珍貴花卉，散發著迷人的氣息。"
+      "description": "世界上最脆弱的物質之一，只要碰到水就會破掉。老闆宣稱這是技術問題，但我們都知道那是陰謀。"
     },
     {
       "id": "jp_s4_shooting",
@@ -587,7 +587,7 @@
       "growthTime": 50,
       "price": 190,
       "scene": 4,
-      "description": "這是一株來自 日本 的珍貴花卉，散發著迷人的氣息。"
+      "description": "架子上的獎品似乎黏了三秒膠，就算你百發百中，獎品也只會晃一下嘲笑你。"
     },
     {
       "id": "jp_s4_furin",
@@ -596,7 +596,7 @@
       "growthTime": 60,
       "price": 260,
       "scene": 4,
-      "description": "這是一株來自 日本 的珍貴花卉，散發著迷人的氣息。"
+      "description": "微風吹過會發出清脆的叮噹聲，據說能帶來涼意。但如果是颱風天，它會吵到你崩潰。"
     },
     {
       "id": "jp_s4_taiko",
@@ -605,7 +605,7 @@
       "growthTime": 70,
       "price": 310,
       "scene": 4,
-      "description": "這是一株來自 日本 的珍貴花卉，散發著迷人的氣息。"
+      "description": "咚！咚！咚！發出震耳欲聾的鼓聲，通常是由肌肉發達的大叔在敲，非常有魄力。"
     },
     {
       "id": "jp_s4_bonodori",
@@ -614,7 +614,7 @@
       "growthTime": 80,
       "price": 360,
       "scene": 4,
-      "description": "這是一株來自 日本 的珍貴花卉，散發著迷人的氣息。"
+      "description": "大家圍成一圈跳的神祕舞蹈，就算你四肢不協調，只要跟著前面的人亂揮手也不會被發現。"
     },
     {
       "id": "jp_s4_ema",
@@ -623,7 +623,7 @@
       "growthTime": 90,
       "price": 420,
       "scene": 4,
-      "description": "這是一株來自 日本 的珍貴花卉，散發著迷人的氣息。"
+      "description": "上面寫滿了大家的願望，從「世界和平」到「希望抽到 SSR」，神明每天看這些應該覺得很頭痛。"
     },
     {
       "id": "jp_s4_mikoshi",
@@ -632,7 +632,7 @@
       "growthTime": 120,
       "price": 650,
       "scene": 4,
-      "description": "這是一株來自 日本 的珍貴花卉，散發著迷人的氣息。"
+      "description": "裝飾華麗的神明轎子，由一群壯漢抬著在街上衝撞。如果擋在前面，真的會被抬去見神明。"
     },
     {
       "id": "jp_s4_toronagashi",
@@ -641,7 +641,7 @@
       "growthTime": 150,
       "price": 850,
       "scene": 4,
-      "description": "這是一株來自 日本 的珍貴花卉，散發著迷人的氣息。"
+      "description": "承載著思念，漂流在河面上的小燈。很浪漫，但在下游負責打撈清潔的人應該不這麼覺得。"
     },
     {
       "id": "jp_s4_hanabi",
@@ -650,17 +650,16 @@
       "growthTime": 200,
       "price": 1600,
       "scene": 4,
-      "description": "這是一株來自 日本 的珍貴花卉，散發著迷人的氣息。"
+      "description": "在夜空中綻放的巨大光芒，是夏日祭典的最高潮。可惜美麗總是短暫的，就像你的薪水一樣。"
     },
     {
       "id": "jp_legendary",
       "name": "傳說·櫻花神",
       "rarity": "Legendary",
-      "weight": 1,
       "growthTime": 1800,
       "price": 12000,
       "scene": 0,
-      "description": "這是一株來自 日本 的珍貴花卉，散發著迷人的氣息。"
+      "description": "傳說中的櫻花精靈，花瓣飄落時自帶粉紅色濾鏡和 BGM。缺點是每年只開花幾天，剩下的時間都在睡覺。"
     }
   ]
 }
