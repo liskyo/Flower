@@ -373,18 +373,27 @@ onUnmounted(() => {
 }
 
 .scene-bg-full {
-  position: absolute; top: 0; left: 0;
-  /* 👇 終極解法：把畫布做成螢幕的兩倍寬 (200%) */
-  width: 200%;   
+  position: absolute; 
+  inset: 0;
+  width: 100%;   
   height: 100%;
   
-  /* 讓一張圖的寬度剛好佔滿一個螢幕 (50%) */
-  background-size: 50% 100%; 
-  background-repeat: repeat-x; 
+  /* 💡 讓高度 100% 貼齊螢幕，寬度依照原圖比例自動延伸，絕不變形 */
+  background-size: auto 100%; 
   
-  /* 改用 transform 進行動畫，手機瀏覽器 100% 完美支援且不破圖 */
-  animation: scrollBg 80s linear infinite;
+  /* 💡 自動左右複製貼上，填滿無限延伸的畫面 */
+  background-repeat: repeat-x; 
+  background-position: 0 0;
+  
+  /* 💡 改用背景座標位移來做動畫 */
+  animation: scrollGardenBg 80s linear infinite;
   transition: background-image 0.5s ease;
+}
+
+/* 補上專屬於花園背景的捲動動畫 */
+@keyframes scrollGardenBg {
+  0% { background-position: 0 0; }
+  100% { background-position: -4000px 0; } 
 }
 
 /* 預設水滴濾鏡效果 (暴風雨：高模糊、快水滴) */
@@ -420,12 +429,6 @@ onUnmounted(() => {
   background-image: none; /* 隱藏水滴 */
   backdrop-filter: blur(1.2px) contrast(1.0); /* 單純玻璃起霧感 */
   background-color: rgba(255, 255, 255, 0.05); /* 加上極淡的白霧 */
-}
-
-@keyframes scrollBg {
-  0% { transform: translateX(0); }
-  /* 向左移動一個螢幕的寬度，完美達成無縫接軌循環 */
-  100% { transform: translateX(-50%); } 
 }
 
 

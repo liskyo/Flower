@@ -183,6 +183,17 @@ const getFlowersForCurrentScene = () => {
   });
 };
 
+const getWeight = (rarity) => {
+  if (rarity === 'Legendary') return 3;
+  const r = parseInt(rarity) || 1;
+  if (r === 1) return 100;
+  if (r === 2) return 50;
+  if (r === 3) return 30;
+  if (r === 4) return 20;
+  if (r === 5) return 10;
+  return 100;
+};
+
 const seedVariety = () => {
   const garden = getCurrentGarden().slice(0, 16);
   const pool = getFlowersForCurrentScene();
@@ -270,16 +281,7 @@ export const hasSilverMedalForAllCountryFlowers = (countryId) => {
   return countryFlowers.every(f => (state.inventory[f.id] || 0) >= 20);
 };
 
-const getWeight = (rarity) => {
-  if (rarity === 'Legendary') return 3;
-  const r = parseInt(rarity) || 1;
-  if (r === 1) return 100;
-  if (r === 2) return 50;
-  if (r === 3) return 30;
-  if (r === 4) return 20;
-  if (r === 5) return 10;
-  return 100;
-};
+
 
 export const autoSpawn = (targetCountry = null, targetScene = null) => {
   const country = targetCountry || state.currentCountry;
