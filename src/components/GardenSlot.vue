@@ -1,7 +1,8 @@
 <script setup>
-import { computed, ref, onMounted, onUnmounted, watch } from 'vue';
+import { computed, ref, onUnmounted, watch } from 'vue';
 import { FLOWERS } from '../data/flowers';
 import { state, harvestFlower, calculateEffectiveElapsedTime, getWitherMultiplier, globalTicker } from '../store/gameState';
+
 const props = defineProps(['slotData']);
 const emit = defineEmits(['swipe', 'harvest-animate']);
 
@@ -14,11 +15,10 @@ const holdTimer = ref(null);
 
 const flower = computed(() => FLOWERS.find(f => f.id === props.slotData.flowerId));
 
-// 👇 將進度改為 computed，依賴全域 ticker (不管切到哪個畫面都會更新)
+// 👇 1. 依賴全域時間的進度計算
 const progress = computed(() => {
   if (!props.slotData.startTime || !flower.value || props.slotData.status === 'empty') return 0;
   
-  // 讀取 globalTicker.now 來強制 Vue 定期重新計算
   const currentNow = globalTicker.now; 
   
   if (props.slotData.status === 'growing') {
@@ -28,7 +28,80 @@ const progress = computed(() => {
   return 100;
 });
 
-// 👇 監聽進度變化，滿 100% 就轉為 ready 狀態
+// 👇 2. 恢復生長縮放比例 (缺少這個花會縮小到 0 看不見)
+const growthScale = computed(() => {
+  if (props.slotData.status === 'ready' || props.slotData.status === 'withered') return 1;
+  if (props.slotData.status === 'growing') return 0.3 + (progress.value / 100) * 0.7;
+  return 0;
+});
+
+// 👇 3. 恢復光暈與圖片去背邏輯 (缺少這個圖片無法顯示)
+const getGlowClass = (rarity) => {
+  if (!rarity) return '';
+  if (rarity === 'Legendary') return 'glow-rainbow';
+  if (parseInt(rarity) === 5) return 'glow-gold';
+  if (parseInt(rarity) === 4) return 'glow-silver';
+  return '';
+};
+
+const globalImageCache = window.__FLOWER_IMG_CACHE__ || (window.__FLOWER_IMG_CACHE__ = new Map());
+
+const processImage = () => {
+  if (!imgRef.value || processedSrc.value) return;
+  if (!flower.value) return;
+  const cacheKey = `flower_${flower.value.id}`;
+  if (globalImageCache.has(cacheKey)) {
+    processedSrc.value = globalImageCache.get(cacheKey);
+    return;
+  }
+
+  const img = imgRef.value;
+  const canvas = canvasRef.value;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  canvas.width = img.naturalWidth;
+  canvas.height = img.naturalHeight;
+  ctx.drawImage(img, 0, 0);
+  try {
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const data = imageData.data;
+    for (let i = 0; i < data.length; i += 4) {
+      const r = data[i], g = data[i+1], b = data[i+2];
+      if ((r > 230 && g > 230 && b > 230) || (r < 30 && g < 30 && b < 30)) data[i+3] = 0;
+    }
+    ctx.putImageData(imageData, 0, 0);
+    const dataUrl = canvas.toDataURL();
+    processedSrc.value = dataUrl;
+    globalImageCache.set(cacheKey, dataUrl);
+  } catch (e) { processedSrc.value = img.src; }
+};
+
+watch(() => props.slotData.flowerId, (newId) => {
+  if (newId) {
+    const cacheKey = `flower_${newId}`;
+    if (globalImageCache.has(cacheKey)) {
+      processedSrc.value = globalImageCache.get(cacheKey);
+    } else {
+      processedSrc.value = null; 
+    }
+  } else {
+    processedSrc.value = null;
+  }
+});
+
+let notifiedSlots = new Set();
+const sendGrowthNotification = () => {
+  if (notifiedSlots.has(props.slotData.id)) return;
+  notifiedSlots.add(props.slotData.id);
+  if ('Notification' in window && Notification.permission === 'granted') {
+    new Notification('🌸 花朵長成囉！', {
+      body: `${flower.value?.name || '你的花朵'} 已準備好採收！`,
+      icon: '/favicon.ico'
+    });
+  }
+};
+
+// 👇 4. 監聽進度狀態
 watch(progress, (newProgress) => {
   if (props.slotData.status === 'growing' && newProgress >= 100) {
     props.slotData.status = 'ready';
@@ -37,7 +110,7 @@ watch(progress, (newProgress) => {
   }
 });
 
-// 👇 獨立監聽全域時間，檢查花朵是否枯萎 (背景也會執行)
+// 👇 5. 監聽全域時間，檢查花朵是否枯萎
 watch(() => globalTicker.now, () => {
   if (props.slotData.status === 'ready') {
     const rTime = props.slotData.readyTime || (Date.now() - 1000); 
@@ -53,10 +126,10 @@ watch(() => globalTicker.now, () => {
   }
 });
 
-// 保留清理長按判斷的計時器，避免切換頁面時報錯
 onUnmounted(() => { 
   if (holdTimer.value) clearTimeout(holdTimer.value); 
 });
+
 // --- 收割邏輯 ---
 
 const startHold = () => {
@@ -106,13 +179,11 @@ const pullUp = () => {
   }, 400);
 };
 
-// 處理滑鼠進入 (停留開始)
 const handleMouseEnter = () => {
   emit('swipe', props.slotData.id);
   startHold();
 };
 
-// 供外部直接呼叫 (touchmove 滑動收成用)
 const triggerHarvest = () => {
   if (props.slotData.status === 'ready' || props.slotData.status === 'withered') {
     pullUp();
