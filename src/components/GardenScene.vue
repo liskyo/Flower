@@ -386,7 +386,7 @@ onUnmounted(() => {
   background-position: 0 0;
   
   /* 💡 改用背景座標位移來做動畫 */
-  animation: scrollGardenBg 80s linear infinite;
+  animation: scrollGardenBg 150s linear infinite;
   transition: background-image 0.5s ease;
 }
 

@@ -86,7 +86,7 @@ const handleModeSelect = (mode) => {
   background-position: 0 0;
   
   /* 指定正確的動畫名稱 scrollBgPanorama */
-  animation: scrollBgPanorama 80s linear infinite; 
+  animation: scrollBgPanorama 150s linear infinite; 
   z-index: 0;
   opacity: 0.7; 
 }
