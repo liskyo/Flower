@@ -61,6 +61,26 @@ const currentSceneNames = computed(() => {
   return sceneNames[state.currentCountry.toLowerCase()] || ["場景 1", "場景 2", "場景 3", "場景 4"];
 });
 
+// 計算指定場景的前置任務 (前一個場景) 的銀牌收集進度
+const getSceneUnlockProgress = (country, targetScene) => {
+  if (targetScene === 1) return 100; // 場景 1 預設解鎖
+  
+  // 找出前一個場景的所有花朵
+  const prevSceneFlowers = FLOWERS.filter(f => 
+    String(f.country).toLowerCase() === String(country).toLowerCase() && 
+    Number(f.scene) === targetScene - 1 &&
+    f.rarity !== 'Legendary'
+  );
+  
+  if (prevSceneFlowers.length === 0) return 100; // 防呆
+  
+  // 計算有多少朵花已經達到銀牌 (數量 >= 20)
+  const silverCount = prevSceneFlowers.filter(f => (state.inventory[f.id] || 0) >= 20).length;
+  
+  // 回傳百分比 (四捨五入)
+  return Math.round((silverCount / prevSceneFlowers.length) * 100);
+};
+
 let weatherTimer = null;
 let stormTimer = null;
 
@@ -290,8 +310,9 @@ onUnmounted(() => {
           >
             {{ name }}
           </button>
+          <!-- 👇 修改這裡，加入進度顯示 -->
           <button v-else class="landmark-btn locked-scene" disabled>
-            🔒 {{ name }}
+            🔒 {{ name }} <span class="unlock-progress">({{ getSceneUnlockProgress(state.currentCountry, index + 1) }}%)</span>
           </button>
         </template>
       </div>
@@ -690,5 +711,11 @@ onUnmounted(() => {
   .basket-img-real {
     width: 65px !important;  /* 強制覆寫原本的 80px，縮小花籃圖片 */
     height: 65px !important; 
+  }
+
+  .unlock-progress {
+  color: #ffeaa7;
+  font-size: 0.7rem;
+  margin-left: 2px;
   }
 </style>

@@ -125,8 +125,11 @@ const processCatalogImage = (flower, e) => {
               :class="{ locked: !isCollected(flower.id) }"
               @click="openDetail(flower)"
             >
-              <div class="m-slot-header" :class="getGlowClass(flower.rarity)">{{ flower.name }}</div>
-              
+              <div class="m-slot-header" :class="getGlowClass(flower.rarity)">
+                <!-- 👇 新增場景標示 (傳說花朵沒有場景所以隱藏) -->
+                <span v-if="flower.rarity !== 'Legendary'" class="scene-badge">S{{ flower.scene }}</span>
+                {{ flower.name }}
+              </div>
               <div class="m-slot-body">
                 <div class="m-slot-id-badge">NMI-{{ flower.id.split('_').pop() }}</div>
                 
@@ -305,7 +308,24 @@ const processCatalogImage = (flower, e) => {
 
 .swipe-text { font-weight: 900; color: #747d8c; font-size: 0.75rem; }
 
-.notebook-close-btn { position: absolute; bottom: -10px; right: -25px; width: 65px; height: 65px; background: #e74c3c; border: 4px solid #2d3436; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; z-index: 1000; box-shadow: 0 5px 0 #c0392b; transition: all 0.2s; }
+.notebook-close-btn { 
+  position: absolute; 
+  top: -20px;       /* 👈 從 bottom 改為 top，移到筆記本右上角 */
+  right: -20px;     /* 👈 稍微往內收一點，視覺上更平衡 */
+  width: 65px; 
+  height: 65px; 
+  background: #e74c3c; 
+  border: 4px solid #2d3436; 
+  border-radius: 50%; 
+  display: flex; 
+  flex-direction: column; 
+  align-items: center; 
+  justify-content: center; 
+  cursor: pointer; 
+  z-index: 1000; 
+  box-shadow: 0 5px 0 #c0392b; 
+  transition: all 0.2s; 
+}
 .notebook-close-btn:active { transform: translateY(3px); box-shadow: 0 2px 0 #c0392b; }
 
 .x-icon { font-size: 1.3rem; color: white; font-weight: 900; }
@@ -399,4 +419,16 @@ const processCatalogImage = (flower, e) => {
   from { filter: drop-shadow(0 0 4px rgba(0,0,0,0.9)) drop-shadow(0 0 12px #ff00de) brightness(1.1) hue-rotate(0deg); }
   to { filter: drop-shadow(0 0 4px rgba(0,0,0,0.9)) drop-shadow(0 0 45px #00d4ff) brightness(1.4) hue-rotate(360deg); }
 }
+/* 圖鑑場景小標籤 */
+.scene-badge {
+  background: rgba(0,0,0,0.5);
+  color: #ffeaa7;
+  padding: 1px 4px;
+  border-radius: 4px;
+  font-size: 0.6rem;
+  margin-right: 4px;
+  border: 1px solid rgba(255,255,255,0.3);
+  vertical-align: middle;
+}
+
 </style>
