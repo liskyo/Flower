@@ -28,8 +28,14 @@ const handleModeSelect = (mode) => {
       return;
     }
   }
-  // 呼叫我們在 gameState 中寫好的新版 resetGame
-  resetGame(mode);
+  
+  // 呼叫 resetGame，並接收它回傳的成功/失敗狀態
+  const isResetSuccess = resetGame(mode);
+  
+  // 👇 只要重置成功 (沒有按取消)，就觸發 'start' 事件切換到花園！
+  if (isResetSuccess) {
+    emit('start');
+  }
 };
 </script>
 
