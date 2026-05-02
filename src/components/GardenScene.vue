@@ -8,41 +8,6 @@ import GardenSlot from './GardenSlot.vue';
 // 取得當前經驗值進度資訊
 const currentLevelInfo = computed(() => getLevelInfo(state.exp || 0));
 
-// 啊音效 (base64 短声波)
-const popAudio = new Audio('data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAA' +
-  'EAAQAQAAAQABAAACABAAZGF0YU9vT18AAAAAAP//AAD+/wIA/v8CAP3/BAD9/wUA/f8F' +
-  'AP3/BAD+/wIA//8AAP//AQAAAP//AAAAAAAAAP8/AP8/AP8/AP8/AP8/AP8/AP8/AP8/');
-
-// 👇 新增一個標記，記錄音效是否已經解鎖
-let isAudioUnlocked = false;
-
-// 👇 溫和版：解鎖音效的函式
-const initAudio = () => {
-  if (isAudioUnlocked) return;
-  try {
-    popAudio.volume = 0; // 先設為 0 (靜音)
-    const playPromise = popAudio.play();
-    
-    if (playPromise !== undefined) {
-      playPromise.then(() => {
-        // 成功播放！不要按 pause()，讓這 0.幾秒的短音效默默在背景播完
-        isAudioUnlocked = true; // 標記為已解鎖
-        popAudio.volume = 0.5;  // 恢復正常音量，準備給下次拔花使用
-      }).catch(() => {});
-    }
-  } catch (e) {}
-};
-
-// 實際拔花時呼叫的播放函式
-const playPop = () => {
-  try {
-    if (isAudioUnlocked) { 
-      popAudio.currentTime = 0; // 將音軌切回最開頭
-      popAudio.volume = 0.5;    // 確保音量是正常的
-      popAudio.play().catch(() => {});
-    }
-  } catch(e) {}
-};
 const emit = defineEmits(['change-tab']);
 const slotRefs = ref([]);
 const isSwiping = ref(false);
