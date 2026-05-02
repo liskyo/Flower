@@ -467,9 +467,12 @@ export const resetGame = (mode = 'player') => {
       supabase.from('profiles').upsert({ id: currentUser.id, game_state: state }).then();
     }
 
-    // 強制重載頁面以確保所有 UI 與狀態套用新模式
-    window.location.reload();
+    // ❌ 刪除這行：window.location.reload();
+    // 👇 新增這行：回傳 true 代表重置成功
+    return true;
   }
+  // 👇 新增這行：如果玩家在 confirm 彈窗按了取消，回傳 false
+  return false;
 };
 
 
