@@ -122,9 +122,9 @@ const showBuffTooltip = (item) => { buffTooltip.value = buffTooltip.value?.name 
 const tickerTime = ref(Date.now());
 
 const startSwiping = () => { 
-  initAudio(); // 👈 只要手指一碰到螢幕，就立刻觸發解鎖
   isSwiping.value = true; 
-};const stopSwiping = () => { isSwiping.value = false; };
+};
+const stopSwiping = () => { isSwiping.value = false; };
 
 const handleSwipe = (slotId) => {
   if (!isSwiping.value) return;
@@ -318,7 +318,6 @@ onUnmounted(() => {
             :slot-data="slot" 
             @swipe="handleSwipe"
             @harvest-animate="handleHarvestAnimate"
-            @play-sound="playPop"
           />
         </div>
       </div>
