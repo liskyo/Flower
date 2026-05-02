@@ -50,22 +50,22 @@
       "description": "只要投入硬幣，就會吐出熱騰騰的玉米濃湯罐頭，是冬天花園裡的救星。"
     },
     {
-      "id": "jp_s1_onigiri",
-      "name": "飯糰花",
+      "id": "jp_s1_Chikawa",
+      "name": "竹輪花",
       "rarity": 3,
       "growthTime": 25,
       "price": 90,
       "scene": 1,
-      "description": "外面包著酥脆的海苔，裡面通常是梅子口味，但偶爾會抽到芥末地雷。"
+      "description": "長得像竹子的甜不辣，通常是辣味較好吃，但偶爾會抽到芥末地雷。"
     },
     {
-      "id": "jp_s1_train",
-      "name": "電車擠擠花",
+      "id": "jp_s1_Ukiyo-e",
+      "name": "浮世會衝浪花",
       "rarity": 4,
       "growthTime": 35,
       "price": 150,
       "scene": 1,
-      "description": "這朵花的每一片花瓣都緊緊貼在一起，似乎連呼吸都很困難。"
+      "description": "從牆上畫作跳出來的木雕會衝浪。"
     },
     {
       "id": "jp_s1_maid",
