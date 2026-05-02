@@ -365,8 +365,6 @@ export const catchUpSpawning = () => {
 
   state.lastActiveTime = now;
 };
-state.lastActiveTime = now;
-};
 
 export const globalTicker = reactive({ now: Date.now() });
 
