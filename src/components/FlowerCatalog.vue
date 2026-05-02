@@ -55,8 +55,12 @@ const prevPage = () => { if (currentPage.value > 0) currentPage.value--; };
 
 const getGlowClass = (rarity) => {
   if (rarity === 'Legendary') return 'glow-rainbow';
-  if (parseInt(rarity) === 5) return 'glow-gold';
-  if (parseInt(rarity) === 4) return 'glow-silver';
+  
+  const r = parseInt(rarity);
+  if (r === 5) return 'glow-gold';
+  if (r === 4) return 'glow-silver';
+  if (r === 3) return 'glow-blue';   // 👇 新增 3星
+  if (r === 2) return 'glow-green';  // 👇 新增 2星
   return '';
 };
 
@@ -360,20 +364,39 @@ const processCatalogImage = (flower, e) => {
 }
 .m-stat-body.rarity span.active { color: #f1c40f; text-shadow: 0 0 5px rgba(241,196,15,0.5); font-size: 1.2rem; }
 
-.glow-silver { animation: shine-silver 2s infinite alternate; }
-.glow-gold { animation: shine-gold 2s infinite alternate; }
-.glow-rainbow { animation: glow-pulse 2s infinite alternate; }
+/* --- 圖鑑花朵圖片基礎陰影強化 --- */
+.m-img, .m-detail-img {
+  filter: drop-shadow(0 2px 3px rgba(0,0,0,0.6));
+}
 
-@keyframes shine-silver {
-  from { filter: drop-shadow(0 0 5px rgba(192, 192, 192, 0.5)); }
-  to { filter: drop-shadow(0 0 15px rgba(192, 192, 192, 1)); }
+/* --- 全新稀有度光芒 (Glow) 設計 (與花園同步) --- */
+.glow-green { animation: shine-green 2.5s infinite alternate; }
+@keyframes shine-green {
+  from { filter: drop-shadow(0 0 4px rgba(0,0,0,0.7)) drop-shadow(0 0 6px rgba(122, 255, 122, 0.6)); }
+  to { filter: drop-shadow(0 0 4px rgba(0,0,0,0.7)) drop-shadow(0 0 16px rgba(122, 255, 122, 1)); }
 }
-@keyframes shine-gold {
-  from { filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.5)); }
-  to { filter: drop-shadow(0 0 25px rgba(255, 215, 0, 1)); }
+
+.glow-blue { animation: shine-blue 2.2s infinite alternate; }
+@keyframes shine-blue {
+  from { filter: drop-shadow(0 0 4px rgba(0,0,0,0.7)) drop-shadow(0 0 6px rgba(100, 210, 255, 0.6)); }
+  to { filter: drop-shadow(0 0 4px rgba(0,0,0,0.7)) drop-shadow(0 0 18px rgba(100, 210, 255, 1)); }
 }
-@keyframes glow-pulse {
-  from { filter: drop-shadow(0 0 10px #ff00de) hue-rotate(0deg); }
-  to { filter: drop-shadow(0 0 30px #00d4ff) hue-rotate(360deg); }
+
+.glow-silver { animation: shine-purple 2s infinite alternate; }
+@keyframes shine-purple {
+  from { filter: drop-shadow(0 0 4px rgba(0,0,0,0.7)) drop-shadow(0 0 8px rgba(200, 150, 255, 0.7)); }
+  to { filter: drop-shadow(0 0 4px rgba(0,0,0,0.7)) drop-shadow(0 0 22px rgba(200, 150, 255, 1)); }
+}
+
+.glow-gold { animation: shine-gold-intensify 1.2s infinite alternate; }
+@keyframes shine-gold-intensify {
+  from { filter: drop-shadow(0 0 4px rgba(0,0,0,0.8)) drop-shadow(0 0 10px rgba(255, 220, 50, 0.8)) brightness(1.1); }
+  to { filter: drop-shadow(0 0 4px rgba(0,0,0,0.8)) drop-shadow(0 0 35px rgba(255, 215, 0, 1)) brightness(1.3); }
+}
+
+.glow-rainbow { animation: glow-rainbow-intensify 1s infinite alternate; }
+@keyframes glow-rainbow-intensify {
+  from { filter: drop-shadow(0 0 4px rgba(0,0,0,0.9)) drop-shadow(0 0 12px #ff00de) brightness(1.1) hue-rotate(0deg); }
+  to { filter: drop-shadow(0 0 4px rgba(0,0,0,0.9)) drop-shadow(0 0 45px #00d4ff) brightness(1.4) hue-rotate(360deg); }
 }
 </style>

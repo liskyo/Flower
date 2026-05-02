@@ -91,11 +91,6 @@ export const getWitherMultiplier = () => {
 const savedData = localStorage.getItem(SAVE_KEY);
 export const state = reactive(savedData ? JSON.parse(savedData) : defaultState);
 
-// 開發者測試用：首次載入直接給予 500 萬鑽石
-if (!localStorage.getItem('dev_bonus_received_v2')) {
-  state.diamonds = 5000000;
-  localStorage.setItem('dev_bonus_received_v2', 'true');
-}
 
 // 兼容舊存檔：確保舊玩家具備 unlockedCountries
 if (!state.unlockedCountries) {
@@ -394,15 +389,24 @@ export const isSceneUnlocked = (country, scene) => {
   return prevSceneFlowers.every(f => (state.inventory[f.id] || 0) >= 20);
 };
 
-export const resetGame = () => {
-  if (confirm("確定要重置遊戲嗎？所有花園與鑽石將歸零，此動作無法復原！")) {
+// 支援模式選擇的重置與初始化函式
+export const resetGame = (mode = 'player') => {
+  const confirmMsg = mode === 'dev'
+    ? "即將啟用【開發者模式】。這將會覆蓋當前進度，確定要繼續嗎？"
+    : "確定要重置遊戲並以【玩家模式】重新開始嗎？所有進度將歸零！";
+
+  if (confirm(confirmMsg)) {
     const freshState = {
-      diamonds: 0,
+      // 根據模式給予初始鑽石
+      diamonds: mode === 'dev' ? 5000000 : 100000,
       currentCountry: 'Taiwan',
       currentScene: 1,
       unlockedScenes: { 'Taiwan': [1, 2, 3, 4], 'Japan': [1, 2, 3, 4], 'Korea': [1, 2, 3, 4], 'Thailand': [1, 2, 3, 4], 'Singapore': [1, 2, 3, 4] },
-      unlockedCountries: ['Taiwan'],
-      visitedCount: 1,
+
+      // 開發者模式：一次性解鎖所有國家機票
+      unlockedCountries: mode === 'dev' ? ['Taiwan', 'Japan', 'Korea', 'Thailand', 'Singapore'] : ['Taiwan'],
+      visitedCount: mode === 'dev' ? 5 : 1,
+
       inventory: {},
       medals: {},
       gardens: {},
@@ -410,15 +414,22 @@ export const resetGame = () => {
       activeBuffs: { sunnyDollUntil: null, rainUntil: null, rainMultiplier: 1, fertilizerUntil: null, fertilizerMultiplier: 1 },
       exp: 0,
       level: 1,
-      inventoryItems: {}
+
+      // 玩家模式：給予初始道具
+      inventoryItems: mode === 'player' ? { 'sunnyDoll': 3, 'rain1': 3, 'fert1': 3 } : {},
+
+      lastActiveTime: Date.now(),
+      lastSpawnTimes: {}
     };
 
     // 初始化各場景花園
     ['Taiwan', 'Japan', 'Korea', 'Thailand', 'Singapore'].forEach(country => {
       [1, 2, 3, 4].forEach(scene => {
-        freshState.gardens[`${country}_${scene}`] = Array.from({ length: 24 }, (_, i) => ({
+        const key = `${country}_${scene}`;
+        freshState.gardens[key] = Array.from({ length: 24 }, (_, i) => ({
           id: i, flowerId: null, startTime: null, status: 'empty'
         }));
+        freshState.lastSpawnTimes[key] = Date.now();
       });
     });
 
@@ -429,6 +440,18 @@ export const resetGame = () => {
       supabase.from('profiles').upsert({ id: currentUser.id, game_state: state }).then();
     }
 
-    seedVariety();
+    // 強制重載頁面以確保所有 UI 與狀態套用新模式
+    window.location.reload();
+  }
+};
+
+Object.assign(state, freshState);
+localStorage.setItem(SAVE_KEY, JSON.stringify(state));
+
+if (currentUser) {
+  supabase.from('profiles').upsert({ id: currentUser.id, game_state: state }).then();
+}
+
+seedVariety();
   }
 };

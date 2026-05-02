@@ -35,15 +35,17 @@ const growthScale = computed(() => {
   return 0;
 });
 
-// 👇 3. 恢復光暈與圖片去背邏輯 (缺少這個圖片無法顯示)
 const getGlowClass = (rarity) => {
   if (!rarity) return '';
   if (rarity === 'Legendary') return 'glow-rainbow';
-  if (parseInt(rarity) === 5) return 'glow-gold';
-  if (parseInt(rarity) === 4) return 'glow-silver';
-  return '';
+  
+  const r = parseInt(rarity);
+  if (r === 5) return 'glow-gold';
+  if (r === 4) return 'glow-silver'; // 對應 Pale Purple CSS
+  if (r === 3) return 'glow-blue';   // 👇 新增 3星藍光
+  if (r === 2) return 'glow-green';  // 👇 新增 2星綠光
+  return ''; // 1星不發光
 };
-
 const globalImageCache = window.__FLOWER_IMG_CACHE__ || (window.__FLOWER_IMG_CACHE__ = new Map());
 
 const processImage = () => {
@@ -263,21 +265,59 @@ defineExpose({ triggerHarvest, getSlotStatus });
   transition: filter 0.3s ease, opacity 0.3s ease;
 }
 
-.glow-silver { animation: shine-silver 2s infinite alternate !important; }
-.glow-gold { animation: shine-gold 2s infinite alternate !important; }
-.glow-rainbow { animation: glow-pulse 2s infinite alternate !important; }
+/* --- 核心基礎：強制加上一層深色勾邊陰影，突顯立體感與光芒對比 --- */
+.final-flower-img {
+  width: 100%; height: 100%; object-fit: contain;
+  /* 👇 基礎陰影：讓花朵與雲朵分離 */
+  filter: drop-shadow(0 2px 3px rgba(0,0,0,0.5));
+  transition: filter 0.3s ease, opacity 0.3s ease;
+}
 
-@keyframes shine-silver {
-  from { filter: drop-shadow(0 0 5px rgba(192, 192, 192, 0.5)); }
-  to { filter: drop-shadow(0 0 15px rgba(192, 192, 192, 1)); }
+/* --- 全新稀有度光芒 (Glow) 設計 --- */
+
+/* 2星：淡綠色 (Pale Green) */
+.glow-green { 
+  animation: shine-green 2.5s infinite alternate !important; 
 }
-@keyframes shine-gold {
-  from { filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.5)); }
-  to { filter: drop-shadow(0 0 25px rgba(255, 215, 0, 1)); }
+@keyframes shine-green {
+  from { filter: drop-shadow(0 0 4px rgba(0,0,0,0.7)) drop-shadow(0 0 6px rgba(122, 255, 122, 0.6)); }
+  to { filter: drop-shadow(0 0 4px rgba(0,0,0,0.7)) drop-shadow(0 0 16px rgba(122, 255, 122, 1)); }
 }
-@keyframes glow-pulse {
-  from { filter: drop-shadow(0 0 10px #ff00de) hue-rotate(0deg); }
-  to { filter: drop-shadow(0 0 30px #00d4ff) hue-rotate(360deg); }
+
+/* 3星：淡藍色 (Pale Blue) */
+.glow-blue { 
+  animation: shine-blue 2.2s infinite alternate !important; 
+}
+@keyframes shine-blue {
+  from { filter: drop-shadow(0 0 4px rgba(0,0,0,0.7)) drop-shadow(0 0 6px rgba(100, 210, 255, 0.6)); }
+  to { filter: drop-shadow(0 0 4px rgba(0,0,0,0.7)) drop-shadow(0 0 18px rgba(100, 210, 255, 1)); }
+}
+
+/* 4星：淡紫色 (Pale Purple) - 原 Silver 調整 */
+.glow-silver { 
+  animation: shine-purple 2s infinite alternate !important; 
+}
+@keyframes shine-purple {
+  from { filter: drop-shadow(0 0 4px rgba(0,0,0,0.7)) drop-shadow(0 0 8px rgba(200, 150, 255, 0.7)); }
+  to { filter: drop-shadow(0 0 4px rgba(0,0,0,0.7)) drop-shadow(0 0 22px rgba(200, 150, 255, 1)); }
+}
+
+/* 5星：金色光芒特別耀眼 (Dazzling Gold) - 範圍更大、亮度更高、呼吸更快 */
+.glow-gold { 
+  animation: shine-gold-intensify 1.2s infinite alternate !important; 
+}
+@keyframes shine-gold-intensify {
+  from { filter: drop-shadow(0 0 4px rgba(0,0,0,0.8)) drop-shadow(0 0 10px rgba(255, 220, 50, 0.8)) brightness(1.1); }
+  to { filter: drop-shadow(0 0 4px rgba(0,0,0,0.8)) drop-shadow(0 0 35px rgba(255, 215, 0, 1)) brightness(1.3); }
+}
+
+/* 傳說：彩色光芒特別耀眼 (Dazzling Rainbow) - 色相旋轉、能量波動感 */
+.glow-rainbow { 
+  animation: glow-rainbow-intensify 1s infinite alternate !important; 
+}
+@keyframes glow-rainbow-intensify {
+  from { filter: drop-shadow(0 0 4px rgba(0,0,0,0.9)) drop-shadow(0 0 12px #ff00de) brightness(1.1) hue-rotate(0deg); }
+  to { filter: drop-shadow(0 0 4px rgba(0,0,0,0.9)) drop-shadow(0 0 45px #00d4ff) brightness(1.4) hue-rotate(360deg); }
 }
 
 /* 枯萎狀態視覺效果 */
