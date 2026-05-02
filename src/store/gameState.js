@@ -107,8 +107,8 @@ if (!state.lastSpawnTimes) {
   state.lastSpawnTimes = {};
 }
 
-// 兼容舊存檔：確保新國家的 unlockedScenes 存在
-['Japan', 'Korea', 'Thailand', 'Singapore'].forEach(c => {
+// 兼容舊存檔：確保新國家的 unlockedScenes 存在 (加上台灣)
+['Taiwan', 'Japan', 'Korea', 'Thailand', 'Singapore'].forEach(c => {
   if (!state.unlockedScenes[c]) state.unlockedScenes[c] = [1, 2, 3, 4];
   // 確保補上計時器結構
   [1, 2, 3, 4].forEach(s => {
@@ -331,7 +331,6 @@ export const autoSpawn = (targetCountry = null, targetScene = null) => {
   }
 };
 
-// 離線生成補償 (分場景獨立計算)
 export const catchUpSpawning = () => {
   const now = Date.now();
   const multiplier = getCurrentSpawnMultiplier();
@@ -351,28 +350,35 @@ export const catchUpSpawning = () => {
       const numCycles = Math.floor(elapsedMs / intervalMs);
 
       if (numCycles > 0) {
-        console.log(`${gardenKey} 背景生成：${numCycles} 個週期`);
         // 限制單次補償上限避免卡頓
         for (let i = 0; i < Math.min(numCycles, 16); i++) {
           autoSpawn(country, scene);
         }
+        // 👇 修正重點：完美繼承剩餘的小數點秒數，而不是粗暴地設定為 now
+        state.lastSpawnTimes[gardenKey] = lastTime + (numCycles * intervalMs);
+      } else if (!state.lastSpawnTimes[gardenKey]) {
+        // 確保初始值存在
+        state.lastSpawnTimes[gardenKey] = now;
       }
-      // 更新計時器
-      state.lastSpawnTimes[gardenKey] = now;
     }
   });
 
   state.lastActiveTime = now;
 };
+state.lastActiveTime = now;
+};
 
 export const globalTicker = reactive({ now: Date.now() });
 
+let tickCount = 0;
 // 全域背景計時器：每 0.5 秒滴答一次，驅動全域生長與補償
 setInterval(() => {
   globalTicker.now = Date.now();
-  // 為了效能，每 20 次 (約 10 秒) 才執行一次離線補償計算
-  if (Math.round(globalTicker.now / 500) % 20 === 0) {
+  tickCount++;
+  // 為了效能與精準度，強制每 20 次 (約 10 秒) 執行一次計算，解決時間漂移 Bug
+  if (tickCount >= 20) {
     catchUpSpawning();
+    tickCount = 0;
   }
 }, 500);
 
