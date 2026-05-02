@@ -4,8 +4,8 @@ import { FLOWERS } from '../data/flowers';
 import { state, harvestFlower, calculateEffectiveElapsedTime, getWitherMultiplier, globalTicker } from '../store/gameState';
 
 const props = defineProps(['slotData']);
-const emit = defineEmits(['swipe', 'harvest-animate']);
-
+// 👇 原本只有 'swipe', 'harvest-animate'，現在補上 'play-sound'
+const emit = defineEmits(['swipe', 'harvest-animate', 'play-sound']);
 const imgRef = ref(null);
 const canvasRef = ref(null);
 const processedSrc = ref(null);
@@ -156,6 +156,9 @@ const pullUp = () => {
   isHarvesting.value = true;
   isShaking.value = false;
   holdTimer.value = null;
+
+  // 👇 新增這行：只要一開始拔花，就馬上通知外面播放音效
+  emit('play-sound');
 
   const currentStatus = props.slotData.status;
   const currentFlowerId = props.slotData.flowerId;

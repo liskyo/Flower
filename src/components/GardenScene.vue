@@ -145,7 +145,6 @@ const handleSwipe = (slotId) => {
     const status = slotComp.getSlotStatus?.();
     if (status === 'ready' || status === 'withered') {
       slotComp.triggerHarvest();
-      playPop(); // 加入這行補上音效
     }
   }
 };
@@ -163,7 +162,6 @@ const handleTouchMove = (e) => {
       const status = slotComp.getSlotStatus?.();
       if (status === 'ready' || status === 'withered') {
         slotComp.triggerHarvest();
-        playPop();
       }
     }
   });
@@ -331,6 +329,7 @@ onUnmounted(() => {
             :slot-data="slot" 
             @swipe="handleSwipe"
             @harvest-animate="handleHarvestAnimate"
+            @play-sound="playPop"
           />
         </div>
       </div>
