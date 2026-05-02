@@ -17,11 +17,19 @@ const currentPage = ref(0);
 const itemsPerPage = 6;
 
 const visibleFlowers = computed(() => {
-  return FLOWERS.filter(f => {
+  const filtered = FLOWERS.filter(f => {
     if (selectedCountry.value === 'Legendary') {
       return f.rarity === 'Legendary' && ((state.inventory[f.id] || 0) > 0 || hasSilverMedalForAllCountryFlowers(f.country));
     }
     return String(f.country).toLowerCase() === selectedCountry.value.toLowerCase() && f.rarity !== 'Legendary';
+  });
+
+  // 👇 加入排序邏輯：先排場景 (S1 -> S4)，場景相同再排稀有度 (1星 -> 5星)
+  return filtered.sort((a, b) => {
+    if (a.scene !== b.scene) {
+      return a.scene - b.scene;
+    }
+    return parseInt(a.rarity) - parseInt(b.rarity);
   });
 });
 
