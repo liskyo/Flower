@@ -13,11 +13,29 @@ const popAudio = new Audio('data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAA' +
   'EAAQAQAAAQABAAACABAAZGF0YU9vT18AAAAAAP//AAD+/wIA/v8CAP3/BAD9/wUA/f8F' +
   'AP3/BAD+/wIA//8AAP//AQAAAP//AAAAAAAAAP8/AP8/AP8/AP8/AP8/AP8/AP8/AP8/');
 
+// 👇 新增一個標記，記錄音效是否已經解鎖
+let isAudioUnlocked = false;
+
+// 👇 解鎖音效的函式 (必須在使用者點擊/觸控的第一時間呼叫)
+const initAudio = () => {
+  if (isAudioUnlocked) return;
+  try {
+    popAudio.volume = 0; // 先設為靜音偷播
+    popAudio.play().then(() => {
+      popAudio.pause();
+      popAudio.currentTime = 0;
+      popAudio.volume = 0.5; // 解鎖成功後恢復正常音量
+      isAudioUnlocked = true; // 標記為已解鎖
+    }).catch(() => {});
+  } catch (e) {}
+};
+
 const playPop = () => {
   try {
-    popAudio.currentTime = 0;
-    popAudio.volume = 0.5;
-    popAudio.play().catch(() => {});
+    if (isAudioUnlocked) { // 確保解鎖後才播放
+      popAudio.currentTime = 0;
+      popAudio.play().catch(() => {});
+    }
   } catch(e) {}
 };
 
@@ -134,8 +152,10 @@ const buffTooltip = ref(null);
 const showBuffTooltip = (item) => { buffTooltip.value = buffTooltip.value?.name === item.name ? null : item; };
 const tickerTime = ref(Date.now());
 
-const startSwiping = () => { isSwiping.value = true; };
-const stopSwiping = () => { isSwiping.value = false; };
+const startSwiping = () => { 
+  initAudio(); // 👈 只要手指一碰到螢幕，就立刻觸發解鎖
+  isSwiping.value = true; 
+};const stopSwiping = () => { isSwiping.value = false; };
 
 const handleSwipe = (slotId) => {
   if (!isSwiping.value) return;
