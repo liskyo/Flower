@@ -78,7 +78,7 @@ const handleModeSelect = (mode) => {
 .start-bg-scroller {
   position: absolute; top: 0; left: 0;
   width: 200%; height: 100%;
-  background-image: url('/assets/scenes/taiwan/scene_taiwan_1.png'); /* 可自行更換想要的背景圖 */
+  background-image: url('/background.png'); /* 可自行更換想要的背景圖 */
   background-size: 50% 100%;
   background-repeat: repeat-x;
   animation: scrollBg 60s linear infinite;
@@ -157,5 +157,38 @@ const handleModeSelect = (mode) => {
   .sub-title { font-size: 1.8rem; }
   .menu-btn { width: 240px; font-size: 1rem; padding: 10px 20px; }
   .menu-btn.continue { font-size: 1.1rem; }
+}
+/* 👇 加入這段：當螢幕高度小於 500px (例如手機橫向) 時，自動縮小所有元素 */
+@media (max-height: 500px) {
+  .logo-container { 
+    margin-bottom: 15px; 
+  }
+  .main-title { 
+    font-size: 2.2rem; 
+  }
+  .sub-title { 
+    font-size: 1.2rem; 
+    margin-top: 5px; 
+    padding: 2px 10px;
+  }
+  
+  .action-menu { 
+    gap: 8px; 
+  }
+  .menu-btn { 
+    width: 220px; 
+    font-size: 0.85rem; 
+    padding: 8px 15px; 
+    border-width: 3px; 
+  }
+  .menu-btn.continue { 
+    font-size: 1rem; 
+    padding: 10px 20px; 
+    margin-bottom: 5px; 
+  }
+  .version-info {
+    font-size: 0.9rem;
+    padding: 2px 8px;
+  }
 }
 </style>
