@@ -77,6 +77,27 @@ export const getWitherMultiplier = () => {
   return 1;
 };
 
+// 👇 新增這段：計算遞增式等級與進度百分比
+export const getLevelInfo = (totalExp) => {
+  let level = 1;
+  let expNeeded = 1000;   // 1 升 2 的基礎經驗值
+  let expAccumulated = 0; // 達到該等級所需的「總累計」經驗值
+
+  while (totalExp >= expAccumulated + expNeeded) {
+    expAccumulated += expNeeded;
+    level++;
+    // 每升一級，所需經驗值變成上一級的 1.5 倍 (你可以自由修改 1.5 這個係數)
+    expNeeded = Math.floor(expNeeded * 1.5);
+  }
+
+  // 計算在當前等級裡，累積了多少經驗值
+  const currentLevelExp = totalExp - expAccumulated;
+  // 計算當前等級的進度條百分比
+  const progressPercent = Math.min((currentLevelExp / expNeeded) * 100, 100);
+
+  return { level, currentLevelExp, expNeeded, progressPercent };
+};
+
 // 初始化各場景花園
 ['Taiwan', 'Japan', 'Korea', 'Thailand', 'Singapore'].forEach(country => {
   [1, 2, 3, 4].forEach(scene => {
@@ -255,9 +276,9 @@ export const harvestFlower = (slotId) => {
     if (flower) {
       state.diamonds += flower.price;
       state.inventory[flowerId] = (state.inventory[flowerId] || 0) + 1;
-      // 增加經驗值並計算新等級 (每 1000 經驗 1 級)
+      // 增加經驗值並計算新等級 (遞增式)
       state.exp = (state.exp || 0) + Math.round(flower.price / 10);
-      state.level = Math.floor(state.exp / 1000) + 1;
+      state.level = getLevelInfo(state.exp).level;
     }
     slot.status = 'empty';
     slot.flowerId = null;

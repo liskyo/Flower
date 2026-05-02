@@ -2,9 +2,11 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted, computed, nextTick } from 'vue';
-import { state, autoSpawn, setScene, getCurrentGarden, harvestFlower, getCurrentWeather, isSceneUnlocked, getCurrentSpawnMultiplier, catchUpSpawning } from '../store/gameState';
-import { FLOWERS } from '../data/flowers';
+import { state, autoSpawn, setScene, getCurrentGarden, harvestFlower, getCurrentWeather, isSceneUnlocked, getCurrentSpawnMultiplier, catchUpSpawning, getLevelInfo } from '../store/gameState';import { FLOWERS } from '../data/flowers';
 import GardenSlot from './GardenSlot.vue';
+
+// 取得當前經驗值進度資訊
+const currentLevelInfo = computed(() => getLevelInfo(state.exp || 0));
 
 // 啊音效 (base64 短声波)
 const popAudio = new Audio('data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAA' +
@@ -258,9 +260,11 @@ onUnmounted(() => {
     <div class="top-hud">
       <div class="level-box">
         <div class="hud-title">{{ state.currentCountry === 'Taiwan' ? '台灣花園' : state.currentCountry === 'Japan' ? '日本花園' : state.currentCountry + '花園' }}</div>
-        <div class="hud-level">Lv. {{ state.level || 1 }}</div>
+        <!-- 加入 title 屬性，長按或鼠標停留可看具體數字 -->
+        <div class="hud-level" :title="`經驗值: ${currentLevelInfo.currentLevelExp} / ${currentLevelInfo.expNeeded}`">Lv. {{ state.level || 1 }}</div>
         <div class="progress-bar">
-          <div class="progress-fill" :style="{ width: `${((state.exp || 0) % 1000) / 10}%` }"></div>
+          <!-- 改用新計算出來的精確百分比 -->
+          <div class="progress-fill" :style="{ width: `${currentLevelInfo.progressPercent}%` }"></div>
         </div>
       </div>
       <div class="diamond-display">💎 {{ state.diamonds }}</div>
