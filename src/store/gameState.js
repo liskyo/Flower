@@ -195,8 +195,20 @@ const seedVariety = () => {
 
   garden.forEach((slot, i) => {
     if (slot.status === 'empty' && i < 6) {
-      const randomFlower = pool[Math.floor(Math.random() * pool.length)];
-      slot.flowerId = randomFlower.id;
+      // 👇 替換成權重抽取系統，修復無視機率的 Bug
+      const totalWeight = pool.reduce((sum, flower) => sum + getWeight(flower.rarity), 0);
+      let randomVal = Math.random() * totalWeight;
+      let selectedFlower = pool[0];
+
+      for (const flower of pool) {
+        randomVal -= getWeight(flower.rarity);
+        if (randomVal <= 0) {
+          selectedFlower = flower;
+          break;
+        }
+      }
+
+      slot.flowerId = selectedFlower.id;
       slot.startTime = Date.now() - 10000;
       slot.status = 'ready';
     }
@@ -263,6 +275,17 @@ export const hasSilverMedalForAllCountryFlowers = (countryId) => {
   return countryFlowers.every(f => (state.inventory[f.id] || 0) >= 20);
 };
 
+const getWeight = (rarity) => {
+  if (rarity === 'Legendary') return 3;
+  const r = parseInt(rarity) || 1;
+  if (r === 1) return 100;
+  if (r === 2) return 50;
+  if (r === 3) return 30;
+  if (r === 4) return 20;
+  if (r === 5) return 10;
+  return 100;
+};
+
 export const autoSpawn = (targetCountry = null, targetScene = null) => {
   const country = targetCountry || state.currentCountry;
   const scene = targetScene || state.currentScene;
@@ -291,16 +314,7 @@ export const autoSpawn = (targetCountry = null, targetScene = null) => {
   }
 
   if (finalPool.length > 0) {
-    const getWeight = (rarity) => {
-      if (rarity === 'Legendary') return 3;
-      const r = parseInt(rarity) || 1;
-      if (r === 1) return 100;
-      if (r === 2) return 50;
-      if (r === 3) return 30;
-      if (r === 4) return 20;
-      if (r === 5) return 10;
-      return 100;
-    };
+
 
     const totalWeight = finalPool.reduce((sum, flower) => sum + getWeight(flower.rarity), 0);
     let randomVal = Math.random() * totalWeight;
