@@ -6,6 +6,26 @@ import { state, harvestFlower, calculateEffectiveElapsedTime, getWitherMultiplie
 const props = defineProps(['slotData']);
 // 👇 原本只有 'swipe', 'harvest-animate'，現在補上 'play-sound'
 const emit = defineEmits(['swipe', 'harvest-animate', 'play-sound']);
+
+// 👇 1. 在 props 定義下方，新增音效物件與解鎖邏輯
+const popAudio = new Audio('data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAA' +
+  'EAAQAQAAAQABAAACABAAZGF0YU9vT18AAAAAAP//AAD+/wIA/v8CAP3/BAD9/wUA/f8F' +
+  'AP3/BAD+/wIA//8AAP//AQAAAP//AAAAAAAAAP8/AP8/AP8/AP8/AP8/AP8/AP8/AP8/');
+
+let isAudioUnlocked = false;
+
+// 解鎖音效函式
+const initAudio = () => {
+  if (isAudioUnlocked) return;
+  popAudio.volume = 0;
+  popAudio.play().then(() => {
+    popAudio.pause();
+    popAudio.currentTime = 0;
+    popAudio.volume = 0.5;
+    isAudioUnlocked = true;
+  }).catch(() => {});
+};
+
 const imgRef = ref(null);
 const canvasRef = ref(null);
 const processedSrc = ref(null);
@@ -132,8 +152,10 @@ onUnmounted(() => {
 });
 
 // --- 收割邏輯 ---
-
 const startHold = () => {
+  // 👇 2. 手指一碰觸就嘗試解鎖音效
+  initAudio();
+  
   const status = props.slotData.status;
   if ((status === 'ready' || status === 'withered') && !isHarvesting.value && !holdTimer.value) {
     isShaking.value = true;
@@ -153,12 +175,16 @@ const endHold = () => {
 
 const pullUp = () => {
   if (isHarvesting.value) return;
+  
+  // 👇 3. 關鍵：在拔起的瞬間立即播放音效
+  try {
+    popAudio.currentTime = 0;
+    popAudio.play().catch(() => {});
+  } catch (e) {}
+
   isHarvesting.value = true;
   isShaking.value = false;
   holdTimer.value = null;
-
-  // 👇 新增這行：只要一開始拔花，就馬上通知外面播放音效
-  emit('play-sound');
 
   const currentStatus = props.slotData.status;
   const currentFlowerId = props.slotData.flowerId;
@@ -181,11 +207,6 @@ const pullUp = () => {
     harvestFlower(currentSlotId);
     isHarvesting.value = false;
   }, 400);
-};
-
-const handleMouseEnter = () => {
-  emit('swipe', props.slotData.id);
-  startHold();
 };
 
 const triggerHarvest = () => {
