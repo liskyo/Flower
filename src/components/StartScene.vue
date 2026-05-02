@@ -74,20 +74,27 @@ const handleModeSelect = (mode) => {
 }
 .start-scene.visible { opacity: 1; }
 
-/* 橫向移動背景特效 */
+/* 橫向移動背景特效 (完美比例、全螢幕無縫版) */
 .start-bg-scroller {
-  position: absolute; top: 0; left: 0;
-  width: 200%; height: 100%;
-  background-image: url('/background.png'); /* 可自行更換想要的背景圖 */
-  background-size: 50% 100%;
-  background-repeat: repeat-x;
-  animation: scrollBg 60s linear infinite;
+  position: absolute; 
+  inset: 0; 
+  width: 100%; 
+  height: 100%;
+  background-image: url('/background.png'); 
+  background-size: auto 100%; 
+  background-repeat: repeat-x; 
+  background-position: 0 0;
+  
+  /* 指定正確的動畫名稱 scrollBgPanorama */
+  animation: scrollBgPanorama 80s linear infinite; 
   z-index: 0;
-  opacity: 0.6; /* 稍微變淡以突顯前方 UI */
+  opacity: 0.7; 
 }
-@keyframes scrollBg {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
+
+/* 補上遺漏的關鍵動畫設定，使用像素移動確保無縫接軌 */
+@keyframes scrollBgPanorama {
+  0% { background-position: 0 0; }
+  100% { background-position: -4000px 0; } 
 }
 
 /* 前景內容層 */
