@@ -445,13 +445,4 @@ export const resetGame = (mode = 'player') => {
   }
 };
 
-Object.assign(state, freshState);
-localStorage.setItem(SAVE_KEY, JSON.stringify(state));
 
-if (currentUser) {
-  supabase.from('profiles').upsert({ id: currentUser.id, game_state: state }).then();
-}
-
-seedVariety();
-  }
-};
