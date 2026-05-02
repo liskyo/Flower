@@ -108,8 +108,7 @@ watch(progress, (newProgress) => {
     props.slotData.readyTime = Date.now();
     sendGrowthNotification();
   }
-});
-
+}, { immediate: true }); // 👈 關鍵：加上這個大括號與設定
 // 👇 5. 監聽全域時間，檢查花朵是否枯萎
 watch(() => globalTicker.now, () => {
   if (props.slotData.status === 'ready') {
