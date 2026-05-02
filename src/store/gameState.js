@@ -354,10 +354,16 @@ export const catchUpSpawning = () => {
   state.lastActiveTime = now;
 };
 
-// 全域背景計時器：每 10 秒執行一次補償檢查 (實現背景成長)
+export const globalTicker = reactive({ now: Date.now() });
+
+// 全域背景計時器：每 0.5 秒滴答一次，驅動全域生長與補償
 setInterval(() => {
-  catchUpSpawning();
-}, 10000);
+  globalTicker.now = Date.now();
+  // 為了效能，每 20 次 (約 10 秒) 才執行一次離線補償計算
+  if (Math.round(globalTicker.now / 500) % 20 === 0) {
+    catchUpSpawning();
+  }
+}, 500);
 
 export const setScene = (sceneId) => {
   state.currentScene = Number(sceneId);

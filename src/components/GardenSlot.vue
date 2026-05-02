@@ -1,8 +1,7 @@
 <script setup>
 import { computed, ref, onMounted, onUnmounted, watch } from 'vue';
 import { FLOWERS } from '../data/flowers';
-import { state, harvestFlower, calculateEffectiveElapsedTime, getWitherMultiplier } from '../store/gameState';
-
+import { state, harvestFlower, calculateEffectiveElapsedTime, getWitherMultiplier, globalTicker } from '../store/gameState';
 const props = defineProps(['slotData']);
 const emit = defineEmits(['swipe', 'harvest-animate']);
 
@@ -14,115 +13,50 @@ const isShaking = ref(false);
 const holdTimer = ref(null);     
 
 const flower = computed(() => FLOWERS.find(f => f.id === props.slotData.flowerId));
-const progress = ref(0);
 
-const growthScale = computed(() => {
-  if (props.slotData.status === 'ready' || props.slotData.status === 'withered') return 1;
-  if (props.slotData.status === 'growing') return 0.3 + (progress.value / 100) * 0.7;
-  return 0;
-});
-
-const getGlowClass = (rarity) => {
-  if (!rarity) return '';
-  if (rarity === 'Legendary') return 'glow-rainbow';
-  if (parseInt(rarity) === 5) return 'glow-gold';
-  if (parseInt(rarity) === 4) return 'glow-silver';
-  return '';
-};
-
-// 全域快取，避免切換場景時重複消耗 CPU 運算去背
-const globalImageCache = window.__FLOWER_IMG_CACHE__ || (window.__FLOWER_IMG_CACHE__ = new Map());
-
-const processImage = () => {
-  if (!imgRef.value || processedSrc.value) return;
+// 👇 將進度改為 computed，依賴全域 ticker (不管切到哪個畫面都會更新)
+const progress = computed(() => {
+  if (!props.slotData.startTime || !flower.value || props.slotData.status === 'empty') return 0;
   
-  if (!flower.value) return;
-  const cacheKey = `flower_${flower.value.id}`;
-  if (globalImageCache.has(cacheKey)) {
-    processedSrc.value = globalImageCache.get(cacheKey);
-    return;
+  // 讀取 globalTicker.now 來強制 Vue 定期重新計算
+  const currentNow = globalTicker.now; 
+  
+  if (props.slotData.status === 'growing') {
+    const { growthElapsed } = calculateEffectiveElapsedTime(props.slotData.startTime);
+    return Math.min((growthElapsed / flower.value.growthTime) * 100, 100);
   }
+  return 100;
+});
 
-  const img = imgRef.value;
-  const canvas = canvasRef.value;
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-  canvas.width = img.naturalWidth;
-  canvas.height = img.naturalHeight;
-  ctx.drawImage(img, 0, 0);
-  try {
-    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    const data = imageData.data;
-    for (let i = 0; i < data.length; i += 4) {
-      const r = data[i], g = data[i+1], b = data[i+2];
-      if ((r > 230 && g > 230 && b > 230) || (r < 30 && g < 30 && b < 30)) data[i+3] = 0;
-    }
-    ctx.putImageData(imageData, 0, 0);
-    const dataUrl = canvas.toDataURL();
-    processedSrc.value = dataUrl;
-    globalImageCache.set(cacheKey, dataUrl); // 存入快取
-  } catch (e) { processedSrc.value = img.src; }
-};
-
-// 監聽花朵變化，若變化則重置去背狀態
-watch(() => props.slotData.flowerId, (newId) => {
-  if (newId) {
-    const cacheKey = `flower_${newId}`;
-    if (globalImageCache.has(cacheKey)) {
-      processedSrc.value = globalImageCache.get(cacheKey);
-    } else {
-      processedSrc.value = null; // 讓 @load 重新觸發 processImage
-    }
-  } else {
-    processedSrc.value = null;
+// 👇 監聽進度變化，滿 100% 就轉為 ready 狀態
+watch(progress, (newProgress) => {
+  if (props.slotData.status === 'growing' && newProgress >= 100) {
+    props.slotData.status = 'ready';
+    props.slotData.readyTime = Date.now();
+    sendGrowthNotification();
   }
 });
 
-// 通知：花朵長成
-let notifiedSlots = new Set();
-const sendGrowthNotification = () => {
-  if (notifiedSlots.has(props.slotData.id)) return;
-  notifiedSlots.add(props.slotData.id);
-  if ('Notification' in window && Notification.permission === 'granted') {
-    new Notification('🌸 花朵長成囉！', {
-      body: `${flower.value?.name || '你的花朵'} 已準備好採收！`,
-      icon: '/favicon.ico'
-    });
-  }
-};
-
-const updateProgress = () => {
-  if (props.slotData.startTime && flower.value) {
-    const { growthElapsed } = calculateEffectiveElapsedTime(props.slotData.startTime);
+// 👇 獨立監聽全域時間，檢查花朵是否枯萎 (背景也會執行)
+watch(() => globalTicker.now, () => {
+  if (props.slotData.status === 'ready') {
+    const rTime = props.slotData.readyTime || (Date.now() - 1000); 
+    const timeSinceReady = (Date.now() - rTime) / 1000;
+    const witherTime = (3 * 60 * 60) * getWitherMultiplier();
     
-    if (props.slotData.status === 'growing') {
-      const p = Math.min((growthElapsed / flower.value.growthTime) * 100, 100);
-      progress.value = p;
-      if (p >= 100) {
-        props.slotData.status = 'ready';
-        props.slotData.readyTime = Date.now();
-        sendGrowthNotification();
-      }
-    } else {
-      notifiedSlots.delete(props.slotData.id); // 收成後清除記錄
+    if (timeSinceReady >= witherTime) {
+      props.slotData.status = 'withered';
+      notifiedSlots.delete(props.slotData.id);
     }
-    
-    // 獨立檢查枯萎 (真實時間 3 小時 * 肥料倍率)
-    if (props.slotData.status === 'ready') {
-      const rTime = props.slotData.readyTime || (Date.now() - 1000); 
-      const timeSinceReady = (Date.now() - rTime) / 1000;
-      const witherTime = (3 * 60 * 60) * getWitherMultiplier();
-      if (timeSinceReady >= witherTime) {
-        props.slotData.status = 'withered';
-      }
-    }
+  } else if (props.slotData.status !== 'ready') {
+    notifiedSlots.delete(props.slotData.id);
   }
-};
+});
 
-let timer = null;
-onMounted(() => { timer = setInterval(updateProgress, 200); });
-onUnmounted(() => { clearInterval(timer); clearTimeout(holdTimer.value); });
-
+// 保留清理長按判斷的計時器，避免切換頁面時報錯
+onUnmounted(() => { 
+  if (holdTimer.value) clearTimeout(holdTimer.value); 
+});
 // --- 收割邏輯 ---
 
 const startHold = () => {
