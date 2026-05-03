@@ -291,7 +291,7 @@ onUnmounted(() => {
         <!-- 👇 修改條件：暴風雨、小雨、陰天 都會有這個濾鏡層 -->
         <div v-if="['storm', 'rainy', 'cloudy'].includes(currentWeather.id)" class="water-drop-filter"></div>
       </div>
-      <div class="landmark-nav">
+      <div class="landmark-nav" @mousedown.stop @touchstart.stop>
         <template v-for="(name, index) in currentSceneNames" :key="index">
           <button 
             v-if="isSceneUnlocked(state.currentCountry, index + 1)"
@@ -399,7 +399,6 @@ onUnmounted(() => {
   
   /* 💡 改用背景座標位移來做動畫 */
   animation: scrollGardenBg 150s linear infinite;
-  transition: background-image 0.5s ease;
 }
 
 /* 補上專屬於花園背景的捲動動畫 */
@@ -453,7 +452,7 @@ onUnmounted(() => {
 
 /* 作用中 Buff 欄 */
 .buff-bar {
-  position: absolute; bottom: 160px; left: 15px; z-index: 3000;
+  position: absolute; top: 100px; left: 15px; z-index: 3000;
   display: flex; flex-direction: column; gap: 6px;
 }
 .buff-icon {
@@ -551,8 +550,8 @@ onUnmounted(() => {
   position: absolute; top: 80px; left: 0; right: 0; display: flex; justify-content: center; gap: 8px; z-index: 1000;
 }
 .landmark-btn {
-  background: white; border: 3px solid #2d3436; padding: 5px 12px; border-radius: 50px;
-  font-weight: 900; font-size: 0.8rem; box-shadow: 0 3px 0 #2d3436; cursor: pointer; transition: all 0.2s;
+  background: white; border: 3px solid #2d3436; padding: 8px 16px; border-radius: 50px;
+  font-weight: 900; font-size: 0.8rem; box-shadow: 0 3px 0 #2d3436; cursor: pointer; transition: all 0.1s;
 }
 .landmark-btn.active { background: #ffd100; transform: translateY(2px); box-shadow: 0 1px 0 #2d3436; }
 .landmark-btn.locked-scene { background: #636e72; color: #b2bec3; cursor: not-allowed; opacity: 0.7; }
