@@ -53,7 +53,7 @@ const defaultState = {
     rainUntil: null,
     rainMultiplier: 1,
     fertilizerUntil: null,
-    fertilizerMultiplier: 1
+    fertilizerMultiplier: 1,
     starUntil: null,     // 👇 新增星星持續時間
     starMultiplier: 1    // 👇 新增星星倍率
   },
