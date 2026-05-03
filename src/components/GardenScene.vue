@@ -43,7 +43,10 @@ const processBasketImage = () => {
 
 const sceneNames = {
   taiwan: ["台北 101", "阿里山", "民雄鬼屋", "台灣夜市"],
-  japan: ["富士山", "晴空塔", "百鬼夜行", "夏日祭典"]
+  japan: ["富士山", "晴空塔", "百鬼夜行", "夏日祭典"],
+  korea: ["景福宮", "濟州島", "海雲台", "漢江公園"],
+  singapore: ["濱海灣金沙", "魚尾獅公園", "聖淘沙島", "濱海灣花園"],
+  thailand: ["曼谷大皇宮", "皮皮島", "曼谷水上市場", "清邁古城"]
 };
 
 const currentSceneNames = computed(() => {

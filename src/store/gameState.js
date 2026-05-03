@@ -447,9 +447,6 @@ setInterval(() => {
 
 export const setScene = (sceneId) => {
   state.currentScene = Number(sceneId);
-  if (getCurrentGarden().slice(0, 16).filter(s => s.status !== 'empty').length < 2) {
-    seedVariety();
-  }
 };
 
 export const isSceneUnlocked = (country, scene) => {
