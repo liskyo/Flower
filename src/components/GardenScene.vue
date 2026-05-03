@@ -298,17 +298,16 @@ onUnmounted(() => {
         <!-- 👇 修改條件：暴風雨、小雨、陰天 都會有這個濾鏡層 -->
         <div v-if="['storm', 'rainy', 'cloudy'].includes(currentWeather.id)" class="water-drop-filter"></div>
       </div>
-      <div class="landmark-nav" @mousedown.stop @touchstart.stop>
+      <div class="landmark-nav" @touchmove.stop @mousedown.stop @touchstart.stop>
         <template v-for="(name, index) in currentSceneNames" :key="index">
           <button 
             v-if="isSceneUnlocked(state.currentCountry, index + 1)"
             :class="{ active: state.currentScene === (index + 1) }"
-            @click="setScene(index + 1)"
+            @click="playSound('button'); setScene(index + 1)"
             class="landmark-btn"
           >
             {{ name }}
           </button>
-          <!-- 👇 修改這裡，加入進度顯示 -->
           <button v-else class="landmark-btn locked-scene" disabled>
             🔒 {{ name }} <span class="unlock-progress">({{ getSceneUnlockProgress(state.currentCountry, index + 1) }}%)</span>
           </button>
@@ -338,21 +337,21 @@ onUnmounted(() => {
         <div class="basket-label">花籃</div>
       </div>
 
-      <!-- 右下角：功能按鍵群組 -->
-      <div class="action-cluster">
-        <button class="action-btn map" @click="emit('change-tab', 'map')">
+      <!-- 右下角：功能按鍵群組 (同樣加入 touchmove.stop 防護罩) -->
+      <div class="action-cluster" @touchmove.stop @mousedown.stop @touchstart.stop>
+        <button class="action-btn map" @click="playSound('button'); emit('change-tab', 'map')">
           <span class="icon">🗺️</span>
           <span class="label">地圖</span>
         </button>
-        <button class="action-btn catalog" @click="emit('change-tab', 'catalog')">
+        <button class="action-btn catalog" @click="playSound('button'); emit('change-tab', 'catalog')">
           <span class="icon">📖</span>
           <span class="label">圖鑑</span>
         </button>
-        <button class="action-btn shop" @click="emit('change-tab', 'shop')">
+        <button class="action-btn shop" @click="playSound('button'); emit('change-tab', 'shop')">
           <span class="icon">🛒</span>
           <span class="label">商店</span>
         </button>
-        <button class="action-btn inventory" @click="emit('change-tab', 'inventory')">
+        <button class="action-btn inventory" @click="playSound('button'); emit('change-tab', 'inventory')">
           <span class="icon">🎒</span>
           <span class="label">道具</span>
         </button>
@@ -556,13 +555,17 @@ onUnmounted(() => {
 .landmark-nav {
   position: absolute; top: 80px; left: 0; right: 0; display: flex; justify-content: center; gap: 8px; z-index: 1000;
 }
+/* 修改上方場景按鈕 */
 .landmark-btn {
   background: white; border: 3px solid #2d3436; padding: 8px 16px; border-radius: 50px;
   font-weight: 900; font-size: 0.8rem; box-shadow: 0 3px 0 #2d3436; cursor: pointer; transition: all 0.1s;
+  
+  /* 👇 加入這兩行，強制消除手機瀏覽器的 300ms 點擊延遲 */
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 .landmark-btn.active { background: #ffd100; transform: translateY(2px); box-shadow: 0 1px 0 #2d3436; }
 .landmark-btn.locked-scene { background: #636e72; color: #b2bec3; cursor: not-allowed; opacity: 0.7; }
-
 /* --- 找到 核心種植區 這段並替換 --- */
 .absolute-garden-container {
   position: absolute; top: 60%; left: 50%; transform: translate(-50%, -50%);
@@ -616,10 +619,15 @@ onUnmounted(() => {
   position: absolute; bottom: 30px; right: 30px; z-index: 1500;
   display: flex; flex-direction: column; gap: 15px; align-items: flex-end;
 }
+/* 修改右下角圓形按鈕 */
 .action-btn {
   background: #fff; border: 4px solid #2d3436; border-radius: 50%;
   width: 70px; height: 70px; display: flex; flex-direction: column; align-items: center; justify-content: center;
   cursor: pointer; box-shadow: 0 6px 0 #2d3436; transition: all 0.1s; position: relative;
+  
+  /* 👇 同樣加入這兩行 */
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 .action-btn:active { transform: translateY(4px); box-shadow: 0 2px 0 #2d3436; }
 .action-btn .icon { font-size: 1.8rem; }
