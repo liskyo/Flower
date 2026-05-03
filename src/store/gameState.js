@@ -17,11 +17,18 @@ Object.values(sounds).forEach(audio => {
 
 export const playSound = (soundName) => {
   try {
-    const audio = sounds[soundName];
-    if (audio) {
-      // 確保每次點擊都會從頭播放，即使前一次還沒播完
-      audio.currentTime = 0;
-      audio.play().catch(() => { }); // 攔截瀏覽器自動播放限制的報錯
+    const baseAudio = sounds[soundName];
+    if (baseAudio) {
+      // 👇 關鍵：複製一個全新的音效實體，讓聲音可以無限重疊！
+      const clone = baseAudio.cloneNode(true);
+      clone.volume = baseAudio.volume; // 繼承我們設定好的 0.5 音量
+
+      clone.play().catch(() => { });
+
+      // 播放完畢後自動清除分身，釋放手機記憶體
+      clone.onended = () => {
+        clone.remove();
+      };
     }
   } catch (e) {
     console.error('音效播放失敗:', e);
