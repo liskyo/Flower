@@ -82,11 +82,12 @@ const processCatalogImage = (flower, e) => {
   canvas.height = img.naturalHeight;
   ctx.drawImage(img, 0, 0);
   try {
-    // ... 前面的程式碼不變 ...
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     const data = imageData.data;
-    
-    // ... 後面的程式碼不變 ...
+    for (let i = 0; i < data.length; i += 4) {
+      const r = data[i], g = data[i+1], b = data[i+2];
+      if ((r > 230 && g > 230 && b > 230) || (r < 30 && g < 30 && b < 30)) data[i+3] = 0;
+    }
     ctx.putImageData(imageData, 0, 0);
     processedImages.value[flower.id] = canvas.toDataURL();
   } catch (err) {
@@ -394,8 +395,6 @@ const processCatalogImage = (flower, e) => {
 /* --- 圖鑑花朵圖片基礎陰影強化 --- */
 .m-img, .m-detail-img {
   filter: drop-shadow(0 2px 3px rgba(0,0,0,0.6));
-  /* 👇 加上這行！ */
-  mix-blend-mode: multiply;
 }
 
 /* --- 全新稀有度光芒 (Glow) 設計 (與花園同步) --- */

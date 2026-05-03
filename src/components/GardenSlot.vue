@@ -66,11 +66,12 @@ const processImage = () => {
   canvas.height = img.naturalHeight;
   ctx.drawImage(img, 0, 0);
   try {
-    // ... 前面的程式碼不變 ...
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     const data = imageData.data;
-        
-    // ... 後面的程式碼不變 ...
+    for (let i = 0; i < data.length; i += 4) {
+      const r = data[i], g = data[i+1], b = data[i+2];
+      if ((r > 230 && g > 230 && b > 230) || (r < 30 && g < 30 && b < 30)) data[i+3] = 0;
+    }
     ctx.putImageData(imageData, 0, 0);
     const dataUrl = canvas.toDataURL();
     processedSrc.value = dataUrl;
@@ -257,15 +258,10 @@ defineExpose({ triggerHarvest, getSlotStatus });
 
 .hidden-core { display: none; }
 
-/* --- 核心基礎：強制加上一層深色勾邊陰影，突顯立體感與光芒對比 --- */
 .final-flower-img {
   width: 100%; height: 100%; object-fit: contain;
-  /* 基礎陰影：讓花朵與雲朵分離 */
-  filter: drop-shadow(0 2px 3px rgba(0,0,0,0.5));
+  filter: drop-shadow(0 4px 0 rgba(0,0,0,0.1));
   transition: filter 0.3s ease, opacity 0.3s ease;
-  
-  /* 👇 加入這行！這就是魔法去背的關鍵！ */
-  mix-blend-mode: multiply;
 }
 
 /* --- 核心基礎：強制加上一層深色勾邊陰影，突顯立體感與光芒對比 --- */
