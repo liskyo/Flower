@@ -86,7 +86,7 @@ const processCatalogImage = (flower, e) => {
     const data = imageData.data;
     for (let i = 0; i < data.length; i += 4) {
       const r = data[i], g = data[i+1], b = data[i+2];
-      if ((r > 230 && g > 230 && b > 230) || (r < 30 && g < 30 && b < 30)) data[i+3] = 0;
+      if ((r > 200 && g > 200 && b > 200) || (r < 40 && g < 40 && b < 40)) data[i+3] = 0;
     }
     ctx.putImageData(imageData, 0, 0);
     processedImages.value[flower.id] = canvas.toDataURL();
