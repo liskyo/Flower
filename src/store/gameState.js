@@ -467,48 +467,35 @@ export const resetGame = (mode = 'player') => {
     : "確定要重置遊戲並以【玩家模式】重新開始嗎？所有進度將歸零！";
 
   if (confirm(confirmMsg)) {
-    // 👇 1. 預先準備開發者模式的圖鑑庫存
+    // 預先準備開發者模式的圖鑑庫存
     const devInventory = {};
     if (mode === 'dev') {
       FLOWERS.forEach(flower => {
-        devInventory[flower.id] = 50; // 每種花給予 50 朵 (達標金牌)
+        devInventory[flower.id] = 50;
       });
     }
 
     const freshState = {
-      // 根據模式給予初始鑽石
       diamonds: mode === 'dev' ? 5000000 : 100000,
       currentCountry: 'Taiwan',
       currentScene: 1,
       unlockedScenes: { 'Taiwan': [1, 2, 3, 4], 'Japan': [1, 2, 3, 4], 'Korea': [1, 2, 3, 4], 'Thailand': [1, 2, 3, 4], 'Singapore': [1, 2, 3, 4] },
-
-      // 開發者模式：一次性解鎖所有國家機票
       unlockedCountries: mode === 'dev' ? ['Taiwan', 'Japan', 'Korea', 'Thailand', 'Singapore'] : ['Taiwan'],
       visitedCount: mode === 'dev' ? 5 : 1,
-
-      // 👇 2. 套用開發者專屬庫存
       inventory: mode === 'dev' ? devInventory : {},
       medals: {},
       gardens: {},
       upgrades: { spawnRate: 0.5, maxSlots: 24 },
-
-      // 確保這裡的 activeBuffs 帶有 star 的預設值，且沒有漏逗號！
       activeBuffs: { sunnyDollUntil: null, rainUntil: null, rainMultiplier: 1, fertilizerUntil: null, fertilizerMultiplier: 1, starUntil: null, starMultiplier: 1 },
-
-      // 👇 3. 開發者模式給予足以升到 15 級的經驗值 (大約需要至少 19 萬 Exp)
       exp: mode === 'dev' ? 200000 : 0,
       level: mode === 'dev' ? 15 : 1,
-
-      // 👇 4. 玩家模式：新增給予無敵星星
       inventoryItems: mode === 'player'
         ? { 'sunnyDoll': 3, 'rain1': 3, 'fert1': 3, 'star1': 3 }
         : {},
-
       lastActiveTime: Date.now(),
       lastSpawnTimes: {}
     };
 
-    // 初始化各場景花園
     ['Taiwan', 'Japan', 'Korea', 'Thailand', 'Singapore'].forEach(country => {
       [1, 2, 3, 4].forEach(scene => {
         const key = `${country}_${scene}`;
@@ -526,8 +513,7 @@ export const resetGame = (mode = 'player') => {
       supabase.from('profiles').upsert({ id: currentUser.id, game_state: state }).then();
     }
 
-    // 強制重載頁面以確保所有 UI 與狀態套用新模式
-    window.location.reload();
+    // 💡 關鍵修正：移除了重新整理，單純回傳 true 告訴介面重置成功
     return true;
   }
   return false;
