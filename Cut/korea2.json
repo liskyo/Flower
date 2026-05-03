@@ -1,0 +1,326 @@
+[
+    {
+        "id": "kr_s3_lock",
+        "name": "情侶鎖花",
+        "rarity": 1,
+        "growthTime": 8,
+        "price": 20,
+        "scene": 3,
+        "description": "密密麻麻長滿了鎖頭。雖然象徵永恆，但要是忘記密碼這朵花就採不下來。"
+    },
+    {
+        "id": "kr_s3_cable",
+        "name": "纜車花",
+        "rarity": 1,
+        "growthTime": 12,
+        "price": 35,
+        "scene": 3,
+        "description": "長在半空中，採收它需要搬梯子。花朵形狀像個懸掛的小車廂。"
+    },
+    {
+        "id": "kr_s3_coffee",
+        "name": "冰美式花",
+        "rarity": 1,
+        "growthTime": 15,
+        "price": 40,
+        "scene": 3,
+        "description": "韓國人的血液。不管冬天多冷，這朵花採下來一定是冰的。"
+    },
+    {
+        "id": "kr_s3_selfie",
+        "name": "自拍棒花",
+        "rarity": 1,
+        "growthTime": 18,
+        "price": 50,
+        "scene": 3,
+        "description": "花莖可以無限伸縮。它會自動尋找最好的光線角度，讓自己看起來很美。"
+    },
+    {
+        "id": "kr_s3_highheels",
+        "name": "南山爬坡花",
+        "rarity": 1,
+        "growthTime": 22,
+        "price": 60,
+        "scene": 3,
+        "description": "長得像高跟鞋。據說穿這種鞋爬南山的女生，意志力都比鋼鐵還硬。"
+    },
+    {
+        "id": "kr_s3_letter",
+        "name": "慢郵遞花",
+        "rarity": 2,
+        "growthTime": 28,
+        "price": 85,
+        "scene": 3,
+        "description": "採收後要把它的種子寄給未來的自己，一年後它才會在你的信箱裡發芽。"
+    },
+    {
+        "id": "kr_s3_stairs",
+        "name": "三順階梯花",
+        "rarity": 2,
+        "growthTime": 32,
+        "price": 100,
+        "scene": 3,
+        "description": "長成階梯狀，每爬一層就會想起一段虐心的韓劇台詞，讓人淚流滿面。"
+    },
+    {
+        "id": "kr_s3_bear",
+        "name": "泰迪熊花",
+        "rarity": 2,
+        "growthTime": 38,
+        "price": 130,
+        "scene": 3,
+        "description": "毛茸茸的像玩偶。它會穿著南山塔的制服，在半夜偷偷幫你巡邏花園。"
+    },
+    {
+        "id": "kr_s3_light",
+        "name": "百萬夜景花",
+        "rarity": 2,
+        "growthTime": 45,
+        "price": 160,
+        "scene": 3,
+        "description": "花瓣閃爍著首爾城市的燈火。採收它一次的價格，等於首爾一坪的房價。"
+    },
+    {
+        "id": "kr_s3_heart",
+        "name": "手指愛心花",
+        "rarity": 3,
+        "growthTime": 55,
+        "price": 250,
+        "scene": 3,
+        "description": "兩片小花瓣交錯。這朵花開花時會發出『啾』的一聲，非常肉麻。"
+    },
+    {
+        "id": "kr_s3_makeup",
+        "name": "明洞美妝花",
+        "rarity": 3,
+        "growthTime": 65,
+        "price": 320,
+        "scene": 3,
+        "description": "自带保濕噴霧，採收後你的手會變得晶瑩剔透，像剛打過水光針。"
+    },
+    {
+        "id": "kr_s3_oppa",
+        "name": "長腿歐巴花",
+        "rarity": 3,
+        "growthTime": 80,
+        "price": 450,
+        "scene": 3,
+        "description": "花莖長達 1.2 公尺，比例完美。唯一的缺點是它太受蝴蝶歡迎，整天鬧緋聞。"
+    },
+    {
+        "id": "kr_s3_fireworks",
+        "name": "南山煙火花",
+        "rarity": 4,
+        "growthTime": 110,
+        "price": 700,
+        "scene": 3,
+        "description": "在夜空中突然爆開，然後留下一堆亮晶晶的金屬粉末，很漂亮但難清理。"
+    },
+    {
+        "id": "kr_s3_proposal",
+        "name": "求婚大作戰花",
+        "rarity": 4,
+        "growthTime": 130,
+        "price": 900,
+        "scene": 3,
+        "description": "這朵花瓣裡藏著一顆 0.1 克拉的碎鑽，但通常都被路過的麻雀叼走了。"
+    },
+    {
+        "id": "kr_s3_skyline",
+        "name": "雲端塔尖花",
+        "rarity": 4,
+        "growthTime": 160,
+        "price": 1200,
+        "scene": 3,
+        "description": "長在首爾塔的最尖端，吸收了大量的無線電訊號，採收它家裡網路變 6G。"
+    },
+    {
+        "id": "kr_s3_idol",
+        "name": "練習生花",
+        "rarity": 5,
+        "growthTime": 200,
+        "price": 2500,
+        "scene": 3,
+        "description": "在地下室練習了三年才開花。一旦盛開就會自帶舞台燈光跟應援團。"
+    },
+    {
+        "id": "kr_s3_fountain",
+        "name": "音樂噴泉花",
+        "rarity": 5,
+        "growthTime": 250,
+        "price": 4000,
+        "scene": 3,
+        "description": "會跟著 BTS 的歌節奏噴灑營養液，是花園裡最時髦的表演者。"
+    },
+    {
+        "id": "kr_s3_eternal",
+        "name": "南山不老花",
+        "rarity": 5,
+        "growthTime": 320,
+        "price": 6000,
+        "scene": 3,
+        "description": "據說只要情侶一起採收，兩人的愛情就會長長久久，直到手機沒電為止。"
+    },
+    {
+        "id": "kr_s4_ramen",
+        "name": "便利店拉麵花",
+        "rarity": 1,
+        "growthTime": 5,
+        "price": 15,
+        "scene": 4,
+        "description": "花瓣是捲曲的麵體。在漢江邊聞到它的香味，如果不吃會引發嚴重的焦慮。"
+    },
+    {
+        "id": "kr_s4_chicken",
+        "name": "炸雞外送花",
+        "rarity": 1,
+        "growthTime": 10,
+        "price": 25,
+        "scene": 4,
+        "description": "無論你在哪裡種下它，都會有一隻機車蝴蝶準時在 20 分鐘內把它採走。"
+    },
+    {
+        "id": "kr_s4_beer",
+        "name": "雞啤花",
+        "rarity": 1,
+        "growthTime": 15,
+        "price": 40,
+        "scene": 4,
+        "description": "金黃色的液體花瓣頂部帶著白沫。跟炸雞花種在一起，產量會加倍。"
+    },
+    {
+        "id": "kr_s4_blanket",
+        "name": "野餐墊花",
+        "rarity": 1,
+        "growthTime": 20,
+        "price": 55,
+        "scene": 4,
+        "description": "葉子是格紋狀的。它會自動平鋪在地上，防止你的屁股被草地弄濕。"
+    },
+    {
+        "id": "kr_s4_bike",
+        "name": "雙人協力車花",
+        "rarity": 1,
+        "growthTime": 25,
+        "price": 70,
+        "scene": 4,
+        "description": "長著兩個花心。如果兩個人不一起澆水，這朵花就會原地轉圈，不長大。"
+    },
+    {
+        "id": "kr_s4_duck",
+        "name": "漢江鴨子船花",
+        "rarity": 2,
+        "growthTime": 35,
+        "price": 110,
+        "scene": 4,
+        "description": "花瓣是白色的羽毛感。它最喜歡下大雨，這樣它就可以在泥巴坑裡游泳。"
+    },
+    {
+        "id": "kr_s4_tent",
+        "name": "露營帳篷花",
+        "rarity": 2,
+        "growthTime": 45,
+        "price": 150,
+        "scene": 4,
+        "description": "晚上會自動摺疊起來。根據法規，這朵花的葉子必須有一邊是打開通風的。"
+    },
+    {
+        "id": "kr_s4_busking",
+        "name": "路邊駐唱花",
+        "rarity": 2,
+        "growthTime": 55,
+        "price": 190,
+        "scene": 4,
+        "description": "會不停重複唱著悲傷的情歌。如果你不給它投幣（肥料），它會唱得更大聲。"
+    },
+    {
+        "id": "kr_s4_bridge",
+        "name": "盤浦彩虹花",
+        "rarity": 2,
+        "growthTime": 65,
+        "price": 230,
+        "scene": 4,
+        "description": "會噴出七彩的水霧。在陽光照射下，你的花盆旁邊會出現真的彩虹。"
+    },
+    {
+        "id": "kr_s4_sunset",
+        "name": "漢江夕照花",
+        "rarity": 3,
+        "growthTime": 85,
+        "price": 380,
+        "scene": 4,
+        "description": "花瓣呈現美麗的粉紫色與橘色漸層。採收它的最佳時間只有五分鐘。"
+    },
+    {
+        "id": "kr_s4_fire",
+        "name": "江邊仙女棒花",
+        "rarity": 3,
+        "growthTime": 100,
+        "price": 450,
+        "scene": 4,
+        "description": "花尖會滋滋作響冒火花。是製造浪漫氛圍的好手，但要小心別燒到雜草。"
+    },
+    {
+        "id": "kr_s4_monster",
+        "name": "漢江怪獸花",
+        "rarity": 3,
+        "growthTime": 120,
+        "price": 600,
+        "scene": 4,
+        "description": "長得像一坨巨大的綠色粘液。據說它是喝多了廢棄化妝水後變異的產品。"
+    },
+    {
+        "id": "kr_s4_marathon",
+        "name": "江邊路跑花",
+        "rarity": 4,
+        "growthTime": 150,
+        "price": 850,
+        "scene": 4,
+        "description": "花莖很有彈性，會跟著路跑的人節奏一起晃動，汗水（露水）特別多。"
+    },
+    {
+        "id": "kr_s4_ship",
+        "name": "遊覽船花",
+        "rarity": 4,
+        "growthTime": 180,
+        "price": 1100,
+        "scene": 4,
+        "description": "花瓣像一艘巨大的郵輪。上面常有無數的海鷗花圍著它討蝦味先吃。"
+    },
+    {
+        "id": "kr_s4_building",
+        "name": "63大廈花",
+        "rarity": 4,
+        "growthTime": 220,
+        "price": 1500,
+        "scene": 4,
+        "description": "全身金黃閃閃，是漢江邊最老牌的財富象徵。採收它的人會財運亨通。"
+    },
+    {
+        "id": "kr_s4_moon",
+        "name": "三島月光花",
+        "rarity": 5,
+        "growthTime": 260,
+        "price": 2800,
+        "scene": 4,
+        "description": "由三朵不同顏色的小花組合而成，在夜晚會不斷變換顏色，像燈光秀。"
+    },
+    {
+        "id": "kr_s4_winter",
+        "name": "江邊冰窖花",
+        "rarity": 5,
+        "growthTime": 300,
+        "price": 4200,
+        "scene": 4,
+        "description": "專門在零下十度的寒流中綻放，凍得發白。它是唯一能跟北極熊溝通的花。"
+    },
+    {
+        "id": "kr_s4_future",
+        "name": "漢江奇蹟花",
+        "rarity": 5,
+        "growthTime": 360,
+        "price": 6500,
+        "scene": 4,
+        "description": "集合了所有韓國拼勁的精華。它不睡覺，24 小時都在瘋狂生長。"
+    }
+]

@@ -1,0 +1,326 @@
+[
+    {
+        "id": "kr_legendary",
+        "name": "傳說·無窮花",
+        "rarity": "Legendary",
+        "growthTime": 1800,
+        "price": 12000,
+        "scene": 0,
+        "description": "韓國國花，象徵永恆。據說在它盛開時，空氣中會自動播放大長今的主題曲。"
+    },
+    {
+        "id": "kr_s1_hanbok",
+        "name": "韓服體驗花",
+        "rarity": 1,
+        "growthTime": 5,
+        "price": 15,
+        "scene": 1,
+        "description": "花瓣像裙襬一樣蓬鬆。穿著它進場可以免門票，但蝴蝶進去還是要收錢。"
+    },
+    {
+        "id": "kr_s1_guard",
+        "name": "守門將花",
+        "rarity": 1,
+        "growthTime": 8,
+        "price": 25,
+        "scene": 1,
+        "description": "長著一圈濃密的大鬍子，不管你怎麼逗它，它都不會動，除非你踩到它的根。"
+    },
+    {
+        "id": "kr_s1_kimchi",
+        "name": "皇家泡菜花",
+        "rarity": 1,
+        "growthTime": 10,
+        "price": 30,
+        "scene": 1,
+        "description": "散發著發酵的酸爽味。據說它是紅色的原因是因為被辣油浸泡過久。"
+    },
+    {
+        "id": "kr_s1_roof",
+        "name": "青瓦花",
+        "rarity": 1,
+        "growthTime": 12,
+        "price": 35,
+        "scene": 1,
+        "description": "花瓣呈現完美的屋脊曲線，擋雨效果極佳，是螞蟻們的避雨勝地。"
+    },
+    {
+        "id": "kr_s1_stick",
+        "name": "扁筷子花",
+        "rarity": 1,
+        "growthTime": 15,
+        "price": 40,
+        "scene": 1,
+        "description": "這朵花長得扁扁的，非常難拿捏，剛採收的人通常手會抽筋。"
+    },
+    {
+        "id": "kr_s1_tea",
+        "name": "五味子花",
+        "rarity": 2,
+        "growthTime": 18,
+        "price": 50,
+        "scene": 1,
+        "description": "酸甜苦辣鹹五味雜陳，長得像一串串紅珍珠，喝了據說能考試滿分。"
+    },
+    {
+        "id": "kr_s1_incense",
+        "name": "線香花",
+        "rarity": 2,
+        "growthTime": 22,
+        "price": 65,
+        "scene": 1,
+        "description": "裊裊升起的煙霧中能看見世宗大王的幻影，但他只會教你韓文發音。"
+    },
+    {
+        "id": "kr_s1_fan",
+        "name": "八角扇花",
+        "rarity": 2,
+        "growthTime": 25,
+        "price": 80,
+        "scene": 1,
+        "description": "花瓣展開後就是一把精美的扇子，搧出來的風帶有濃郁的檀香香味。"
+    },
+    {
+        "id": "kr_s1_brush",
+        "name": "訓民正音花",
+        "rarity": 2,
+        "growthTime": 28,
+        "price": 90,
+        "scene": 1,
+        "description": "花粉落到地上會自動排列成『阿尼哈誰喲』，非常適合用來練習書寫。"
+    },
+    {
+        "id": "kr_s1_drama",
+        "name": "穿越古裝花",
+        "rarity": 3,
+        "growthTime": 35,
+        "price": 120,
+        "scene": 1,
+        "description": "碰到它的人會突然換上世子服裝，並對著枯萎的花大喊：『妳不能死！』"
+    },
+    {
+        "id": "kr_s1_mask",
+        "name": "河回面具花",
+        "rarity": 3,
+        "growthTime": 45,
+        "price": 180,
+        "scene": 1,
+        "description": "長著一張充滿魔性的笑臉，看久了會跟著它一起笑到肚子痛。"
+    },
+    {
+        "id": "kr_s1_ginseng",
+        "name": "千年人蔘花",
+        "rarity": 3,
+        "growthTime": 55,
+        "price": 280,
+        "scene": 1,
+        "description": "長得像個小人兒，半夜會自己拔腿跑路，必須用紅線綁住它的腰。"
+    },
+    {
+        "id": "kr_s1_phoenix",
+        "name": "鳳凰御花",
+        "rarity": 4,
+        "growthTime": 75,
+        "price": 450,
+        "scene": 1,
+        "description": "雕刻在寶座背後的鳳凰顯靈，花瓣帶有金邊，看起來就很有王權霸氣。"
+    },
+    {
+        "id": "kr_s1_tiger",
+        "name": "朝鮮猛虎花",
+        "rarity": 4,
+        "growthTime": 100,
+        "price": 750,
+        "scene": 1,
+        "description": "長著老虎斑紋的花朵，叫聲卻是可愛的『喵』，嚴重打擊它的威信。"
+    },
+    {
+        "id": "kr_s1_crane",
+        "name": "仙鶴花",
+        "rarity": 4,
+        "growthTime": 120,
+        "price": 900,
+        "scene": 1,
+        "description": "單腳站立的優雅花朵，據說只有品格高尚的人才能在雨天採收它。"
+    },
+    {
+        "id": "kr_s1_gumiho",
+        "name": "九尾狐花",
+        "rarity": 5,
+        "growthTime": 160,
+        "price": 1500,
+        "scene": 1,
+        "description": "擁有九片毛茸茸的白色尾巴瓣，極具誘惑力，會騙走隔壁花盆的肥料。"
+    },
+    {
+        "id": "kr_s1_dragon",
+        "name": "青龍之首花",
+        "rarity": 5,
+        "growthTime": 200,
+        "price": 3000,
+        "scene": 1,
+        "description": "花心呈現龍頭形狀，每逢初一十五會噴出小火花，專門用來烤乾花粉。"
+    },
+    {
+        "id": "kr_s2_stone",
+        "name": "石頭爺爺花",
+        "rarity": 1,
+        "growthTime": 10,
+        "price": 30,
+        "scene": 2,
+        "description": "摸摸它的鼻子會生兒子，摸它的耳朵會發財，摸它的頭它會罵你。"
+    },
+    {
+        "id": "kr_s2_orange",
+        "name": "漢拿峰橘花",
+        "rarity": 1,
+        "growthTime": 15,
+        "price": 45,
+        "scene": 2,
+        "description": "頭頂有個突起的小腫包，聞起來是清爽的柑橘味，是濟州島的驕傲。"
+    },
+    {
+        "id": "kr_s2_wind",
+        "name": "強風花",
+        "rarity": 1,
+        "growthTime": 18,
+        "price": 50,
+        "scene": 2,
+        "description": "花莖永遠是歪向一邊的，因為濟州島的風大到它從來沒站直過。"
+    },
+    {
+        "id": "kr_s2_shell",
+        "name": "鮑魚花",
+        "rarity": 1,
+        "growthTime": 22,
+        "price": 60,
+        "scene": 2,
+        "description": "長得像貝殼一樣硬梆梆，花心裡藏著一顆珍珠（其實是海女掉的耳環）。"
+    },
+    {
+        "id": "kr_s2_blackpork",
+        "name": "黑豬肉花",
+        "rarity": 1,
+        "growthTime": 25,
+        "price": 70,
+        "scene": 2,
+        "description": "帶著烤肉香味的花朵，葉子上有黑色細毛。請注意，這朵花禁止生吃。"
+    },
+    {
+        "id": "kr_s2_seaweed",
+        "name": "海女浮標花",
+        "rarity": 2,
+        "growthTime": 30,
+        "price": 100,
+        "scene": 2,
+        "description": "圓滾滾的橘色花朵，會浮在水面上，下方似乎繫著一大籃新鮮海膽。"
+    },
+    {
+        "id": "kr_s2_cactus",
+        "name": "百年草花",
+        "rarity": 2,
+        "growthTime": 35,
+        "price": 120,
+        "scene": 2,
+        "description": "紫色的果實形花朵，據說吃下一口能活到一百歲，但味道苦到讓你不想活。"
+    },
+    {
+        "id": "kr_s2_canola",
+        "name": "油菜花海花",
+        "rarity": 2,
+        "growthTime": 40,
+        "price": 140,
+        "scene": 2,
+        "description": "金燦燦的一大片，只要拍張照，你的社交媒體就會被點讚點到當機。"
+    },
+    {
+        "id": "kr_s2_horse",
+        "name": "矮腳馬花",
+        "rarity": 2,
+        "growthTime": 45,
+        "price": 160,
+        "scene": 2,
+        "description": "濟州特產小短腿馬，雖然跑得不快，但它的花瓣可以做成強身健體的藥膏。"
+    },
+    {
+        "id": "kr_s2_volcano",
+        "name": "城山日出花",
+        "rarity": 3,
+        "growthTime": 60,
+        "price": 300,
+        "scene": 2,
+        "description": "花心會在清晨發出第一道曙光，喚醒島上所有還在宿醉的遊客。"
+    },
+    {
+        "id": "kr_s2_waterfall",
+        "name": "天地淵瀑布花",
+        "rarity": 3,
+        "growthTime": 70,
+        "price": 350,
+        "scene": 2,
+        "description": "水流不斷地從花瓣流下，是天然的自動灌溉系統，不需要幫它澆水。"
+    },
+    {
+        "id": "kr_s2_hallasan",
+        "name": "漢拿山雪花",
+        "rarity": 3,
+        "growthTime": 85,
+        "price": 400,
+        "scene": 2,
+        "description": "長在最高的山巔，花瓣上附帶的小冰晶可以用來冰鎮燒酒。"
+    },
+    {
+        "id": "kr_s2_camellia",
+        "name": "冬柏花",
+        "rarity": 4,
+        "growthTime": 100,
+        "price": 600,
+        "scene": 2,
+        "description": "在白雪中綻放的鮮紅，是文青們最愛的背景，代表著冷艷的熱情。"
+    },
+    {
+        "id": "kr_s2_butterfly",
+        "name": "神話幻想花",
+        "rarity": 4,
+        "growthTime": 120,
+        "price": 800,
+        "scene": 2,
+        "description": "據說這朵花是神話中女神的淚珠化成的，花粉會閃爍著彩虹般的色彩。"
+    },
+    {
+        "id": "kr_s2_lavatube",
+        "name": "萬丈窟石筍花",
+        "rarity": 4,
+        "growthTime": 140,
+        "price": 1000,
+        "scene": 2,
+        "description": "長在陰暗處，花莖像熔岩冷卻後的柱狀玄武岩，結構異常堅固。"
+    },
+    {
+        "id": "kr_s2_dolphin",
+        "name": "西歸浦海豚花",
+        "rarity": 5,
+        "growthTime": 180,
+        "price": 2000,
+        "scene": 2,
+        "description": "會發出超音波，據說只要採收它，今年一整年去賞鯨都不會落空。"
+    },
+    {
+        "id": "kr_s2_star",
+        "name": "螢火之海花",
+        "rarity": 5,
+        "growthTime": 220,
+        "price": 3500,
+        "scene": 2,
+        "description": "模仿海邊發光微生物的花朵，在晚上會照亮整個花園，省下電費。"
+    },
+    {
+        "id": "kr_s2_legend",
+        "name": "麻姑婆婆花",
+        "rarity": 5,
+        "growthTime": 300,
+        "price": 5000,
+        "scene": 2,
+        "description": "傳說中創造濟州島的巨人，這朵花巨大到可以讓你在它的葉子上睡午覺。"
+    }
+]
