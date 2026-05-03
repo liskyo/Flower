@@ -2,7 +2,7 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted, computed, nextTick } from 'vue';
-import { state, autoSpawn, setScene, getCurrentGarden, harvestFlower, getCurrentWeather, isSceneUnlocked, getCurrentSpawnMultiplier, catchUpSpawning, getLevelInfo } from '../store/gameState';import { FLOWERS } from '../data/flowers';
+import { state, autoSpawn, setScene, getCurrentGarden, harvestFlower, getCurrentWeather, isSceneUnlocked, getCurrentSpawnMultiplier, catchUpSpawning, getLevelInfo, playSound } from '../store/gameState';import { FLOWERS } from '../data/flowers';
 import GardenSlot from './GardenSlot.vue';
 
 // 取得當前經驗值進度資訊

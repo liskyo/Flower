@@ -1,6 +1,33 @@
 import { reactive, watch } from 'vue';
 import { FLOWERS } from '../data/flowers';
 
+// --- 音效管理器 ---
+const sounds = {
+  // 替換成你放在 public 資料夾裡的路徑
+  pop: new Audio('/assets/sounds/harvest.mp3'),
+  button: new Audio('/sounds/button.wav'),
+  buy: new Audio('/sounds/buy.wav'),
+  error: new Audio('/sounds/error.wav'),
+};
+
+// 預設音量設定 (0.0 到 1.0)
+Object.values(sounds).forEach(audio => {
+  audio.volume = 0.5;
+});
+
+export const playSound = (soundName) => {
+  try {
+    const audio = sounds[soundName];
+    if (audio) {
+      // 確保每次點擊都會從頭播放，即使前一次還沒播完
+      audio.currentTime = 0;
+      audio.play().catch(() => { }); // 攔截瀏覽器自動播放限制的報錯
+    }
+  } catch (e) {
+    console.error('音效播放失敗:', e);
+  }
+};
+
 const SAVE_KEY = 'global_flower_game_save_v6'; // 升級版本以強制重置結構
 
 const defaultState = {
