@@ -11,11 +11,16 @@ const allItems = [
   { id: 'rain3', name: '🌧️ 人造雨三階', desc: '全域生長速度 6 倍 (1小時)', type: 'rain', multi: 6, duration: 1 },
   { id: 'rain4', name: '🌧️ 人造雨四階', desc: '全域生長速度 8 倍 (1小時)', type: 'rain', multi: 8, duration: 1 },
   { id: 'rain5', name: '🌧️ 人造雨五階', desc: '全域生長速度 10 倍 (1小時)', type: 'rain', multi: 10, duration: 1 },
-  { id: 'fert1', name: '💩 肥料一階', desc: '枯萎時間延長 2 倍 (2小時)', type: 'fertilizer', multi: 2, duration: 2 },
-  { id: 'fert2', name: '💩 肥料二階', desc: '枯萎時間延長 4 倍 (2小時)', type: 'fertilizer', multi: 4, duration: 2 },
-  { id: 'fert3', name: '💩 肥料三階', desc: '枯萎時間延長 6 倍 (2小時)', type: 'fertilizer', multi: 6, duration: 2 },
-  { id: 'fert4', name: '💩 肥料四階', desc: '枯萎時間延長 8 倍 (2小時)', type: 'fertilizer', multi: 8, duration: 2 },
-  { id: 'fert5', name: '💩 肥料五階', desc: '枯萎時間延長 10 倍 (2小時)', type: 'fertilizer', multi: 10, duration: 2 }
+  { id: 'fert1', name: '💩 肥料一階', desc: '採收數量 2 倍 (30分鐘)', type: 'fertilizer', multi: 2, duration: 0.5 },
+  { id: 'fert2', name: '💩 肥料二階', desc: '採收數量 2 倍 (60分鐘)', type: 'fertilizer', multi: 2, duration: 1 },
+  { id: 'fert3', name: '💩 肥料三階', desc: '採收數量 2 倍 (120分鐘)', type: 'fertilizer', multi: 2, duration: 2 },
+  { id: 'fert4', name: '💩 肥料四階', desc: '採收數量 3 倍 (60分鐘)', type: 'fertilizer', multi: 3, duration: 1 },
+  { id: 'fert5', name: '💩 肥料五階', desc: '採收數量 3 倍 (120分鐘)', type: 'fertilizer', multi: 3, duration: 2 },
+  { id: 'star1', name: '⭐ 無敵星星一階', desc: '五星機率 2 倍 (30分鐘)', type: 'star', multi: 2, duration: 0.5 },
+  { id: 'star2', name: '⭐ 無敵星星二階', desc: '五星機率 2 倍 (60分鐘)', type: 'star', multi: 2, duration: 1 },
+  { id: 'star3', name: '⭐ 無敵星星三階', desc: '五星機率 2 倍 (120分鐘)', type: 'star', multi: 2, duration: 2 },
+  { id: 'star4', name: '⭐ 無敵星星四階', desc: '五星機率 3 倍 (60分鐘)', type: 'star', multi: 3, duration: 1 },
+  { id: 'star5', name: '⭐ 無敵星星五階', desc: '五星機率 3 倍 (120分鐘)', type: 'star', multi: 3, duration: 2 }
 ];
 
 const inventoryItems = computed(() => {
@@ -51,6 +56,10 @@ const useItem = (item) => {
     } else if (item.type === 'fertilizer') {
       state.activeBuffs.fertilizerUntil = now + item.duration * 60 * 60 * 1000;
       state.activeBuffs.fertilizerMultiplier = item.multi;
+    } else if (item.type === 'star') {
+      // 👇 新增這兩行：讓星星道具發生作用
+      state.activeBuffs.starUntil = now + item.duration * 60 * 60 * 1000;
+      state.activeBuffs.starMultiplier = item.multi;  
     }
     alert(`成功使用 ${item.name}！`);
   }

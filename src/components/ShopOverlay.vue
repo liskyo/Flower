@@ -15,11 +15,20 @@ const items = [
   { id: 'rain3', name: '🌧️ 人造雨三階', desc: '全域生長速度 6 倍 (1小時)', price: 100000, type: 'rain', multi: 6, duration: 1, reqLevel: 8 },
   { id: 'rain4', name: '🌧️ 人造雨四階', desc: '全域生長速度 8 倍 (1小時)', price: 250000, type: 'rain', multi: 8, duration: 1, reqLevel: 12 },
   { id: 'rain5', name: '🌧️ 人造雨五階', desc: '全域生長速度 10 倍 (1小時)', price: 500000, type: 'rain', multi: 10, duration: 1, reqLevel: 15 },
-  { id: 'fert1', name: '💩 肥料一階', desc: '枯萎時間延長 2 倍 (2小時)', price: 10000, type: 'fertilizer', multi: 2, duration: 2, reqLevel: 3 },
-  { id: 'fert2', name: '💩 肥料二階', desc: '枯萎時間延長 4 倍 (2小時)', price: 50000, type: 'fertilizer', multi: 4, duration: 2, reqLevel: 5 },
-  { id: 'fert3', name: '💩 肥料三階', desc: '枯萎時間延長 6 倍 (2小時)', price: 100000, type: 'fertilizer', multi: 6, duration: 2, reqLevel: 8 },
-  { id: 'fert4', name: '💩 肥料四階', desc: '枯萎時間延長 8 倍 (2小時)', price: 250000, type: 'fertilizer', multi: 8, duration: 2, reqLevel: 12 },
-  { id: 'fert5', name: '💩 肥料五階', desc: '枯萎時間延長 10 倍 (2小時)', price: 500000, type: 'fertilizer', multi: 10, duration: 2, reqLevel: 15 }
+  
+  // 👇 更新肥料功能
+  { id: 'fert1', name: '💩 肥料一階', desc: '採收數量 2 倍 (30分鐘)', price: 10000, type: 'fertilizer', multi: 2, duration: 0.5, reqLevel: 3 },
+  { id: 'fert2', name: '💩 肥料二階', desc: '採收數量 2 倍 (60分鐘)', price: 50000, type: 'fertilizer', multi: 2, duration: 1, reqLevel: 5 },
+  { id: 'fert3', name: '💩 肥料三階', desc: '採收數量 2 倍 (120分鐘)', price: 100000, type: 'fertilizer', multi: 2, duration: 2, reqLevel: 8 },
+  { id: 'fert4', name: '💩 肥料四階', desc: '採收數量 3 倍 (60分鐘)', price: 250000, type: 'fertilizer', multi: 3, duration: 1, reqLevel: 12 },
+  { id: 'fert5', name: '💩 肥料五階', desc: '採收數量 3 倍 (120分鐘)', price: 500000, type: 'fertilizer', multi: 3, duration: 2, reqLevel: 15 },
+  
+  // 👇 新增無敵星星
+  { id: 'star1', name: '⭐ 無敵星星一階', desc: '五星機率 2 倍 (30分鐘)', price: 15000, type: 'star', multi: 2, duration: 0.5, reqLevel: 4 },
+  { id: 'star2', name: '⭐ 無敵星星二階', desc: '五星機率 2 倍 (60分鐘)', price: 60000, type: 'star', multi: 2, duration: 1, reqLevel: 7 },
+  { id: 'star3', name: '⭐ 無敵星星三階', desc: '五星機率 2 倍 (120分鐘)', price: 120000, type: 'star', multi: 2, duration: 2, reqLevel: 10 },
+  { id: 'star4', name: '⭐ 無敵星星四階', desc: '五星機率 3 倍 (60分鐘)', price: 300000, type: 'star', multi: 3, duration: 1, reqLevel: 14 },
+  { id: 'star5', name: '⭐ 無敵星星五階', desc: '五星機率 3 倍 (120分鐘)', price: 600000, type: 'star', multi: 3, duration: 2, reqLevel: 16 }
 ];
 
 const buyItem = (item) => {

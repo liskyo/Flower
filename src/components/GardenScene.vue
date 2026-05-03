@@ -107,14 +107,21 @@ const spawnStormElement = () => {
 };
 
 const activeBuffsDisplay = computed(() => {
-  const now = tickerTime.value; // 使用 tickerTime 驅動響應
+  const now = tickerTime.value; 
   const items = [];
   if (state.activeBuffs?.sunnyDollUntil && now < state.activeBuffs.sunnyDollUntil)
     items.push({ icon: '☀️', name: '晴天娃娃', desc: '強制晴天效果', remain: Math.ceil((state.activeBuffs.sunnyDollUntil - now) / 60000) });
   if (state.activeBuffs?.rainUntil && now < state.activeBuffs.rainUntil)
     items.push({ icon: '🌧️', name: '人造雨', desc: `生長速度 ${state.activeBuffs.rainMultiplier || 2} 倍`, remain: Math.ceil((state.activeBuffs.rainUntil - now) / 60000) });
+  
+  // 👇 修正肥料描述
   if (state.activeBuffs?.fertilizerUntil && now < state.activeBuffs.fertilizerUntil)
-    items.push({ icon: '💩', name: '肥料效果', desc: `枯萎時間 ${state.activeBuffs.fertilizerMultiplier || 2} 倍`, remain: Math.ceil((state.activeBuffs.fertilizerUntil - now) / 60000) });
+    items.push({ icon: '💩', name: '肥料效果', desc: `採收數量 ${state.activeBuffs.fertilizerMultiplier || 2} 倍`, remain: Math.ceil((state.activeBuffs.fertilizerUntil - now) / 60000) });
+  
+  // 👇 新增星星描述
+  if (state.activeBuffs?.starUntil && now < state.activeBuffs.starUntil)
+    items.push({ icon: '⭐', name: '無敵星星', desc: `五星出現率 ${state.activeBuffs.starMultiplier || 2} 倍`, remain: Math.ceil((state.activeBuffs.starUntil - now) / 60000) });
+  
   return items;
 });
 const buffTooltip = ref(null);

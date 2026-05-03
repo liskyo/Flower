@@ -54,6 +54,8 @@ const defaultState = {
     rainMultiplier: 1,
     fertilizerUntil: null,
     fertilizerMultiplier: 1
+    starUntil: null,     // 👇 新增星星持續時間
+    starMultiplier: 1    // 👇 新增星星倍率
   },
   exp: 0,
   level: 1,
@@ -104,10 +106,6 @@ export const calculateEffectiveElapsedTime = (startTime) => {
 };
 
 export const getWitherMultiplier = () => {
-  const now = Date.now();
-  if (state.activeBuffs?.fertilizerUntil && now < state.activeBuffs.fertilizerUntil) {
-    return state.activeBuffs?.fertilizerMultiplier || 1;
-  }
   return 1;
 };
 
@@ -245,7 +243,14 @@ const getWeight = (rarity) => {
   if (r === 2) return 50;
   if (r === 3) return 30;
   if (r === 4) return 20;
-  if (r === 5) return 10;
+  if (r === 5) {
+    // 👇 檢查是否有無敵星星效果
+    let starMulti = 1;
+    if (state.activeBuffs?.starUntil && Date.now() < state.activeBuffs.starUntil) {
+      starMulti = state.activeBuffs.starMultiplier || 1;
+    }
+    return 10 * starMulti; // 五星預設權重為 10，乘上星星倍率
+  }
   return 100;
 };
 
@@ -308,10 +313,16 @@ export const harvestFlower = (slotId) => {
     const flowerId = slot.flowerId;
     const flower = FLOWERS.find(f => f.id === flowerId);
     if (flower) {
-      state.diamonds += flower.price;
-      state.inventory[flowerId] = (state.inventory[flowerId] || 0) + 1;
-      // 增加經驗值並計算新等級 (遞增式)
-      state.exp = (state.exp || 0) + Math.round(flower.price / 10);
+      // 👇 檢查是否有肥料效果
+      let harvestMulti = 1;
+      if (state.activeBuffs?.fertilizerUntil && Date.now() < state.activeBuffs.fertilizerUntil) {
+        harvestMulti = state.activeBuffs.fertilizerMultiplier || 1;
+      }
+
+      // 👇 採收數量、鑽石、經驗值全部根據肥料倍率翻倍！
+      state.diamonds += (flower.price * harvestMulti);
+      state.inventory[flowerId] = (state.inventory[flowerId] || 0) + (1 * harvestMulti);
+      state.exp = (state.exp || 0) + Math.round((flower.price * harvestMulti) / 10);
       state.level = getLevelInfo(state.exp).level;
     }
     slot.status = 'empty';
@@ -319,7 +330,6 @@ export const harvestFlower = (slotId) => {
     slot.startTime = null;
     return true;
   } else if (slot.status === 'withered') {
-    // 枯萎花朵清除，無獎勵
     slot.status = 'empty';
     slot.flowerId = null;
     slot.startTime = null;
@@ -472,7 +482,7 @@ export const resetGame = (mode = 'player') => {
       medals: {},
       gardens: {},
       upgrades: { spawnRate: 0.5, maxSlots: 24 },
-      activeBuffs: { sunnyDollUntil: null, rainUntil: null, rainMultiplier: 1, fertilizerUntil: null, fertilizerMultiplier: 1 },
+      activeBuffs: { sunnyDollUntil: null, rainUntil: null, rainMultiplier: 1, fertilizerUntil: null, fertilizerMultiplier: 1, starUntil: null, starMultiplier: 1 },
       exp: 0,
       level: 1,
 
