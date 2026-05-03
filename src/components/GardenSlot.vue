@@ -66,13 +66,34 @@ const processImage = () => {
   canvas.height = img.naturalHeight;
   ctx.drawImage(img, 0, 0);
   try {
+    // ... 前面的程式碼不變 ...
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     const data = imageData.data;
+    
+    // 設定容錯門檻 (0-255)，數值越大去得越乾淨，但也越容易誤傷花朵
+    const tolerance = 45; 
+    // 目標背景色 (假設是純白)
+    const targetR = 255, targetG = 255, targetB = 255;
+
     for (let i = 0; i < data.length; i += 4) {
       const r = data[i], g = data[i+1], b = data[i+2];
-      // 放寬判定：大於 200 的淺灰色、淺黃底色，或是小於 40 的深黑色都會被透明化
-if ((r > 200 && g > 200 && b > 200) || (r < 40 && g < 40 && b < 40)) data[i+3] = 0;
+      
+      // 計算當前像素與目標背景色的「距離」
+      const distance = Math.sqrt(
+        Math.pow(r - targetR, 2) + 
+        Math.pow(g - targetG, 2) + 
+        Math.pow(b - targetB, 2)
+      );
+
+      // 如果距離小於容錯門檻，或是非常黑的顏色，就將其透明化
+      if (distance < tolerance || (r < 40 && g < 40 && b < 40)) {
+        data[i+3] = 0; // alpha 設為 0
+      } else if (distance < tolerance + 20) {
+        // 👇 邊緣羽化處理：讓介於門檻邊緣的像素變成半透明，消除鋸齒
+        data[i+3] = 128; // 半透明
+      }
     }
+    // ... 後面的程式碼不變 ...
     ctx.putImageData(imageData, 0, 0);
     const dataUrl = canvas.toDataURL();
     processedSrc.value = dataUrl;
