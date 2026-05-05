@@ -42,8 +42,17 @@ export const playSound = (soundName) => {
 const SAVE_KEY = 'global_flower_game_save_v6'; // 保留既有 key，透過 saveVersion 做資料 migration
 const SAVE_VERSION = 2;
 
+export const MAP_HOTSPOT_DEFAULTS = {
+  Taiwan: { x: 56, y: 61 },
+  Japan: { x: 90, y: 21 },
+  Korea: { x: 64, y: 30 },
+  Thailand: { x: 45, y: 68 },
+  Singapore: { x: 50, y: 69 }
+};
+
 const defaultState = {
   saveVersion: SAVE_VERSION,
+  isDevMode: false,
   diamonds: 1000, // 給予一些初始鑽石方便測試
   currentCountry: 'Taiwan',
   currentScene: 1,
@@ -66,6 +75,7 @@ const defaultState = {
   exp: 0,
   level: 1,
   inventoryItems: {},
+  mapHotspots: JSON.parse(JSON.stringify(MAP_HOTSPOT_DEFAULTS)),
   dailyLogin: {
     cycleDay: 1,
     lastClaimPeriodKey: null,
@@ -412,6 +422,18 @@ function migrateState(rawState) {
     migrated.inventoryItems.travelTicket = (migrated.inventoryItems.travelTicket || 0) + migrated.travelTickets;
   }
 
+  if (typeof migrated.isDevMode !== 'boolean') {
+    migrated.isDevMode = false;
+  }
+  if (!migrated.mapHotspots || typeof migrated.mapHotspots !== 'object') {
+    migrated.mapHotspots = JSON.parse(JSON.stringify(MAP_HOTSPOT_DEFAULTS));
+  }
+  Object.entries(MAP_HOTSPOT_DEFAULTS).forEach(([countryId, position]) => {
+    if (!migrated.mapHotspots[countryId]) {
+      migrated.mapHotspots[countryId] = { ...position };
+    }
+  });
+
   delete migrated.travelTickets;
   migrated.saveVersion = SAVE_VERSION;
   return migrated;
@@ -458,10 +480,34 @@ function ensureAchievementState() {
   if (!Array.isArray(state.achievements.claimedIds)) state.achievements.claimedIds = [];
 }
 
+function ensureMapHotspotState() {
+  if (!state.mapHotspots || typeof state.mapHotspots !== 'object') {
+    state.mapHotspots = JSON.parse(JSON.stringify(MAP_HOTSPOT_DEFAULTS));
+  }
+  Object.entries(MAP_HOTSPOT_DEFAULTS).forEach(([countryId, position]) => {
+    const current = state.mapHotspots[countryId];
+    if (!current || typeof current.x !== 'number' || typeof current.y !== 'number') {
+      state.mapHotspots[countryId] = { ...position };
+    }
+  });
+}
+
+export const updateMapHotspotPosition = (countryId, x, y) => {
+  ensureMapHotspotState();
+  if (!MAP_HOTSPOT_DEFAULTS[countryId]) return;
+
+  const clamp = (value) => Math.min(100, Math.max(0, Number(value) || 0));
+  state.mapHotspots[countryId] = {
+    x: clamp(x),
+    y: clamp(y)
+  };
+};
+
 ensureDailyLoginState();
 ensureDailyMissionState();
 ensureAchievementState();
 ensureInventoryState();
+ensureMapHotspotState();
 
 // 兼容舊存檔：確保舊玩家具備 unlockedCountries
 if (!state.unlockedCountries) {
@@ -813,6 +859,7 @@ export const resetGame = (mode = 'player') => {
 
     const freshState = {
       saveVersion: SAVE_VERSION,
+      isDevMode: mode === 'dev',
       diamonds: mode === 'dev' ? 5000000 : 100000,
       currentCountry: 'Taiwan',
       currentScene: 1,
@@ -829,6 +876,7 @@ export const resetGame = (mode = 'player') => {
       inventoryItems: mode === 'player'
         ? { 'sunnyDoll': 3, 'rain1': 3, 'fert1': 3, 'star1': 3 }
         : { travelTicket: 3 },
+      mapHotspots: JSON.parse(JSON.stringify(MAP_HOTSPOT_DEFAULTS)),
       dailyLogin: {
         cycleDay: 1,
         lastClaimPeriodKey: null,

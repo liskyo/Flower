@@ -1,13 +1,18 @@
 <script setup>
-import { computed, ref } from 'vue';
-import { consumeInventoryItem, getInventoryItemCount, state, trackDailyMissionProgress } from '../store/gameState';
+import { computed, onUnmounted, ref } from 'vue';
+import { consumeInventoryItem, getInventoryItemCount, MAP_HOTSPOT_DEFAULTS, state, trackDailyMissionProgress, updateMapHotspotPosition } from '../store/gameState';
 
 const emit = defineEmits(['back', 'select-country']);
 
 const selectedCountry = ref(null);
 const selectedMap = ref('asia');
+const mapContainerRef = ref(null);
+const editHotspotMode = ref(false);
+const draggingCountryId = ref(null);
+const dragMoved = ref(false);
 
 const formatNumber = (num) => new Intl.NumberFormat('en-US').format(num);
+const isDevMode = computed(() => !!state.isDevMode);
 
 const maps = [
   { id: 'asia', name: 'Asia', image: '/maps/Asia.png', playable: true },
@@ -17,17 +22,26 @@ const maps = [
   { id: 'one-piece', name: 'One Piece', image: '/maps/One Piece.png', playable: false }
 ];
 
-const countries = [
-  { id: 'Taiwan', name: '台灣', x: 56, y: 61, flag: '🇹🇼' },
-  { id: 'Japan', name: '日本', x: 90, y: 21, flag: '🇯🇵' },
-  { id: 'Korea', name: '韓國', x: 64, y: 30, flag: '🇰🇷' },
-  { id: 'Thailand', name: '泰國', x: 45, y: 68, flag: '🇹🇭' },
-  { id: 'Singapore', name: '新加坡', x: 50, y: 69, flag: '🇸🇬' }
+const countryMeta = [
+  { id: 'Taiwan', name: '台灣', flag: '🇹🇼' },
+  { id: 'Japan', name: '日本', flag: '🇯🇵' },
+  { id: 'Korea', name: '韓國', flag: '🇰🇷' },
+  { id: 'Thailand', name: '泰國', flag: '🇹🇭' },
+  { id: 'Singapore', name: '新加坡', flag: '🇸🇬' }
 ];
+const countries = computed(() => countryMeta.map((country) => {
+  const defaultPos = MAP_HOTSPOT_DEFAULTS[country.id] || { x: 50, y: 50 };
+  const currentPos = state.mapHotspots?.[country.id] || defaultPos;
+  return {
+    ...country,
+    x: currentPos.x,
+    y: currentPos.y
+  };
+}));
 
 const currentMapMeta = computed(() => maps.find(map => map.id === selectedMap.value) || maps[0]);
 const isCurrentMapPlayable = computed(() => currentMapMeta.value.playable);
-const visibleCountries = computed(() => (isCurrentMapPlayable.value ? countries : []));
+const visibleCountries = computed(() => (isCurrentMapPlayable.value ? countries.value : []));
 
 const mapBackgroundStyle = computed(() => ({
   backgroundImage: `url('${currentMapMeta.value.image}')`
@@ -36,6 +50,7 @@ const mapBackgroundStyle = computed(() => ({
 const switchMap = (mapId) => {
   selectedMap.value = mapId;
   selectedCountry.value = null;
+  stopDragging();
 };
 
 const handleSelect = (countryId) => {
@@ -49,7 +64,7 @@ const handleSelect = (countryId) => {
   } else {
     const cost = state.visitedCount * 1000000;
     if (getInventoryItemCount('travelTicket') > 0) {
-      if (confirm(`使用 1 張出國機票解鎖 ${countries.find(c => c.id === countryId)?.name || '此國家'} 嗎？`)) {
+      if (confirm(`使用 1 張出國機票解鎖 ${countries.value.find(c => c.id === countryId)?.name || '此國家'} 嗎？`)) {
         consumeInventoryItem('travelTicket');
         state.unlockedCountries.push(countryId);
         state.visitedCount += 1;
@@ -78,6 +93,51 @@ const handleSelect = (countryId) => {
     }
   }
 };
+
+const getCountryById = (countryId) => countries.value.find(c => c.id === countryId);
+
+const handleHotspotClick = (countryId) => {
+  if (dragMoved.value) {
+    dragMoved.value = false;
+    return;
+  }
+  selectedCountry.value = selectedCountry.value === countryId ? null : countryId;
+};
+
+const updatePositionFromEvent = (event) => {
+  if (!draggingCountryId.value || !mapContainerRef.value) return;
+  const rect = mapContainerRef.value.getBoundingClientRect();
+  if (!rect.width || !rect.height) return;
+
+  const rawX = ((event.clientX - rect.left) / rect.width) * 100;
+  const rawY = ((event.clientY - rect.top) / rect.height) * 100;
+  const clampedX = Math.min(100, Math.max(0, rawX));
+  const clampedY = Math.min(100, Math.max(0, rawY));
+  updateMapHotspotPosition(draggingCountryId.value, clampedX, clampedY);
+  dragMoved.value = true;
+};
+
+const handleHotspotPointerDown = (countryId, event) => {
+  if (!isDevMode.value || !editHotspotMode.value || !isCurrentMapPlayable.value) return;
+  event.preventDefault();
+  draggingCountryId.value = countryId;
+  selectedCountry.value = countryId;
+  dragMoved.value = false;
+  window.addEventListener('pointermove', updatePositionFromEvent);
+  window.addEventListener('pointerup', stopDragging);
+  window.addEventListener('pointercancel', stopDragging);
+};
+
+function stopDragging() {
+  draggingCountryId.value = null;
+  window.removeEventListener('pointermove', updatePositionFromEvent);
+  window.removeEventListener('pointerup', stopDragging);
+  window.removeEventListener('pointercancel', stopDragging);
+}
+
+onUnmounted(() => {
+  stopDragging();
+});
 </script>
 
 <template>
@@ -104,7 +164,19 @@ const handleSelect = (countryId) => {
       </button>
     </div>
 
-    <div class="map-container">
+    <div v-if="isDevMode" class="dev-toolbar">
+      <button class="dev-toggle-btn" :class="{ active: editHotspotMode }" @click="editHotspotMode = !editHotspotMode">
+        {{ editHotspotMode ? '✅ 亮點調整中' : '🛠️ 調整亮點位置' }}
+      </button>
+      <div class="dev-hint">
+        {{ editHotspotMode ? '拖曳地圖上的亮點即可更新座標（會自動儲存）。' : '開啟後可拖曳已生成國家亮點。' }}
+      </div>
+      <div v-if="selectedCountry && getCountryById(selectedCountry)" class="dev-coord">
+        {{ getCountryById(selectedCountry).name }}：X {{ getCountryById(selectedCountry).x.toFixed(1) }} / Y {{ getCountryById(selectedCountry).y.toFixed(1) }}
+      </div>
+    </div>
+
+    <div ref="mapContainerRef" class="map-container" :class="{ 'edit-mode': editHotspotMode && isDevMode }">
 
       <!-- 地圖背景 -->
       <div class="world-map-bg" :style="mapBackgroundStyle"></div>
@@ -120,7 +192,11 @@ const handleSelect = (countryId) => {
         }"
         :style="{ top: `${country.y}%`, left: `${country.x}%` }"
       >
-        <div class="hotspot" @click.stop="selectedCountry = selectedCountry === country.id ? null : country.id"></div>
+        <div
+          class="hotspot"
+          @click.stop="handleHotspotClick(country.id)"
+          @pointerdown="handleHotspotPointerDown(country.id, $event)"
+        ></div>
       </div>
 
       <!-- 固定在左上角的提示框 -->
@@ -215,6 +291,48 @@ const handleSelect = (countryId) => {
   background: #0f1c29; border-radius: 30px; overflow: hidden; border: 4px solid rgba(255,255,255,0.1);
   box-shadow: 0 20px 50px rgba(0,0,0,0.8), inset 0 0 100px rgba(0,0,0,0.5);
 }
+.map-container.edit-mode {
+  border-color: rgba(241, 196, 15, 0.9);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.8), 0 0 0 3px rgba(241, 196, 15, 0.35), inset 0 0 100px rgba(0,0,0,0.5);
+}
+
+.dev-toolbar {
+  width: min(1200px, 95vw);
+  margin-top: 8px;
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  padding: 8px 10px;
+  color: #dfe6e9;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 10px;
+}
+.dev-toggle-btn {
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  background: rgba(40, 44, 52, 0.85);
+  color: #f1f2f6;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 0.78rem;
+  font-weight: 900;
+  cursor: pointer;
+}
+.dev-toggle-btn.active {
+  border-color: #f1c40f;
+  color: #2d3436;
+  background: linear-gradient(to bottom, #ffeaa7, #fdcb6e);
+}
+.dev-hint {
+  font-size: 0.72rem;
+  opacity: 0.95;
+}
+.dev-coord {
+  font-size: 0.72rem;
+  color: #ffeaa7;
+  font-weight: 800;
+}
 
 .world-map-bg { 
   position: absolute; inset: 0; pointer-events: none; 
@@ -228,8 +346,12 @@ const handleSelect = (countryId) => {
 .country-node {
   position: absolute; transform: translate(-50%, -50%); cursor: pointer; z-index: 5;
 }
+.edit-mode .country-node {
+  cursor: grab;
+}
 
 .hotspot {
+  touch-action: none;
   width: 20px; height: 20px; background: #f1c40f; border-radius: 50%;
   border: 3px solid white; box-shadow: 0 0 15px #f1c40f, 0 0 30px #f1c40f;
   animation: pulse 1.5s infinite alternate; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -270,6 +392,91 @@ const handleSelect = (countryId) => {
   box-shadow: 0 2px 5px rgba(0,0,0,0.5);
 }
 .action-btn:active { transform: translateY(1px); }
+
+@media (max-width: 900px), (max-height: 560px) {
+  .map-overlay {
+    padding: 10px 10px 12px;
+  }
+  .close-btn {
+    top: 10px;
+    left: 10px;
+    padding: 7px 12px;
+    border-radius: 14px;
+    font-size: 0.92rem;
+  }
+  .top-info {
+    width: 100%;
+    margin-top: 46px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+  .map-title {
+    text-align: center;
+    font-size: 1.1rem;
+  }
+  .resource-row {
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .diamond-display,
+  .ticket-display {
+    font-size: 0.78rem;
+    padding: 4px 9px;
+  }
+  .map-tabs {
+    width: 100%;
+    margin-top: 6px;
+    justify-content: flex-start;
+    overflow-x: auto;
+    overflow-y: hidden;
+    flex-wrap: nowrap;
+    padding-bottom: 2px;
+  }
+  .map-tab-btn {
+    flex: 0 0 auto;
+    white-space: nowrap;
+    font-size: 0.7rem;
+    padding: 5px 10px;
+  }
+  .tab-soon {
+    font-size: 0.58rem;
+    padding: 1px 5px;
+  }
+  .dev-toolbar {
+    width: 100%;
+    grid-template-columns: 1fr;
+    gap: 6px;
+    padding: 7px 8px;
+  }
+  .dev-toggle-btn,
+  .dev-hint,
+  .dev-coord {
+    font-size: 0.7rem;
+  }
+  .map-container {
+    width: 100%;
+    max-width: none;
+    height: 56vh;
+    aspect-ratio: auto;
+    border-radius: 16px;
+    margin-top: 6px;
+  }
+  .country-label-fixed {
+    top: 8px;
+    left: 8px;
+    padding: 7px 9px;
+    min-width: 130px;
+  }
+  .country-label-fixed .name { font-size: 0.78rem; }
+  .country-label-fixed .status { font-size: 0.64rem; }
+  .action-btn { font-size: 0.68rem; }
+  .map-coming-soon {
+    width: min(84vw, 320px);
+    padding: 12px 14px;
+  }
+}
 
 @keyframes pulse {
   0% { box-shadow: 0 0 5px currentColor; }
