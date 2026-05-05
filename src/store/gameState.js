@@ -1,5 +1,9 @@
 import { reactive, watch } from 'vue';
 import { FLOWERS } from '../data/flowers';
+import { DAILY_LOGIN_REWARDS, DAILY_MISSIONS, DAILY_MISSION_MILESTONES } from '../data/rewards';
+import { getCatalogAchievementDefinitions } from '../data/achievements';
+
+export { DAILY_LOGIN_REWARDS, DAILY_MISSIONS, DAILY_MISSION_MILESTONES };
 
 // --- 音效管理器 ---
 const sounds = {
@@ -35,11 +39,12 @@ export const playSound = (soundName) => {
   }
 };
 
-const SAVE_KEY = 'global_flower_game_save_v6'; // 升級版本以強制重置結構
+const SAVE_KEY = 'global_flower_game_save_v6'; // 保留既有 key，透過 saveVersion 做資料 migration
+const SAVE_VERSION = 2;
 
 const defaultState = {
+  saveVersion: SAVE_VERSION,
   diamonds: 1000, // 給予一些初始鑽石方便測試
-  travelTickets: 0,
   currentCountry: 'Taiwan',
   currentScene: 1,
   unlockedScenes: { 'Taiwan': [1, 2, 3, 4], 'Japan': [1, 2, 3, 4], 'Korea': [1, 2, 3, 4], 'Thailand': [1, 2, 3, 4], 'Singapore': [1, 2, 3, 4] },
@@ -89,121 +94,6 @@ export const WEATHER_TYPES = [
 ];
 export const WEATHER_CYCLE_MS = 2 * 60 * 60 * 1000;
 
-export const DAILY_LOGIN_REWARDS = [
-  { day: 1, icon: '💎', name: '鑽石雨露', desc: '補充旅行基金', diamonds: 2000 },
-  { day: 2, icon: '☀️', name: '晴天娃娃', desc: '強制晴天 6 小時', itemId: 'sunnyDoll', itemName: '晴天娃娃', count: 1 },
-  { day: 3, icon: '💎', name: '閃耀鑽石袋', desc: '更豐厚的鑽石', diamonds: 6000 },
-  { day: 4, icon: '🌧️', name: '人造雨一階', desc: '生成效率加速道具', itemId: 'rain1', itemName: '人造雨一階', count: 1 },
-  { day: 5, icon: '💎', name: '皇家鑽石箱', desc: '大量鑽石獎勵', diamonds: 12000 },
-  { day: 6, icon: '⭐', name: '無敵星星一階', desc: '提高五星花出現率', itemId: 'star1', itemName: '無敵星星一階', count: 1 },
-  { day: 7, icon: '✈️', name: '出國機票', desc: '免費解鎖下一個國家一次', ticket: 1 }
-];
-
-export const DAILY_MISSIONS = [
-  { id: 'loginReward', icon: '🎁', title: '晨光簽到', desc: '領取每日登入獎勵 1 次', progressKey: 'loginClaims', target: 1, reward: { diamonds: 1500 } },
-  { id: 'harvest5', icon: '🌷', title: '採花暖身', desc: '採收 5 朵花', progressKey: 'harvests', target: 5, reward: { diamonds: 2500 } },
-  { id: 'switchScene3', icon: '🧭', title: '花園巡禮', desc: '切換場景 3 次', progressKey: 'switchScenes', target: 3, reward: { itemId: 'sunnyDoll', itemName: '晴天娃娃', count: 1 } },
-  { id: 'buyItem1', icon: '🛒', title: '補給採買', desc: '在商店購買 1 個道具', progressKey: 'purchases', target: 1, reward: { diamonds: 4500 } },
-  { id: 'useItem1', icon: '✨', title: '道具實戰', desc: '使用 1 個道具', progressKey: 'usedItems', target: 1, reward: { itemId: 'rain1', itemName: '人造雨一階', count: 1 } },
-  { id: 'earn10000', icon: '💎', title: '閃耀收成', desc: '透過採收獲得 10,000 鑽石', progressKey: 'diamondsEarned', target: 10000, reward: { diamonds: 7000 } },
-  { id: 'harvest25', icon: '🌺', title: '熟練花匠', desc: '採收 25 朵花', progressKey: 'harvests', target: 25, reward: { itemId: 'fert1', itemName: '肥料一階', count: 2 } },
-  { id: 'rare3', icon: '💐', title: '珍稀尋花', desc: '採收 3 朵四星以上花朵', progressKey: 'rareHarvests', target: 3, reward: { diamonds: 12000 } },
-  { id: 'travel1', icon: '🛫', title: '旅行足跡', desc: '前往或解鎖其他國家 1 次', progressKey: 'travels', target: 1, reward: { itemId: 'star1', itemName: '無敵星星一階', count: 1 } },
-  { id: 'harvest50', icon: '👑', title: '今日花王', desc: '採收 50 朵花', progressKey: 'harvests', target: 50, reward: { diamonds: 18000, itemId: 'star1', itemName: '無敵星星一階', count: 1 } }
-];
-
-export const DAILY_MISSION_MILESTONES = [
-  { count: 1, icon: '🥉', name: '青銅寶箱', reward: { diamonds: 3000 } },
-  { count: 4, icon: '🥈', name: '白銀寶箱', reward: { itemId: 'rain2', itemName: '人造雨二階', count: 1 } },
-  { count: 7, icon: '🥇', name: '黃金寶箱', reward: { diamonds: 20000, itemId: 'fert2', itemName: '肥料二階', count: 1 } },
-  { count: 10, icon: '🏆', name: '傳說寶箱', reward: { diamonds: 50000, itemId: 'star2', itemName: '無敵星星二階', count: 1 } }
-];
-
-const ACHIEVEMENT_COUNTRY_NAMES = {
-  Taiwan: '台灣',
-  Japan: '日本',
-  Korea: '韓國',
-  Thailand: '泰國',
-  Singapore: '新加坡'
-};
-
-const getRarityRank = (rarity) => rarity === 'Legendary' ? 6 : parseInt(rarity) || 1;
-
-const getNormalGoldReward = (flower) => ({
-  diamonds: 8000 + (getRarityRank(flower.rarity) * 6000)
-});
-
-export const getCatalogAchievementDefinitions = () => {
-  return FLOWERS.flatMap(flower => {
-    const countryName = ACHIEVEMENT_COUNTRY_NAMES[flower.country] || flower.country;
-    if (flower.rarity === 'Legendary') {
-      return [
-        {
-          id: `${flower.id}_legend_collect`,
-          flowerId: flower.id,
-          country: flower.country,
-          category: 'Legendary',
-          tier: 'collect',
-          icon: '🌟',
-          title: `${flower.name} 初次邂逅`,
-          desc: `收集 1 朵 ${countryName} 傳說花朵`,
-          target: 1,
-          reward: { diamonds: 50000 }
-        },
-        {
-          id: `${flower.id}_legend_bronze`,
-          flowerId: flower.id,
-          country: flower.country,
-          category: 'Legendary',
-          tier: 'bronze',
-          icon: '🥉',
-          title: `${flower.name} 銅牌典藏`,
-          desc: '傳說花朵達成銅牌採收數',
-          target: 10,
-          reward: { diamonds: 120000 }
-        },
-        {
-          id: `${flower.id}_legend_silver`,
-          flowerId: flower.id,
-          country: flower.country,
-          category: 'Legendary',
-          tier: 'silver',
-          icon: '🥈',
-          title: `${flower.name} 銀牌珍藏`,
-          desc: '傳說花朵達成銀牌採收數',
-          target: 20,
-          reward: { diamonds: 250000 }
-        },
-        {
-          id: `${flower.id}_legend_gold`,
-          flowerId: flower.id,
-          country: flower.country,
-          category: 'Legendary',
-          tier: 'gold',
-          icon: '🥇',
-          title: `${flower.name} 金牌傳說`,
-          desc: '傳說花朵達成金牌採收數',
-          target: 50,
-          reward: { diamonds: 500000, ticket: 1 }
-        }
-      ];
-    }
-
-    return [{
-      id: `${flower.id}_gold`,
-      flowerId: flower.id,
-      country: flower.country,
-      category: flower.country,
-      tier: 'gold',
-      icon: '🥇',
-      title: `${flower.name} 金牌圖鑑`,
-      desc: `${countryName}圖鑑金牌成就`,
-      target: 50,
-      reward: getNormalGoldReward(flower)
-    }];
-  });
-};
-
 const getDailyLoginPeriodStart = (timestamp = Date.now()) => {
   const date = new Date(timestamp);
   date.setHours(date.getHours() - 8);
@@ -250,11 +140,28 @@ export const getDailyLoginStatus = () => {
 
 const applyReward = (reward) => {
   if (reward.diamonds) state.diamonds += reward.diamonds;
-  if (reward.ticket) state.travelTickets = (state.travelTickets || 0) + reward.ticket;
+  if (reward.ticket) addInventoryItem('travelTicket', reward.ticket);
   if (reward.itemId) {
-    if (!state.inventoryItems) state.inventoryItems = {};
-    state.inventoryItems[reward.itemId] = (state.inventoryItems[reward.itemId] || 0) + (reward.count || 1);
+    addInventoryItem(reward.itemId, reward.count || 1);
   }
+};
+
+export const getInventoryItemCount = (itemId) => {
+  ensureInventoryState();
+  return state.inventoryItems[itemId] || 0;
+};
+
+export const addInventoryItem = (itemId, count = 1) => {
+  ensureInventoryState();
+  state.inventoryItems[itemId] = (state.inventoryItems[itemId] || 0) + count;
+};
+
+export const consumeInventoryItem = (itemId, count = 1) => {
+  ensureInventoryState();
+  if ((state.inventoryItems[itemId] || 0) < count) return false;
+  state.inventoryItems[itemId] -= count;
+  if (state.inventoryItems[itemId] <= 0) delete state.inventoryItems[itemId];
+  return true;
 };
 
 export const claimDailyLoginReward = () => {
@@ -341,6 +248,28 @@ export const claimDailyMissionMilestone = (count) => {
   return { ok: true, reward: milestone.reward, milestone };
 };
 
+export const claimAllDailyMissionRewards = () => {
+  ensureDailyMissionState();
+  const claimedTasks = [];
+  const claimedMilestones = [];
+
+  DAILY_MISSIONS.forEach(task => {
+    const result = claimDailyMissionReward(task.id);
+    if (result.ok) claimedTasks.push(result);
+  });
+
+  DAILY_MISSION_MILESTONES.forEach(milestone => {
+    const result = claimDailyMissionMilestone(milestone.count);
+    if (result.ok) claimedMilestones.push(result);
+  });
+
+  return {
+    ok: claimedTasks.length + claimedMilestones.length > 0,
+    claimedTasks,
+    claimedMilestones
+  };
+};
+
 export const getCatalogAchievementStatus = () => {
   ensureAchievementState();
   const definitions = getCatalogAchievementDefinitions();
@@ -385,6 +314,21 @@ export const claimCatalogAchievement = (achievementId) => {
   applyReward(achievement.reward);
   state.achievements.claimedIds.push(achievementId);
   return { ok: true, achievement, reward: achievement.reward };
+};
+
+export const claimAllCatalogAchievements = () => {
+  ensureAchievementState();
+  const claimed = [];
+
+  getCatalogAchievementDefinitions().forEach(achievement => {
+    const result = claimCatalogAchievement(achievement.id);
+    if (result.ok) claimed.push(result);
+  });
+
+  return {
+    ok: claimed.length > 0,
+    claimed
+  };
 };
 
 export const getCurrentWeather = () => {
@@ -454,11 +398,36 @@ export const getLevelInfo = (totalExp) => {
   });
 });
 
+const cloneDefaultState = () => JSON.parse(JSON.stringify(defaultState));
 const savedData = localStorage.getItem(SAVE_KEY);
-export const state = reactive(savedData ? JSON.parse(savedData) : defaultState);
+export const state = reactive(migrateState(savedData ? JSON.parse(savedData) : cloneDefaultState()));
+
+function migrateState(rawState) {
+  const migrated = rawState || defaultState;
+  const fromVersion = Number(migrated.saveVersion || 0);
+
+  if (!migrated.inventoryItems) migrated.inventoryItems = {};
+
+  if (fromVersion < 2 && typeof migrated.travelTickets === 'number' && migrated.travelTickets > 0) {
+    migrated.inventoryItems.travelTicket = (migrated.inventoryItems.travelTicket || 0) + migrated.travelTickets;
+  }
+
+  delete migrated.travelTickets;
+  migrated.saveVersion = SAVE_VERSION;
+  return migrated;
+}
+
+function ensureInventoryState() {
+  if (!state.inventoryItems) state.inventoryItems = {};
+  if (typeof state.travelTickets === 'number' && state.travelTickets > 0) {
+    state.inventoryItems.travelTicket = (state.inventoryItems.travelTicket || 0) + state.travelTickets;
+    delete state.travelTickets;
+  }
+  state.saveVersion = SAVE_VERSION;
+}
 
 function ensureDailyLoginState() {
-  if (typeof state.travelTickets !== 'number') state.travelTickets = 0;
+  ensureInventoryState();
   if (!state.dailyLogin) {
     state.dailyLogin = {
       cycleDay: 1,
@@ -492,6 +461,7 @@ function ensureAchievementState() {
 ensureDailyLoginState();
 ensureDailyMissionState();
 ensureAchievementState();
+ensureInventoryState();
 
 // 兼容舊存檔：確保舊玩家具備 unlockedCountries
 if (!state.unlockedCountries) {
@@ -537,10 +507,11 @@ export const loadStateFromCloud = async (user) => {
 
     if (data && data.game_state && Object.keys(data.game_state).length > 0) {
       // 覆蓋當前狀態
-      Object.assign(state, data.game_state);
+      Object.assign(state, migrateState(data.game_state));
       ensureDailyLoginState();
       ensureDailyMissionState();
       ensureAchievementState();
+      ensureInventoryState();
       localStorage.setItem(SAVE_KEY, JSON.stringify(state));
     } else {
       // 若雲端無存檔，建立一筆新資料
@@ -555,7 +526,7 @@ export const loadStateFromCloud = async (user) => {
 export const handleLogout = async () => {
   await supabase.auth.signOut();
   currentUser = null;
-  Object.assign(state, defaultState); // 清空本地狀態
+  Object.assign(state, cloneDefaultState()); // 清空本地狀態
   localStorage.removeItem(SAVE_KEY);
 };
 
@@ -832,8 +803,8 @@ export const resetGame = (mode = 'player') => {
     }
 
     const freshState = {
+      saveVersion: SAVE_VERSION,
       diamonds: mode === 'dev' ? 5000000 : 100000,
-      travelTickets: mode === 'dev' ? 3 : 0,
       currentCountry: 'Taiwan',
       currentScene: 1,
       unlockedScenes: { 'Taiwan': [1, 2, 3, 4], 'Japan': [1, 2, 3, 4], 'Korea': [1, 2, 3, 4], 'Thailand': [1, 2, 3, 4], 'Singapore': [1, 2, 3, 4] },
@@ -848,7 +819,7 @@ export const resetGame = (mode = 'player') => {
       level: mode === 'dev' ? 15 : 1,
       inventoryItems: mode === 'player'
         ? { 'sunnyDoll': 3, 'rain1': 3, 'fert1': 3, 'star1': 3 }
-        : {},
+        : { travelTicket: 3 },
       dailyLogin: {
         cycleDay: 1,
         lastClaimPeriodKey: null,

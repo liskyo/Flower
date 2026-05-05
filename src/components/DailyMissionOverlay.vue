@@ -1,10 +1,12 @@
 <script setup>
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 import {
+  claimAllDailyMissionRewards,
   claimDailyMissionMilestone,
   claimDailyMissionReward,
   getDailyMissionStatus
 } from '../store/gameState';
+import { getItemDefinition } from '../data/items';
 
 const emit = defineEmits(['back']);
 
@@ -29,7 +31,7 @@ const formatCountdown = (targetTime) => {
 const rewardText = (reward) => {
   const parts = [];
   if (reward.diamonds) parts.push(`💎 ${formatNumber(reward.diamonds)}`);
-  if (reward.itemId) parts.push(`${reward.itemName} x${reward.count || 1}`);
+  if (reward.itemId) parts.push(`${reward.itemName || getItemDefinition(reward.itemId)?.name || '道具'} x${reward.count || 1}`);
   if (reward.ticket) parts.push(`✈️ 出國機票 x${reward.ticket}`);
   return parts.join(' + ');
 };
@@ -42,6 +44,13 @@ const claimTask = (task) => {
 const claimMilestone = (milestone) => {
   const result = claimDailyMissionMilestone(milestone.count);
   if (result.ok) alert(`${milestone.name} 開啟成功！獲得 ${rewardText(result.reward)}`);
+};
+
+const claimAll = () => {
+  const result = claimAllDailyMissionRewards();
+  if (result.ok) {
+    alert(`一鍵領取完成！共領取 ${result.claimedTasks.length} 個任務與 ${result.claimedMilestones.length} 個寶箱。`);
+  }
 };
 
 onMounted(() => {
@@ -83,6 +92,14 @@ onUnmounted(() => {
           <strong>{{ formatCountdown(status.nextResetAt) }}</strong>
         </div>
       </div>
+
+      <button
+        class="claim-all-btn"
+        :disabled="status.claimableTaskCount + status.claimableMilestoneCount === 0"
+        @click="claimAll"
+      >
+        一鍵領取全部可領獎勵
+      </button>
 
       <div class="milestone-row">
         <button
@@ -219,6 +236,18 @@ onUnmounted(() => {
 .summary-card span { display: block; font-size: 0.76rem; font-weight: 900; color: #dfe6e9; margin-bottom: 4px; }
 .summary-card strong { color: #ffeaa7; font-size: 1.15rem; }
 .summary-card.hot { border-color: rgba(255, 234, 167, 0.55); box-shadow: 0 0 18px rgba(255, 234, 167, 0.18); }
+.claim-all-btn {
+  display: block; width: min(420px, 100%); margin: -4px auto 16px;
+  padding: 12px 18px; border: 0; border-radius: 999px;
+  color: #2d3436; font-weight: 900; cursor: pointer;
+  background: linear-gradient(180deg, #ffeaa7, #fdcb6e);
+  box-shadow: 0 5px 0 #b7791f;
+}
+.claim-all-btn:disabled {
+  cursor: not-allowed; color: #dfe6e9;
+  background: linear-gradient(180deg, #636e72, #2d3436);
+  box-shadow: 0 3px 0 #111;
+}
 
 .milestone-row {
   display: grid;

@@ -1,9 +1,12 @@
 <script setup>
 import { computed, ref } from 'vue';
 import {
+  claimAllCatalogAchievements,
   claimCatalogAchievement,
   getCatalogAchievementStatus
 } from '../store/gameState';
+import { ACHIEVEMENT_COUNTRY_NAMES } from '../data/achievements';
+import { getItemDefinition } from '../data/items';
 
 const emit = defineEmits(['back']);
 
@@ -18,8 +21,7 @@ const categories = computed(() => {
     { id: 'Legendary', name: '傳說' }
   ];
   const countryIds = [...new Set(status.value.achievements.map(item => item.country))];
-  const names = { Taiwan: '台灣', Japan: '日本', Korea: '韓國', Thailand: '泰國', Singapore: '新加坡' };
-  return [...base, ...countryIds.map(id => ({ id, name: names[id] || id }))];
+  return [...base, ...countryIds.map(id => ({ id, name: ACHIEVEMENT_COUNTRY_NAMES[id] || id }))];
 });
 
 const filteredAchievements = computed(() => {
@@ -38,7 +40,7 @@ const formatNumber = (num) => new Intl.NumberFormat('en-US').format(num || 0);
 const rewardText = (reward) => {
   const parts = [];
   if (reward.diamonds) parts.push(`💎 ${formatNumber(reward.diamonds)}`);
-  if (reward.itemId) parts.push(`${reward.itemName} x${reward.count || 1}`);
+  if (reward.itemId) parts.push(`${reward.itemName || getItemDefinition(reward.itemId)?.name || '道具'} x${reward.count || 1}`);
   if (reward.ticket) parts.push(`✈️ 出國機票 x${reward.ticket}`);
   return parts.join(' + ');
 };
@@ -47,6 +49,13 @@ const claim = (achievement) => {
   const result = claimCatalogAchievement(achievement.id);
   if (result.ok) {
     alert(`成就達成！獲得 ${rewardText(result.reward)}`);
+  }
+};
+
+const claimAll = () => {
+  const result = claimAllCatalogAchievements();
+  if (result.ok) {
+    alert(`一鍵領取完成！共領取 ${result.claimed.length} 個成就獎勵。`);
   }
 };
 </script>
@@ -79,6 +88,14 @@ const claim = (achievement) => {
           <strong>{{ status.claimedCount }}</strong>
         </div>
       </div>
+
+      <button
+        class="claim-all-btn"
+        :disabled="status.claimableCount === 0"
+        @click="claimAll"
+      >
+        一鍵領取全部可領成就
+      </button>
 
       <div class="category-tabs">
         <button
@@ -209,6 +226,18 @@ const claim = (achievement) => {
 }
 .summary-card span { display: block; font-size: 0.76rem; font-weight: 900; color: #dfe6e9; margin-bottom: 4px; }
 .summary-card strong { color: #ffeaa7; font-size: 1.15rem; }
+.claim-all-btn {
+  display: block; width: min(420px, 100%); margin: -4px auto 16px;
+  padding: 12px 18px; border: 0; border-radius: 999px;
+  color: #2d3436; font-weight: 900; cursor: pointer;
+  background: linear-gradient(180deg, #ffeaa7, #fdcb6e);
+  box-shadow: 0 5px 0 #b7791f;
+}
+.claim-all-btn:disabled {
+  cursor: not-allowed; color: #dfe6e9;
+  background: linear-gradient(180deg, #636e72, #2d3436);
+  box-shadow: 0 3px 0 #111;
+}
 
 .category-tabs {
   display: flex;

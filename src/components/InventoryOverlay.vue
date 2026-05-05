@@ -1,44 +1,19 @@
 <script setup>
 import { computed } from 'vue';
-import { state, trackDailyMissionProgress } from '../store/gameState';
+import { consumeInventoryItem, state, trackDailyMissionProgress } from '../store/gameState';
+import { INVENTORY_ITEM_DEFINITIONS } from '../data/items';
 
 const emit = defineEmits(['back']);
 
-const allItems = [
-  { id: 'travelTicket', name: '✈️ 出國機票', desc: '可在地圖免費解鎖一個未開放國家', type: 'travel' },
-  { id: 'sunnyDoll', name: '☀️ 晴天娃娃', desc: '強制天氣變晴天 6 小時', type: 'weather', duration: 6 },
-  { id: 'rain1', name: '🌧️ 人造雨一階', desc: '全域生長速度 2 倍 (1小時)', type: 'rain', multi: 2, duration: 1 },
-  { id: 'rain2', name: '🌧️ 人造雨二階', desc: '全域生長速度 4 倍 (1小時)', type: 'rain', multi: 4, duration: 1 },
-  { id: 'rain3', name: '🌧️ 人造雨三階', desc: '全域生長速度 6 倍 (1小時)', type: 'rain', multi: 6, duration: 1 },
-  { id: 'rain4', name: '🌧️ 人造雨四階', desc: '全域生長速度 8 倍 (1小時)', type: 'rain', multi: 8, duration: 1 },
-  { id: 'rain5', name: '🌧️ 人造雨五階', desc: '全域生長速度 10 倍 (1小時)', type: 'rain', multi: 10, duration: 1 },
-  { id: 'fert1', name: '💩 肥料一階', desc: '採收數量 2 倍 (30分鐘)', type: 'fertilizer', multi: 2, duration: 0.5 },
-  { id: 'fert2', name: '💩 肥料二階', desc: '採收數量 2 倍 (60分鐘)', type: 'fertilizer', multi: 2, duration: 1 },
-  { id: 'fert3', name: '💩 肥料三階', desc: '採收數量 2 倍 (120分鐘)', type: 'fertilizer', multi: 2, duration: 2 },
-  { id: 'fert4', name: '💩 肥料四階', desc: '採收數量 3 倍 (60分鐘)', type: 'fertilizer', multi: 3, duration: 1 },
-  { id: 'fert5', name: '💩 肥料五階', desc: '採收數量 3 倍 (120分鐘)', type: 'fertilizer', multi: 3, duration: 2 },
-  { id: 'star1', name: '⭐ 無敵星星一階', desc: '五星機率 2 倍 (30分鐘)', type: 'star', multi: 2, duration: 0.5 },
-  { id: 'star2', name: '⭐ 無敵星星二階', desc: '五星機率 2 倍 (60分鐘)', type: 'star', multi: 2, duration: 1 },
-  { id: 'star3', name: '⭐ 無敵星星三階', desc: '五星機率 2 倍 (120分鐘)', type: 'star', multi: 2, duration: 2 },
-  { id: 'star4', name: '⭐ 無敵星星四階', desc: '五星機率 3 倍 (60分鐘)', type: 'star', multi: 3, duration: 1 },
-  { id: 'star5', name: '⭐ 無敵星星五階', desc: '五星機率 3 倍 (120分鐘)', type: 'star', multi: 3, duration: 2 }
-];
-
 const inventoryItems = computed(() => {
-  const travelTicketItems = (state.travelTickets || 0) > 0
-    ? [{ ...allItems[0], count: state.travelTickets }]
-    : [];
-
-  if (!state.inventoryItems) return travelTicketItems;
-  const usableItems = Object.entries(state.inventoryItems)
+  if (!state.inventoryItems) return [];
+  return Object.entries(state.inventoryItems)
     .filter(([_, count]) => count > 0)
     .map(([id, count]) => {
-      const itemDef = allItems.find(i => i.id === id);
+      const itemDef = INVENTORY_ITEM_DEFINITIONS.find(i => i.id === id);
       return { ...itemDef, count };
     })
     .filter(item => item.name); // only valid items
-
-  return [...travelTicketItems, ...usableItems];
 });
 
 const useItem = (item) => {
@@ -47,8 +22,7 @@ const useItem = (item) => {
     return;
   }
 
-  if (state.inventoryItems[item.id] > 0) {
-    state.inventoryItems[item.id]--;
+  if (consumeInventoryItem(item.id)) {
     const now = Date.now();
     
     // 【新增】防呆機制：如果舊存檔沒有 activeBuffs，先初始化它以確保響應式生效

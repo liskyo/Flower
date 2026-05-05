@@ -4,8 +4,9 @@ import {
   DAILY_LOGIN_REWARDS,
   claimDailyLoginReward,
   getDailyLoginStatus,
-  state
+  getInventoryItemCount
 } from '../store/gameState';
+import { getItemDefinition } from '../data/items';
 
 const emit = defineEmits(['back']);
 
@@ -30,7 +31,7 @@ const formatCountdown = (targetTime) => {
 const rewardText = (reward) => {
   if (reward.diamonds) return `💎 ${formatNumber(reward.diamonds)}`;
   if (reward.ticket) return `✈️ 出國機票 x${reward.ticket}`;
-  return `${reward.itemName} x${reward.count || 1}`;
+  return `${reward.itemName || getItemDefinition(reward.itemId)?.name || '道具'} x${reward.count || 1}`;
 };
 
 const cardState = (day) => {
@@ -83,7 +84,7 @@ onUnmounted(() => {
         </div>
         <div class="summary-card">
           <span class="summary-label">持有機票</span>
-          <strong>✈️ {{ state.travelTickets || 0 }}</strong>
+          <strong>✈️ {{ getInventoryItemCount('travelTicket') }}</strong>
         </div>
       </div>
 

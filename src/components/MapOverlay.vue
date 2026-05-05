@@ -1,6 +1,6 @@
 <script setup>
 import { computed, ref } from 'vue';
-import { state, trackDailyMissionProgress } from '../store/gameState';
+import { consumeInventoryItem, getInventoryItemCount, state, trackDailyMissionProgress } from '../store/gameState';
 
 const emit = defineEmits(['back', 'select-country']);
 
@@ -26,9 +26,9 @@ const handleSelect = (countryId) => {
     emit('select-country', countryId);
   } else {
     const cost = state.visitedCount * 1000000;
-    if ((state.travelTickets || 0) > 0) {
+    if (getInventoryItemCount('travelTicket') > 0) {
       if (confirm(`使用 1 張出國機票解鎖 ${countries.find(c => c.id === countryId)?.name || '此國家'} 嗎？`)) {
-        state.travelTickets -= 1;
+        consumeInventoryItem('travelTicket');
         state.unlockedCountries.push(countryId);
         state.visitedCount += 1;
         state.currentCountry = countryId;
@@ -64,7 +64,7 @@ const handleSelect = (countryId) => {
     <div class="top-info">
       <div class="map-title">🌍 選擇你要前往的國家</div>
       <div class="diamond-display">💎 您的鑽石: <span class="diamond-val">{{ formatNumber(state.diamonds) }}</span></div>
-      <div class="ticket-display">✈️ 出國機票: <span class="ticket-val">{{ state.travelTickets || 0 }}</span></div>
+      <div class="ticket-display">✈️ 出國機票: <span class="ticket-val">{{ getInventoryItemCount('travelTicket') }}</span></div>
     </div>
     
     <div class="map-container">
@@ -92,10 +92,10 @@ const handleSelect = (countryId) => {
             <template v-if="country.id === selectedCountry">
               <div class="name">{{ country.flag }} {{ country.name }}</div>
               <div v-if="state.unlockedCountries.includes(country.id)" class="status unlocked">✅ 已解鎖</div>
-              <div v-else-if="(state.travelTickets || 0) > 0" class="status ticket">✈️ 可使用出國機票</div>
+              <div v-else-if="getInventoryItemCount('travelTicket') > 0" class="status ticket">✈️ 可使用出國機票</div>
               <div v-else class="status locked">🔒 需 {{ formatNumber(state.visitedCount * 1000000) }} 鑽石</div>
               <button class="action-btn" @click.stop="handleSelect(country.id)">
-                {{ state.unlockedCountries.includes(country.id) ? '🛫 立即前往' : (state.travelTickets || 0) > 0 ? '✈️ 使用機票' : '💰 購買機票' }}
+                {{ state.unlockedCountries.includes(country.id) ? '🛫 立即前往' : getInventoryItemCount('travelTicket') > 0 ? '✈️ 使用機票' : '💰 購買機票' }}
               </button>
             </template>
           </template>

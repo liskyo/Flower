@@ -10,6 +10,7 @@ import InventoryOverlay from './components/InventoryOverlay.vue';
 import DailyRewardOverlay from './components/DailyRewardOverlay.vue';
 import DailyMissionOverlay from './components/DailyMissionOverlay.vue';
 import AchievementOverlay from './components/AchievementOverlay.vue';
+import ActivityHubOverlay from './components/ActivityHubOverlay.vue';
 import { supabase } from './supabase';
 import { loadStateFromCloud, handleLogout, resetGame } from './store/gameState';
 
@@ -110,6 +111,7 @@ const doLogout = async () => {
             <DailyRewardOverlay v-else-if="currentTab === 'dailyReward'" @back="currentTab = 'garden'" />
             <DailyMissionOverlay v-else-if="currentTab === 'dailyMission'" @back="currentTab = 'garden'" />
             <AchievementOverlay v-else-if="currentTab === 'achievement'" @back="currentTab = 'garden'" />
+            <ActivityHubOverlay v-else-if="currentTab === 'activityHub'" @back="currentTab = 'garden'" @navigate="setTab" />
           </Transition>
         </main>
       </div>

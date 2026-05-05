@@ -1,6 +1,7 @@
 <script setup>
 import { computed } from 'vue';
-import { state, trackDailyMissionProgress } from '../store/gameState';
+import { addInventoryItem, state, trackDailyMissionProgress } from '../store/gameState';
+import { SHOP_ITEMS } from '../data/items';
 
 const emit = defineEmits(['back']);
 
@@ -8,34 +9,12 @@ const formatNumber = (num) => {
   return new Intl.NumberFormat('en-US').format(num);
 };
 
-const items = [
-  { id: 'sunnyDoll', name: '☀️ 晴天娃娃', desc: '強制天氣變晴天 6 小時', price: 5000, type: 'weather', duration: 6, reqLevel: 2 },
-  { id: 'rain1', name: '🌧️ 人造雨一階', desc: '全域生長速度 2 倍 (1小時)', price: 10000, type: 'rain', multi: 2, duration: 1, reqLevel: 3 },
-  { id: 'rain2', name: '🌧️ 人造雨二階', desc: '全域生長速度 4 倍 (1小時)', price: 50000, type: 'rain', multi: 4, duration: 1, reqLevel: 5 },
-  { id: 'rain3', name: '🌧️ 人造雨三階', desc: '全域生長速度 6 倍 (1小時)', price: 100000, type: 'rain', multi: 6, duration: 1, reqLevel: 8 },
-  { id: 'rain4', name: '🌧️ 人造雨四階', desc: '全域生長速度 8 倍 (1小時)', price: 250000, type: 'rain', multi: 8, duration: 1, reqLevel: 12 },
-  { id: 'rain5', name: '🌧️ 人造雨五階', desc: '全域生長速度 10 倍 (1小時)', price: 500000, type: 'rain', multi: 10, duration: 1, reqLevel: 15 },
-  
-  // 👇 更新肥料功能
-  { id: 'fert1', name: '💩 肥料一階', desc: '採收數量 2 倍 (30分鐘)', price: 10000, type: 'fertilizer', multi: 2, duration: 0.5, reqLevel: 3 },
-  { id: 'fert2', name: '💩 肥料二階', desc: '採收數量 2 倍 (60分鐘)', price: 50000, type: 'fertilizer', multi: 2, duration: 1, reqLevel: 5 },
-  { id: 'fert3', name: '💩 肥料三階', desc: '採收數量 2 倍 (120分鐘)', price: 100000, type: 'fertilizer', multi: 2, duration: 2, reqLevel: 8 },
-  { id: 'fert4', name: '💩 肥料四階', desc: '採收數量 3 倍 (60分鐘)', price: 250000, type: 'fertilizer', multi: 3, duration: 1, reqLevel: 12 },
-  { id: 'fert5', name: '💩 肥料五階', desc: '採收數量 3 倍 (120分鐘)', price: 500000, type: 'fertilizer', multi: 3, duration: 2, reqLevel: 15 },
-  
-  // 👇 新增無敵星星
-  { id: 'star1', name: '⭐ 無敵星星一階', desc: '五星機率 2 倍 (30分鐘)', price: 15000, type: 'star', multi: 2, duration: 0.5, reqLevel: 4 },
-  { id: 'star2', name: '⭐ 無敵星星二階', desc: '五星機率 2 倍 (60分鐘)', price: 60000, type: 'star', multi: 2, duration: 1, reqLevel: 7 },
-  { id: 'star3', name: '⭐ 無敵星星三階', desc: '五星機率 2 倍 (120分鐘)', price: 120000, type: 'star', multi: 2, duration: 2, reqLevel: 10 },
-  { id: 'star4', name: '⭐ 無敵星星四階', desc: '五星機率 3 倍 (60分鐘)', price: 300000, type: 'star', multi: 3, duration: 1, reqLevel: 14 },
-  { id: 'star5', name: '⭐ 無敵星星五階', desc: '五星機率 3 倍 (120分鐘)', price: 600000, type: 'star', multi: 3, duration: 2, reqLevel: 16 }
-];
+const items = SHOP_ITEMS;
 
 const buyItem = (item) => {
   if (state.diamonds >= item.price) {
     state.diamonds -= item.price;
-    if (!state.inventoryItems) state.inventoryItems = {};
-    state.inventoryItems[item.id] = (state.inventoryItems[item.id] || 0) + 1;
+    addInventoryItem(item.id);
     trackDailyMissionProgress('purchases');
     alert(`成功購買 ${item.name}！已放入道具箱中。`);
   } else {
