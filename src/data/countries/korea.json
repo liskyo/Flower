@@ -3,6 +3,12 @@
   "name": "韓國",
   "flag": "🇰🇷",
   "scenes": 4,
+  "sceneNames": [
+    "景福宮",
+    "濟州島",
+    "海雲台",
+    "漢江公園"
+  ],
   "flowers": [
     {
       "id": "kr_legendary",

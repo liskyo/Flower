@@ -3,6 +3,12 @@
   "name": "日本",
   "flag": "🇯🇵",
   "scenes": 4,
+  "sceneNames": [
+    "富士山",
+    "晴空塔",
+    "百鬼夜行",
+    "夏日祭典"
+  ],
   "flowers": [
     {
       "id": "jp_s1_skytree",

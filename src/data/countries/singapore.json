@@ -3,6 +3,12 @@
   "name": "新加坡",
   "flag": "🇸🇬",
   "scenes": 4,
+  "sceneNames": [
+    "濱海灣金沙",
+    "魚尾獅公園",
+    "聖淘沙島",
+    "濱海灣花園"
+  ],
   "flowers": [
     {
       "id": "sg_legendary",
@@ -11,7 +17,7 @@
       "growthTime": 1800,
       "price": 12000,
       "scene": 0,
-      "description": "新加坡國花，自帶優雅與堅韌氣場。據說對著它喊一聲『Majulah!』，它會開得更燦爛。"
+      "description": "新加坡國花，氣質穩到像國家預算表。對著它喊『Majulah』，它會淡定回你一句：Can lah。"
     },
     {
       "id": "sg_s1_infinity",
@@ -20,7 +26,7 @@
       "growthTime": 5,
       "price": 15,
       "scene": 1,
-      "description": "花瓣平坦得像水面，如果你試圖在上面游泳，會因為高度太高而腳軟。"
+      "description": "花瓣平到像金沙無邊際泳池，站上去先想拍照、再想人生，最後想房價。"
     },
     {
       "id": "sg_s1_casino",
@@ -29,7 +35,7 @@
       "growthTime": 8,
       "price": 25,
       "scene": 1,
-      "description": "長得像圓形的賭場籌碼，聞起來有一種『搏一搏，單槓變摩托』的冒險氣息。"
+      "description": "長得像賭場籌碼，香氣裡混著『這把穩了』和『完了啦』，是濱海灣專屬情緒香。"
     },
     {
       "id": "sg_s1_shopping",
@@ -38,7 +44,7 @@
       "growthTime": 10,
       "price": 30,
       "scene": 1,
-      "description": "花瓣呈現高級紙質手感，採收時會發出刷信用卡的『刷刷』聲。"
+      "description": "花瓣像精品購物袋，採收時自動播放刷卡聲，然後提醒你帳單明天到。"
     },
     {
       "id": "sg_s1_highview",
@@ -146,7 +152,7 @@
       "growthTime": 160,
       "price": 1200,
       "scene": 1,
-      "description": "花心會發出引擎轟鳴聲，採收它需要極快的反應速度，不然它會在你面前飛馳而去。"
+      "description": "花心有 F1 引擎轟鳴，手速慢 0.3 秒它就衝走，還會回頭嗆你：Try again, bro。"
     },
     {
       "id": "sg_s1_ship",
@@ -164,7 +170,7 @@
       "growthTime": 300,
       "price": 5000,
       "scene": 1,
-      "description": "花瓣像飛舞的鈔票，採收後會讓人產生一種『我現在超有錢』的錯覺（雖然只有三秒）。"
+      "description": "花瓣像鈔票滿天飛，採收後短暫覺得財富自由，三秒後回到現實：ERP 扣款中。"
     },
     {
       "id": "sg_s2_water",
@@ -173,7 +179,7 @@
       "growthTime": 5,
       "price": 20,
       "scene": 2,
-      "description": "這朵花會一直往你臉上噴水，是夏天防暑的最佳選擇（如果噴的是聖水就更好）。"
+      "description": "會朝你臉上連續噴水，降溫效果一流；唯一缺點是瀏海瞬間變魚尾獅同款。"
     },
     {
       "id": "sg_s2_pose",
@@ -281,7 +287,7 @@
       "growthTime": 100,
       "price": 550,
       "scene": 2,
-      "description": "這朵花開花時會發出『Lah!』、『Meh?』的聲音，溝通起來非常有效率。"
+      "description": "開花時連發『Can lah』『Can meh』『Aiyo』，是整座花園最道地的 Singlish 老師。"
     },
     {
       "id": "sg_s2_skyline",
@@ -362,7 +368,7 @@
       "growthTime": 20,
       "price": 60,
       "scene": 3,
-      "description": "長在細長的花莖上，像個懸掛的小車廂，能讓螞蟻在不同花盆間旅行。"
+      "description": "像聖淘沙纜車的小車廂，專門載螞蟻觀光客看海景，票價一粒砂糖。"
     },
     {
       "id": "sg_s3_peacock",
@@ -596,7 +602,7 @@
       "growthTime": 120,
       "price": 750,
       "scene": 4,
-      "description": "它生長得非常、非常、非常慢。等它開花，你的孫子可能都大學畢業了。"
+      "description": "生長速度慢到像排熱門餐廳。等它開花時，你可能已經把號碼牌背下來了。"
     },
     {
       "id": "sg_s4_ocbc",
@@ -623,7 +629,7 @@
       "growthTime": 220,
       "price": 1900,
       "scene": 4,
-      "description": "花心會轉動，負責調節整座花園的二氧化碳比例。它是這座島的肺。"
+      "description": "花心像渦輪引擎，默默幫整座花園調節空氣，是低調做事不作秀的 MVP。"
     },
     {
       "id": "sg_s4_glass",
@@ -650,7 +656,7 @@
       "growthTime": 400,
       "price": 8000,
       "scene": 4,
-      "description": "據說是從 2050 年穿越回來的花。它展現了人類與自然完美共存的終極形態。"
+      "description": "據說從 2050 年穿越回來，展示人類與自然共存的最終版本，順便自帶智慧冷氣。"
     }
   ]
 }

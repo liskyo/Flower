@@ -5,8 +5,17 @@ import { consumeInventoryItem, getInventoryItemCount, state, trackDailyMissionPr
 const emit = defineEmits(['back', 'select-country']);
 
 const selectedCountry = ref(null);
+const selectedMap = ref('asia');
 
 const formatNumber = (num) => new Intl.NumberFormat('en-US').format(num);
+
+const maps = [
+  { id: 'asia', name: 'Asia', image: '/maps/Asia.png', playable: true },
+  { id: 'europe', name: 'Europe', image: '/maps/Europe.png', playable: false },
+  { id: 'north-america', name: 'North America', image: '/maps/North America.png', playable: false },
+  { id: 'south-america', name: 'South America', image: '/maps/South America.png', playable: false },
+  { id: 'one-piece', name: 'One Piece', image: '/maps/One Piece.png', playable: false }
+];
 
 const countries = [
   { id: 'Taiwan', name: '台灣', x: 56, y: 61, flag: '🇹🇼' },
@@ -15,6 +24,19 @@ const countries = [
   { id: 'Thailand', name: '泰國', x: 45, y: 68, flag: '🇹🇭' },
   { id: 'Singapore', name: '新加坡', x: 50, y: 69, flag: '🇸🇬' }
 ];
+
+const currentMapMeta = computed(() => maps.find(map => map.id === selectedMap.value) || maps[0]);
+const isCurrentMapPlayable = computed(() => currentMapMeta.value.playable);
+const visibleCountries = computed(() => (isCurrentMapPlayable.value ? countries : []));
+
+const mapBackgroundStyle = computed(() => ({
+  backgroundImage: `url('${currentMapMeta.value.image}')`
+}));
+
+const switchMap = (mapId) => {
+  selectedMap.value = mapId;
+  selectedCountry.value = null;
+};
 
 const handleSelect = (countryId) => {
   if (state.unlockedCountries.includes(countryId)) {
@@ -62,18 +84,30 @@ const handleSelect = (countryId) => {
   <div class="map-overlay">
     <button @click="emit('back')" class="close-btn">🔙 返回花園</button>
     <div class="top-info">
-      <div class="map-title">🌍 選擇你要前往的國家</div>
+      <div class="map-title">🌍 選擇地圖與國家</div>
       <div class="diamond-display">💎 您的鑽石: <span class="diamond-val">{{ formatNumber(state.diamonds) }}</span></div>
       <div class="ticket-display">✈️ 出國機票: <span class="ticket-val">{{ getInventoryItemCount('travelTicket') }}</span></div>
     </div>
     
     <div class="map-container">
-      <!-- 真實世界地圖背景 -->
-      <div class="world-map-bg"></div>
+      <div class="map-tabs">
+        <button
+          v-for="map in maps"
+          :key="map.id"
+          class="map-tab-btn"
+          :class="{ active: selectedMap === map.id }"
+          @click="switchMap(map.id)"
+        >
+          {{ map.name }}
+        </button>
+      </div>
+
+      <!-- 地圖背景 -->
+      <div class="world-map-bg" :style="mapBackgroundStyle"></div>
       
       <!-- 國家節點 -->
       <div 
-        v-for="country in countries" 
+        v-for="country in visibleCountries" 
         :key="country.id"
         class="country-node"
         :class="{ 
@@ -87,7 +121,7 @@ const handleSelect = (countryId) => {
 
       <!-- 固定在左上角的提示框 -->
       <Transition name="fade-label">
-        <div v-if="selectedCountry" class="country-label-fixed">
+        <div v-if="selectedCountry && isCurrentMapPlayable" class="country-label-fixed">
           <template v-for="country in countries" :key="country.id">
             <template v-if="country.id === selectedCountry">
               <div class="name">{{ country.flag }} {{ country.name }}</div>
@@ -101,6 +135,11 @@ const handleSelect = (countryId) => {
           </template>
         </div>
       </Transition>
+
+      <div v-if="!isCurrentMapPlayable" class="map-coming-soon">
+        <h3>🛠️ {{ currentMapMeta.name }} 地圖施工中</h3>
+        <p>此區域地圖已上線，國家與花朵內容將於後續版本陸續開放。</p>
+      </div>
     </div>
   </div>
 </template>
@@ -134,9 +173,25 @@ const handleSelect = (countryId) => {
   box-shadow: 0 20px 50px rgba(0,0,0,0.8), inset 0 0 100px rgba(0,0,0,0.5);
 }
 
+.map-tabs {
+  position: absolute; top: 12px; left: 50%; transform: translateX(-50%);
+  display: flex; gap: 8px; z-index: 30; flex-wrap: wrap; justify-content: center;
+  max-width: 92%;
+}
+.map-tab-btn {
+  border: 2px solid rgba(255,255,255,0.35); border-radius: 999px;
+  background: rgba(0,0,0,0.55); color: #ecf0f1; padding: 6px 12px;
+  font-size: 0.75rem; font-weight: 900; cursor: pointer;
+  transition: all 0.2s;
+}
+.map-tab-btn.active {
+  color: #2d3436; background: linear-gradient(to bottom, #ffeaa7, #fdcb6e);
+  border-color: #f1c40f;
+}
+
 .world-map-bg { 
   position: absolute; inset: 0; pointer-events: none; 
-  background-image: url('/worldmap.png');
+  background-image: url('/maps/Asia.png');
   background-size: 100% 100%;
   background-position: center;
   background-repeat: no-repeat;
@@ -171,6 +226,16 @@ const handleSelect = (countryId) => {
 .country-label-fixed .status.unlocked { color: #2ecc71; }
 .country-label-fixed .status.locked { color: #e74c3c; }
 .country-label-fixed .status.ticket { color: #ffeaa7; }
+
+.map-coming-soon {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  z-index: 40; text-align: center; color: white;
+  background: rgba(0,0,0,0.68); border: 2px solid rgba(255,255,255,0.25);
+  border-radius: 16px; padding: 16px 20px; max-width: 360px;
+  backdrop-filter: blur(8px);
+}
+.map-coming-soon h3 { margin: 0 0 6px; font-size: 1.1rem; }
+.map-coming-soon p { margin: 0; font-size: 0.82rem; color: #dfe6e9; line-height: 1.5; }
 
 .action-btn {
   margin-top: 6px; width: 100%; padding: 4px; border-radius: 6px; font-weight: bold; font-size: 0.75rem;

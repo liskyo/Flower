@@ -3,6 +3,10 @@
 <script setup>
 import { ref, onMounted, onUnmounted, computed, nextTick } from 'vue';
 import { state, autoSpawn, setScene, getCurrentGarden, harvestFlower, getCurrentWeather, isSceneUnlocked, getCurrentSpawnMultiplier, catchUpSpawning, getLevelInfo, getDailyLoginStatus, getDailyMissionSummary, getCatalogAchievementSummary, playSound } from '../store/gameState';import { FLOWERS } from '../data/flowers';
+import taiwanData from '../data/countries/taiwan.json';
+import japanData from '../data/countries/japan.json';
+import koreaData from '../data/countries/korea.json';
+import singaporeData from '../data/countries/singapore.json';
 import GardenSlot from './GardenSlot.vue';
 
 // 取得當前經驗值進度資訊
@@ -52,16 +56,17 @@ const processBasketImage = () => {
   } catch (e) { processedBasketSrc.value = img.src; }
 };
 
-const sceneNames = {
-  taiwan: ["台北 101", "阿里山", "民雄鬼屋", "台灣夜市"],
-  japan: ["富士山", "晴空塔", "百鬼夜行", "夏日祭典"],
-  korea: ["景福宮", "濟州島", "海雲台", "漢江公園"],
-  singapore: ["濱海灣金沙", "魚尾獅公園", "聖淘沙島", "濱海灣花園"],
-  thailand: ["曼谷大皇宮", "皮皮島", "曼谷水上市場", "清邁古城"]
+const sceneNamesByCountry = {
+  [taiwanData.id]: taiwanData.sceneNames || [],
+  [japanData.id]: japanData.sceneNames || [],
+  [koreaData.id]: koreaData.sceneNames || [],
+  [singaporeData.id]: singaporeData.sceneNames || []
 };
 
 const currentSceneNames = computed(() => {
-  return sceneNames[state.currentCountry.toLowerCase()] || ["場景 1", "場景 2", "場景 3", "場景 4"];
+  const names = sceneNamesByCountry[state.currentCountry];
+  if (Array.isArray(names) && names.length === 4) return names;
+  return ["場景 1", "場景 2", "場景 3", "場景 4"];
 });
 
 // 計算指定場景的前置任務 (前一個場景) 的銀牌收集進度
