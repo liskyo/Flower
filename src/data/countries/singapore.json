@@ -7,7 +7,7 @@
     "濱海灣金沙",
     "魚尾獅公園",
     "聖淘沙島",
-    "濱海灣花園"
+    "虎豹別墅"
   ],
   "flowers": [
     {
@@ -498,165 +498,165 @@
     },
     {
       "id": "sg_s4_supertree",
-      "name": "擎天樹花",
+      "name": "虎豹拱門花",
       "rarity": 1,
       "growthTime": 5,
       "price": 20,
       "scene": 4,
-      "description": "雖然長得像樹，但它其實是充滿科技感的巨型花朵。記得晚上幫它充電。"
+      "description": "花瓣像虎豹別墅入口的復古拱門，遠看莊嚴，近看像在說：小朋友，故事聽完再走。"
     },
     {
       "id": "sg_s4_solar",
-      "name": "太陽能板花",
+      "name": "復古磁磚花",
       "rarity": 1,
       "growthTime": 10,
       "price": 35,
       "scene": 4,
-      "description": "花瓣能吸收陽光並轉換為 Wi-Fi 訊號，是現代花園最實用的品種。"
+      "description": "花面鋪滿南洋花磚紋理，色彩飽和到像阿嬤的客廳地板，拍照自帶懷舊濾鏡。"
     },
     {
       "id": "sg_s4_mist",
-      "name": "雲霧林花",
+      "name": "傳說壁畫花",
       "rarity": 1,
       "growthTime": 15,
       "price": 50,
       "scene": 4,
-      "description": "自帶冷氣系統，能在 35 度的高溫下保持 18 度的體溫。採收前請穿外套。"
+      "description": "花瓣上的圖案全是神話故事，越看越像在追連續劇，還會自動播旁白：下集更精彩。"
     },
     {
       "id": "sg_s4_fern",
-      "name": "史前蕨類花",
+      "name": "龍虎守護花",
       "rarity": 1,
       "growthTime": 20,
       "price": 65,
       "scene": 4,
-      "description": "長得非常原始，據說恐龍曾經拿它當牙籤用過。"
+      "description": "一邊像龍一邊像虎，站在花圃邊守門，連麻雀飛過都要先驗證通行證。"
     },
     {
       "id": "sg_s4_waterfall",
-      "name": "室內瀑布花",
+      "name": "十八層地宮花",
       "rarity": 1,
       "growthTime": 25,
       "price": 80,
       "scene": 4,
-      "description": "水流不斷地從花心傾瀉而下，聲音大到讓你懷疑家裡的水龍頭沒關。"
+      "description": "層層花瓣一路向下，氣氛神祕到連蚯蚓經過都放慢腳步，怕誤入劇情主線。"
     },
     {
       "id": "sg_s4_tulip",
-      "name": "花穹鬱金香花",
+      "name": "善惡審判花",
       "rarity": 2,
       "growthTime": 35,
       "price": 120,
       "scene": 4,
-      "description": "它是坐飛機過來的嬌貴客人，必須全程吹冷氣，不然會立刻中暑身亡。"
+      "description": "花芯像法官木槌，開花時會先宣判你今天有沒有偷懶，連拖延症都無所遁形。"
     },
     {
       "id": "sg_s4_orchid",
-      "name": "萬代蘭研究花",
+      "name": "虎爪石像花",
       "rarity": 2,
       "growthTime": 45,
       "price": 160,
       "scene": 4,
-      "description": "長得極其標準，花瓣上印著實驗室的編號，是一朵有身分證的花。"
+      "description": "花瓣像石雕虎爪，摸起來冷冷硬硬，實際上很溫柔，頂多只會嚇跑偷吃肥料的蟲。"
     },
     {
       "id": "sg_s4_baobab",
-      "name": "大肚子猴麵包樹花",
+      "name": "百獸長廊花",
       "rarity": 2,
       "growthTime": 55,
       "price": 210,
       "scene": 4,
-      "description": "花莖像個大酒桶。裡面儲存的水分足夠讓你在沙漠裡活上一個月。"
+      "description": "每片花瓣都刻著不同神獸，像在逛迷你動物園，差別只在牠們都會背古文。"
     },
     {
       "id": "sg_s4_skyway",
-      "name": "空中走廊花",
+      "name": "秘道迴廊花",
       "rarity": 2,
       "growthTime": 65,
       "price": 280,
       "scene": 4,
-      "description": "細長的花瓣連接著不同的分枝。建議不要在刮風天採收，會晃得很厲害。"
+      "description": "花莖像迷宮走廊，繞三圈還是回到原點。玩家公認：方向感在這裡會自動下線。"
     },
     {
       "id": "sg_s4_avatar",
-      "name": "阿凡達藍光花",
+      "name": "夜巡燈籠花",
       "rarity": 3,
       "growthTime": 85,
       "price": 480,
       "scene": 4,
-      "description": "夜晚會發出幽藍的光芒，讓人感覺隨時會有一隻靈鳥飛過來載你走。"
+      "description": "夜裡會發出昏黃微光，像導覽阿伯拿著燈籠喊：跟緊喔，這段故事有點刺激。"
     },
     {
       "id": "sg_s4_flytrap",
-      "name": "大胃王捕蠅草花",
+      "name": "石虎咬咬花",
       "rarity": 3,
       "growthTime": 100,
       "price": 600,
       "scene": 4,
-      "description": "它不吃肥料，專吃那些試圖偷採花粉的小蟲。採收時請保護好你的手指。"
+      "description": "外型很兇其實很乖，只會象徵性咬一下你的手套，提醒你：參觀請勿投餵。"
     },
     {
       "id": "sg_s4_prehistoric",
-      "name": "活化石蘇鐵花",
+      "name": "萬年傳奇花",
       "rarity": 3,
       "growthTime": 120,
       "price": 750,
       "scene": 4,
-      "description": "生長速度慢到像排熱門餐廳。等它開花時，你可能已經把號碼牌背下來了。"
+      "description": "它的故事比你阿公還多，開花前會先講古，講完你就順便學完半部新加坡都市傳說。"
     },
     {
       "id": "sg_s4_ocbc",
-      "name": "銀行應援花",
+      "name": "家族傳承花",
       "rarity": 3,
       "growthTime": 150,
       "price": 950,
       "scene": 4,
-      "description": "花瓣是紅色的。採收它的人，這輩子都不會遇到 ATM 壞掉的情況。"
+      "description": "這朵花特別重視祖訓，花苞一開就開始碎念：做人要守規矩，澆水要準時。"
     },
     {
       "id": "sg_s4_bioglow",
-      "name": "生物發光孢子花",
+      "name": "幽光神話花",
       "rarity": 4,
       "growthTime": 180,
       "price": 1400,
       "scene": 4,
-      "description": "不需要插電，它能將廢氣轉換為綠色螢光，是環保界的明星。"
+      "description": "會在深夜發出神祕綠光，膽小玩家看了會先存檔再呼吸，膽大玩家直接拍限動。"
     },
     {
       "id": "sg_s4_engine",
-      "name": "自然引擎花",
+      "name": "神獸引擎花",
       "rarity": 4,
       "growthTime": 220,
       "price": 1900,
       "scene": 4,
-      "description": "花心像渦輪引擎，默默幫整座花園調節空氣，是低調做事不作秀的 MVP。"
+      "description": "花心像古代機關，啟動時會發出低鳴，感覺下一秒就要召喚一整隊虎豹巡邏隊。"
     },
     {
       "id": "sg_s4_glass",
-      "name": "溫室玻璃花",
+      "name": "琉璃傳說花",
       "rarity": 4,
       "growthTime": 260,
       "price": 2500,
       "scene": 4,
-      "description": "晶瑩剔透，由數千片微小玻璃瓣組成。如果摔在地上，你會聽到心碎的聲音。"
+      "description": "花瓣像彩色琉璃拼貼，陽光一照滿地都是故事碎片，連路過貓咪都想停下來聽。"
     },
     {
       "id": "sg_s4_master",
-      "name": "擎天樹王花",
+      "name": "虎豹王座花",
       "rarity": 5,
       "growthTime": 320,
       "price": 5000,
       "scene": 4,
-      "description": "所有超級樹的首領。盛開時會連結所有花的電波，舉辦一場全球同步的燈光秀。"
+      "description": "這是虎豹別墅區的王者之花，盛開時整座花園像開朝會，連傳說花都要排隊點名。"
     },
     {
       "id": "sg_s4_paradise",
-      "name": "未來伊甸園花",
+      "name": "萬象奇譚花",
       "rarity": 5,
       "growthTime": 400,
       "price": 8000,
       "scene": 4,
-      "description": "據說從 2050 年穿越回來，展示人類與自然共存的最終版本，順便自帶智慧冷氣。"
+      "description": "傳說它收藏了整座別墅的怪奇故事，開花時會把虎豹神話一次播完，還附導覽語音。"
     }
   ]
 }

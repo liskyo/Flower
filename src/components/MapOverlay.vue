@@ -85,22 +85,26 @@ const handleSelect = (countryId) => {
     <button @click="emit('back')" class="close-btn">🔙 返回花園</button>
     <div class="top-info">
       <div class="map-title">🌍 選擇地圖與國家</div>
-      <div class="diamond-display">💎 您的鑽石: <span class="diamond-val">{{ formatNumber(state.diamonds) }}</span></div>
-      <div class="ticket-display">✈️ 出國機票: <span class="ticket-val">{{ getInventoryItemCount('travelTicket') }}</span></div>
-    </div>
-    
-    <div class="map-container">
-      <div class="map-tabs">
-        <button
-          v-for="map in maps"
-          :key="map.id"
-          class="map-tab-btn"
-          :class="{ active: selectedMap === map.id }"
-          @click="switchMap(map.id)"
-        >
-          {{ map.name }}
-        </button>
+      <div class="resource-row">
+        <div class="diamond-display">💎 您的鑽石: <span class="diamond-val">{{ formatNumber(state.diamonds) }}</span></div>
+        <div class="ticket-display">✈️ 出國機票: <span class="ticket-val">{{ getInventoryItemCount('travelTicket') }}</span></div>
       </div>
+    </div>
+
+    <div class="map-tabs">
+      <button
+        v-for="map in maps"
+        :key="map.id"
+        class="map-tab-btn"
+        :class="{ active: selectedMap === map.id }"
+        @click="switchMap(map.id)"
+      >
+        {{ map.name }}
+        <span v-if="!map.playable" class="tab-soon">國家生成中</span>
+      </button>
+    </div>
+
+    <div class="map-container">
 
       <!-- 地圖背景 -->
       <div class="world-map-bg" :style="mapBackgroundStyle"></div>
@@ -137,7 +141,7 @@ const handleSelect = (countryId) => {
       </Transition>
 
       <div v-if="!isCurrentMapPlayable" class="map-coming-soon">
-        <h3>🛠️ {{ currentMapMeta.name }} 地圖施工中</h3>
+        <h3>🛠️ {{ currentMapMeta.name }} 國家生成中</h3>
         <p>此區域地圖已上線，國家與花朵內容將於後續版本陸續開放。</p>
       </div>
     </div>
@@ -151,7 +155,7 @@ const handleSelect = (countryId) => {
   inset: 0; 
   background: radial-gradient(circle at center, #2c3e50, #1a252f); 
   z-index: 8000;
-  display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px;
+  display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 16px 20px 20px;
 }
 .close-btn {
   position: absolute; top: 20px; left: 20px; background: #e74c3c; color: white;
@@ -160,33 +164,56 @@ const handleSelect = (countryId) => {
 }
 .close-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #c0392b; }
 
-.top-info { position: absolute; top: 20px; right: 20px; display: flex; flex-direction: column; align-items: flex-end; z-index: 10; gap: 10px; }
+.top-info {
+  width: min(1200px, 95vw);
+  margin-top: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  z-index: 20;
+}
+.resource-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
 .map-title { font-size: 1.4rem; font-weight: 900; color: white; text-shadow: 0 3px 0 rgba(0,0,0,0.5); }
 .diamond-display { background: rgba(0,0,0,0.6); padding: 5px 12px; border-radius: 12px; border: 2px solid rgba(255,255,255,0.2); font-weight: bold; color: white; font-size: 0.9rem; }
 .diamond-val { color: #feca57; font-size: 1rem; }
 .ticket-display { background: rgba(255,255,255,0.12); padding: 5px 12px; border-radius: 12px; border: 2px solid rgba(254, 202, 87, 0.45); font-weight: bold; color: white; font-size: 0.9rem; }
 .ticket-val { color: #ffeaa7; font-size: 1rem; }
 
-.map-container {
-  width: 95vw; max-width: 1200px; aspect-ratio: 2 / 1; position: relative; margin-top: 100px;
-  background: #0f1c29; border-radius: 30px; overflow: hidden; border: 4px solid rgba(255,255,255,0.1);
-  box-shadow: 0 20px 50px rgba(0,0,0,0.8), inset 0 0 100px rgba(0,0,0,0.5);
-}
-
 .map-tabs {
-  position: absolute; top: 12px; left: 50%; transform: translateX(-50%);
+  width: min(1200px, 95vw);
   display: flex; gap: 8px; z-index: 30; flex-wrap: wrap; justify-content: center;
-  max-width: 92%;
+  margin-top: 10px;
 }
 .map-tab-btn {
   border: 2px solid rgba(255,255,255,0.35); border-radius: 999px;
   background: rgba(0,0,0,0.55); color: #ecf0f1; padding: 6px 12px;
   font-size: 0.75rem; font-weight: 900; cursor: pointer;
   transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 .map-tab-btn.active {
   color: #2d3436; background: linear-gradient(to bottom, #ffeaa7, #fdcb6e);
   border-color: #f1c40f;
+}
+.tab-soon {
+  font-size: 0.64rem;
+  color: #ffeaa7;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 999px;
+  padding: 1px 6px;
+}
+
+.map-container {
+  width: 95vw; max-width: 1200px; aspect-ratio: 2 / 1; position: relative; margin-top: 8px;
+  background: #0f1c29; border-radius: 30px; overflow: hidden; border: 4px solid rgba(255,255,255,0.1);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.8), inset 0 0 100px rgba(0,0,0,0.5);
 }
 
 .world-map-bg { 

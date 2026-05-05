@@ -3,6 +3,12 @@
   "name": "泰國",
   "flag": "🇹🇭",
   "scenes": 4,
+  "sceneNames": [
+    "曼谷大皇宮",
+    "皮皮島",
+    "丹嫩莎朵水上市場",
+    "清邁古城"
+  ],
   "flowers": [
     {
       "id": "th_legendary",
