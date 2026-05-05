@@ -6,15 +6,42 @@ setlocal
 set "GAME_URL=http://localhost:5173/"
 set "MOBILE_WIDTH=932"
 set "MOBILE_HEIGHT=430"
+set "NODE_EXE="
+set "NPM_CLI="
+
+if exist "%ProgramFiles%\nodejs\node.exe" set "NODE_EXE=%ProgramFiles%\nodejs\node.exe"
+if not defined NODE_EXE if exist "%ProgramFiles(x86)%\nodejs\node.exe" set "NODE_EXE=%ProgramFiles(x86)%\nodejs\node.exe"
+if not defined NODE_EXE (
+    where node >nul 2>&1
+    if not errorlevel 1 set "NODE_EXE=node"
+)
+
+if exist "%ProgramFiles%\nodejs\node_modules\npm\bin\npm-cli.js" set "NPM_CLI=%ProgramFiles%\nodejs\node_modules\npm\bin\npm-cli.js"
+if not defined NPM_CLI if exist "%ProgramFiles(x86)%\nodejs\node_modules\npm\bin\npm-cli.js" set "NPM_CLI=%ProgramFiles(x86)%\nodejs\node_modules\npm\bin\npm-cli.js"
+
+if not defined NODE_EXE (
+    echo [ERROR] node.exe not found. Please install Node.js LTS and reopen terminal.
+    echo         Download: https://nodejs.org/
+    pause
+    exit /b 1
+)
+
+if not defined NPM_CLI (
+    echo [ERROR] npm-cli.js not found in Node.js installation.
+    echo         Your Node.js/npm installation may be broken.
+    echo         Download: https://nodejs.org/
+    pause
+    exit /b 1
+)
 
 echo [1/3] Checking environment...
 if not exist "node_modules\" (
     echo [ERROR] node_modules not found. Running npm install...
-    call npm install
+    call "%NODE_EXE%" "%NPM_CLI%" install
 )
 
 echo [2/3] Starting Game Server...
-start "Flower Dev Server" cmd /k "npm run dev -- --host 0.0.0.0 --port 5173 --strictPort"
+start "Flower Dev Server" cmd /k ""%NODE_EXE%" "%NPM_CLI%" run dev -- --host 0.0.0.0 --port 5173 --strictPort"
 
 echo [3/3] Opening mobile test window...
 echo Waiting for %GAME_URL%
