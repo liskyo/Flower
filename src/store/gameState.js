@@ -634,6 +634,7 @@ export const harvestFlower = (slotId) => {
   if (slot.status === 'ready') {
     const flowerId = slot.flowerId;
     const flower = FLOWERS.find(f => f.id === flowerId);
+    let reward = null;
     if (flower) {
       // 👇 檢查是否有肥料效果
       let harvestMulti = 1;
@@ -650,18 +651,26 @@ export const harvestFlower = (slotId) => {
       trackDailyMissionProgress('diamondsEarned', flower.price * harvestMulti);
       const rarityRank = flower.rarity === 'Legendary' ? 6 : parseInt(flower.rarity) || 1;
       if (rarityRank >= 4) trackDailyMissionProgress('rareHarvests', harvestMulti);
+      reward = {
+        success: true,
+        flowerId,
+        diamonds: flower.price * harvestMulti,
+        quantity: harvestMulti,
+        rarity: flower.rarity,
+        rarityRank
+      };
     }
     slot.status = 'empty';
     slot.flowerId = null;
     slot.startTime = null;
-    return true;
+    return reward || { success: true, flowerId, diamonds: 0, quantity: 0, rarity: null, rarityRank: 1 };
   } else if (slot.status === 'withered') {
     slot.status = 'empty';
     slot.flowerId = null;
     slot.startTime = null;
-    return false;
+    return { success: false, withered: true };
   }
-  return false;
+  return { success: false };
 };
 
 // 檢查是否已解鎖某國家所有的非傳說花朵

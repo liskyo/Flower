@@ -170,16 +170,21 @@ const pullUp = () => {
       const rect = imgRef.value.getBoundingClientRect();
       const startX = rect.left + rect.width / 2;
       const startY = rect.top + rect.height / 2;
-      emit('harvest-animate', { 
-        slotId: currentSlotId, 
-        flowerId: currentFlowerId, 
-        startX, 
-        startY,
-        imgUrl: processedSrc.value || imgRef.value.src
-      });
+      const harvestResult = harvestFlower(currentSlotId);
+      if (harvestResult?.success) {
+        emit('harvest-animate', { 
+          slotId: currentSlotId, 
+          flowerId: currentFlowerId, 
+          startX, 
+          startY,
+          imgUrl: processedSrc.value || imgRef.value.src,
+          reward: harvestResult
+        });
+      }
+    } else {
+      harvestFlower(currentSlotId);
     }
 
-    harvestFlower(currentSlotId);
     isHarvesting.value = false;
   }, 400);
 };
@@ -212,6 +217,15 @@ defineExpose({ triggerHarvest, getSlotStatus });
     @mouseenter="handleMouseEnter"
   >
     <div class="slot-inner-centered">
+      <div
+        class="slot-ground"
+        :class="{
+          occupied: slotData.status !== 'empty',
+          growing: slotData.status === 'growing',
+          ready: slotData.status === 'ready',
+          withered: slotData.status === 'withered'
+        }"
+      ></div>
       <div v-if="slotData.status !== 'empty' && flower" class="flower-container-v3" :style="{ transform: `scale(${growthScale})` }">
         <div class="flower-render-box">
           <img ref="imgRef" :src="`/assets/flowers/${flower.country.toLowerCase()}/${flower.id}.png`" class="hidden-core" @load="processImage" />
@@ -237,6 +251,58 @@ defineExpose({ triggerHarvest, getSlotStatus });
 .slot-inner-centered {
   position: relative; width: 100%; height: 100%;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
+}
+
+.slot-ground {
+  position: absolute;
+  left: 50%;
+  top: 62%;
+  width: clamp(42px, 78%, 76px);
+  height: clamp(16px, 24%, 26px);
+  transform: translate(-50%, -50%);
+  border-radius: 999px;
+  background:
+    radial-gradient(ellipse at center, rgba(255,255,255,0.44) 0%, rgba(255,255,255,0.22) 42%, rgba(255,255,255,0.05) 72%, transparent 100%);
+  border: 1px solid rgba(255,255,255,0.35);
+  box-shadow:
+    0 8px 14px rgba(45, 52, 54, 0.2),
+    inset 0 1px 8px rgba(255,255,255,0.38);
+  opacity: 0.42;
+  pointer-events: none;
+  z-index: 1;
+}
+.slot-ground::before {
+  content: '';
+  position: absolute;
+  inset: 18% 10%;
+  border-radius: inherit;
+  background: radial-gradient(ellipse at center, rgba(45, 52, 54, 0.32), rgba(45, 52, 54, 0.04) 68%, transparent);
+  filter: blur(2px);
+}
+.slot-ground.occupied { opacity: 0.72; }
+.slot-ground.growing {
+  background:
+    radial-gradient(ellipse at center, rgba(85,239,196,0.35) 0%, rgba(255,255,255,0.18) 46%, rgba(85,239,196,0.06) 76%, transparent 100%);
+}
+.slot-ground.ready {
+  opacity: 0.92;
+  background:
+    radial-gradient(ellipse at center, rgba(255,234,167,0.58) 0%, rgba(255,255,255,0.28) 42%, rgba(255,234,167,0.08) 74%, transparent 100%);
+  box-shadow:
+    0 8px 14px rgba(45, 52, 54, 0.22),
+    0 0 18px rgba(255, 234, 167, 0.45),
+    inset 0 1px 8px rgba(255,255,255,0.5);
+  animation: harvestPadPulse 1.15s ease-in-out infinite alternate;
+}
+.slot-ground.withered {
+  background:
+    radial-gradient(ellipse at center, rgba(120, 84, 50, 0.35) 0%, rgba(80,60,40,0.16) 58%, transparent 100%);
+  filter: grayscale(0.6);
+}
+
+@keyframes harvestPadPulse {
+  from { transform: translate(-50%, -50%) scale(0.94); }
+  to { transform: translate(-50%, -50%) scale(1.08); }
 }
 
 /* --- 找到這段並替換 --- */
@@ -335,7 +401,7 @@ defineExpose({ triggerHarvest, getSlotStatus });
 @keyframes pull-up {
   0% { transform: translateY(-5px) scaleY(1.2); }
   30% { transform: translateY(-15px) scaleY(1.7) scaleX(0.7); }
-  100% { transform: translateY(-100px) scaleY(1.1) opacity(0); }
+  100% { transform: translateY(-100px) scaleY(1.1); opacity: 0; }
 }
 
 .growth-bar-v3 {

@@ -25,7 +25,10 @@ const basketImgRef = ref(null);
 const basketCanvasRef = ref(null);
 const processedBasketSrc = ref(null);
 const flyingFlowers = ref([]);
+const harvestFeedbacks = ref([]);
+const rareBursts = ref([]);
 let flyIdCounter = 0;
+let feedbackIdCounter = 0;
 
 const processBasketImage = () => {
   if (!basketImgRef.value || processedBasketSrc.value) return;
@@ -174,9 +177,52 @@ const handleTouchMove = (e) => {
   });
 };
 
-const handleHarvestAnimate = ({ slotId, flowerId, imgUrl }) => {
+const formatNumber = (num) => new Intl.NumberFormat('en-US').format(num || 0);
+
+const triggerHarvestFeedback = ({ flower, x, y, reward }) => {
+  if (!reward?.success) return;
+
+  const id = feedbackIdCounter++;
+  harvestFeedbacks.value.push({
+    id,
+    x,
+    y,
+    text: `+${formatNumber(reward.diamonds)} 💎`,
+    subText: reward.quantity > 1 ? `x${reward.quantity}` : '',
+    rare: reward.rarityRank >= 4 || reward.rarity === 'Legendary'
+  });
+  setTimeout(() => {
+    harvestFeedbacks.value = harvestFeedbacks.value.filter(item => item.id !== id);
+  }, 950);
+
+  if (reward.rarityRank >= 4 || reward.rarity === 'Legendary') {
+    const burstId = feedbackIdCounter++;
+    rareBursts.value.push({
+      id: burstId,
+      x,
+      y,
+      label: reward.rarity === 'Legendary' ? 'LEGEND!' : `${reward.rarity}★`,
+      legendary: reward.rarity === 'Legendary'
+    });
+    setTimeout(() => {
+      rareBursts.value = rareBursts.value.filter(item => item.id !== burstId);
+    }, 900);
+  }
+
+  if (navigator.vibrate) {
+    navigator.vibrate(reward.rarityRank >= 4 ? [18, 25, 18] : 18);
+  }
+};
+
+const handleHarvestAnimate = ({ slotId, flowerId, imgUrl, startX, startY, reward }) => {
   const flower = FLOWERS.find(f => f.id === flowerId);
   if (!flower) return;
+
+  if (startX && startY) {
+    triggerFlyAnimation(flower, startX, startY, imgUrl);
+    triggerHarvestFeedback({ flower, x: startX, y: startY, reward });
+    return;
+  }
 
   const slotComp = slotRefs.value[slotId];
   if (slotComp && slotComp.$el) {
@@ -185,6 +231,7 @@ const handleHarvestAnimate = ({ slotId, flowerId, imgUrl }) => {
     const startY = rect.top + rect.height / 2 - 50; 
     
     triggerFlyAnimation(flower, startX, startY, imgUrl);
+    triggerHarvestFeedback({ flower, x: startX, y: startY, reward });
   }
 };
 
@@ -391,6 +438,28 @@ onUnmounted(() => {
         }"
       >
         <img :src="flower.url" class="flying-flower-y" />
+      </div>
+    </div>
+
+    <div class="feedback-layer">
+      <div
+        v-for="feedback in harvestFeedbacks"
+        :key="feedback.id"
+        class="harvest-feedback"
+        :class="{ rare: feedback.rare }"
+        :style="{ left: `${feedback.x}px`, top: `${feedback.y}px` }"
+      >
+        <span>{{ feedback.text }}</span>
+        <small v-if="feedback.subText">{{ feedback.subText }}</small>
+      </div>
+      <div
+        v-for="burst in rareBursts"
+        :key="burst.id"
+        class="rare-burst"
+        :class="{ legendary: burst.legendary }"
+        :style="{ left: `${burst.x}px`, top: `${burst.y}px` }"
+      >
+        <span>{{ burst.label }}</span>
       </div>
     </div>
   </div>
@@ -707,6 +776,7 @@ onUnmounted(() => {
 
 /* 飛行動畫層 */
 .flying-layer { position: absolute; inset: 0; pointer-events: none; z-index: 5000; overflow: hidden; }
+.feedback-layer { position: absolute; inset: 0; pointer-events: none; z-index: 6500; overflow: hidden; }
 
 /* 負責 X 軸水平等速移動 */
 .flying-flower-x {
@@ -729,6 +799,68 @@ onUnmounted(() => {
   35% { transform: translateY(calc(var(--startY) - 100px)) scale(1.3); opacity: 1; } /* 拋高且變大 */
   80% { transform: translateY(calc(var(--endY) - 20px)) scale(0.6); opacity: 1; } /* 掉落到開口時縮小 */
   100% { transform: translateY(var(--endY)) scale(0); opacity: 0; } /* 瞬間消失模擬掉進去 */
+}
+
+.harvest-feedback {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  border: 2px solid rgba(45, 52, 54, 0.9);
+  background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(255,234,167,0.92));
+  color: #2d3436;
+  font-size: 0.9rem;
+  font-weight: 900;
+  white-space: nowrap;
+  box-shadow: 0 4px 0 rgba(45,52,54,0.85), 0 0 16px rgba(255,234,167,0.55);
+  animation: harvestFloat 0.95s ease-out forwards;
+}
+.harvest-feedback small {
+  color: #e67e22;
+  font-size: 0.72rem;
+}
+.harvest-feedback.rare {
+  background: linear-gradient(180deg, #fff8c9, #fd79a8);
+  box-shadow: 0 4px 0 rgba(45,52,54,0.85), 0 0 24px rgba(253,121,168,0.75);
+}
+
+@keyframes harvestFloat {
+  0% { opacity: 0; transform: translate(-50%, -20%) scale(0.75); }
+  18% { opacity: 1; transform: translate(-50%, -70%) scale(1.12); }
+  100% { opacity: 0; transform: translate(-50%, -155%) scale(0.9); }
+}
+
+.rare-burst {
+  position: absolute;
+  width: 78px;
+  height: 78px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 0.8rem;
+  font-weight: 900;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.55);
+  background:
+    radial-gradient(circle, rgba(255,255,255,0.95) 0 10%, rgba(255,234,167,0.55) 11% 34%, transparent 35%),
+    conic-gradient(from 0deg, transparent, rgba(255,234,167,0.85), transparent, rgba(253,121,168,0.75), transparent);
+  animation: rareBurst 0.9s ease-out forwards;
+}
+.rare-burst.legendary {
+  background:
+    radial-gradient(circle, rgba(255,255,255,0.95) 0 10%, rgba(255,255,255,0.6) 11% 30%, transparent 31%),
+    conic-gradient(from 0deg, #ff00de, #00d4ff, #55efc4, #ffeaa7, #ff00de);
+}
+
+@keyframes rareBurst {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(0.2) rotate(0deg); filter: blur(2px); }
+  25% { opacity: 1; transform: translate(-50%, -50%) scale(1.05) rotate(80deg); filter: blur(0); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(1.55) rotate(220deg); filter: blur(2px); }
 }
 
 /* --- 找到 @media 裡面的這兩段並替換 --- */
