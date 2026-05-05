@@ -164,19 +164,18 @@ onUnmounted(() => {
       </button>
     </div>
 
-    <div v-if="isDevMode" class="dev-toolbar">
-      <button class="dev-toggle-btn" :class="{ active: editHotspotMode }" @click="editHotspotMode = !editHotspotMode">
-        {{ editHotspotMode ? '✅ 亮點調整中' : '🛠️ 調整亮點位置' }}
-      </button>
-      <div class="dev-hint">
-        {{ editHotspotMode ? '拖曳地圖上的亮點即可更新座標（會自動儲存）。' : '開啟後可拖曳已生成國家亮點。' }}
-      </div>
-      <div v-if="selectedCountry && getCountryById(selectedCountry)" class="dev-coord">
-        {{ getCountryById(selectedCountry).name }}：X {{ getCountryById(selectedCountry).x.toFixed(1) }} / Y {{ getCountryById(selectedCountry).y.toFixed(1) }}
-      </div>
-    </div>
-
     <div ref="mapContainerRef" class="map-container" :class="{ 'edit-mode': editHotspotMode && isDevMode }">
+      <div v-if="isDevMode" class="dev-toolbar">
+        <button class="dev-toggle-btn" :class="{ active: editHotspotMode }" @click="editHotspotMode = !editHotspotMode">
+          {{ editHotspotMode ? '✅ 亮點調整中' : '🛠️ 調整亮點位置' }}
+        </button>
+        <div class="dev-hint">
+          {{ editHotspotMode ? '拖曳地圖上的亮點即可更新座標（會自動儲存）。' : '開啟後可拖曳已生成國家亮點。' }}
+        </div>
+        <div v-if="selectedCountry && getCountryById(selectedCountry)" class="dev-coord">
+          {{ getCountryById(selectedCountry).name }}：X {{ getCountryById(selectedCountry).x.toFixed(1) }} / Y {{ getCountryById(selectedCountry).y.toFixed(1) }}
+        </div>
+      </div>
 
       <!-- 地圖背景 -->
       <div class="world-map-bg" :style="mapBackgroundStyle"></div>
@@ -231,10 +230,10 @@ onUnmounted(() => {
   inset: 0; 
   background: radial-gradient(circle at center, #2c3e50, #1a252f); 
   z-index: 8000;
-  display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 16px 20px 20px;
+  display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 8px 20px 16px;
 }
 .close-btn {
-  position: absolute; top: 20px; left: 20px; background: #e74c3c; color: white;
+  position: absolute; top: 10px; left: 20px; background: #e74c3c; color: white;
   border: 3px solid #c0392b; padding: 10px 20px; border-radius: 20px; font-weight: 900;
   box-shadow: 0 4px 0 #c0392b; cursor: pointer; z-index: 10; font-size: 1.1rem;
 }
@@ -242,7 +241,7 @@ onUnmounted(() => {
 
 .top-info {
   width: min(1200px, 95vw);
-  margin-top: 6px;
+  margin-top: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -263,7 +262,7 @@ onUnmounted(() => {
 .map-tabs {
   width: min(1200px, 95vw);
   display: flex; gap: 8px; z-index: 30; flex-wrap: wrap; justify-content: center;
-  margin-top: 10px;
+  margin-top: 4px;
 }
 .map-tab-btn {
   border: 2px solid rgba(255,255,255,0.35); border-radius: 999px;
@@ -297,8 +296,11 @@ onUnmounted(() => {
 }
 
 .dev-toolbar {
-  width: min(1200px, 95vw);
-  margin-top: 8px;
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(95%, 900px);
   background: rgba(0, 0, 0, 0.45);
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 12px;
@@ -308,6 +310,7 @@ onUnmounted(() => {
   grid-template-columns: auto 1fr auto;
   align-items: center;
   gap: 10px;
+  z-index: 60;
 }
 .dev-toggle-btn {
   border: 2px solid rgba(255, 255, 255, 0.3);
@@ -395,10 +398,10 @@ onUnmounted(() => {
 
 @media (max-width: 900px), (max-height: 560px) {
   .map-overlay {
-    padding: 10px 10px 12px;
+    padding: 4px 10px 10px;
   }
   .close-btn {
-    top: 10px;
+    top: 6px;
     left: 10px;
     padding: 7px 12px;
     border-radius: 14px;
@@ -406,7 +409,7 @@ onUnmounted(() => {
   }
   .top-info {
     width: 100%;
-    margin-top: 46px;
+    margin-top: 34px;
     flex-direction: column;
     align-items: stretch;
     gap: 8px;
@@ -427,7 +430,7 @@ onUnmounted(() => {
   }
   .map-tabs {
     width: 100%;
-    margin-top: 6px;
+    margin-top: 2px;
     justify-content: flex-start;
     overflow-x: auto;
     overflow-y: hidden;
@@ -445,10 +448,11 @@ onUnmounted(() => {
     padding: 1px 5px;
   }
   .dev-toolbar {
-    width: 100%;
+    width: min(96%, 700px);
     grid-template-columns: 1fr;
     gap: 6px;
-    padding: 7px 8px;
+    padding: 6px 8px;
+    top: 6px;
   }
   .dev-toggle-btn,
   .dev-hint,
@@ -461,7 +465,7 @@ onUnmounted(() => {
     height: 56vh;
     aspect-ratio: auto;
     border-radius: 16px;
-    margin-top: 6px;
+    margin-top: 4px;
   }
   .country-label-fixed {
     top: 8px;
