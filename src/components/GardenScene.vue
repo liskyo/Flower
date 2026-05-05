@@ -2,11 +2,14 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted, computed, nextTick } from 'vue';
-import { state, autoSpawn, setScene, getCurrentGarden, harvestFlower, getCurrentWeather, isSceneUnlocked, getCurrentSpawnMultiplier, catchUpSpawning, getLevelInfo, playSound } from '../store/gameState';import { FLOWERS } from '../data/flowers';
+import { state, autoSpawn, setScene, getCurrentGarden, harvestFlower, getCurrentWeather, isSceneUnlocked, getCurrentSpawnMultiplier, catchUpSpawning, getLevelInfo, getDailyLoginStatus, getDailyMissionSummary, getCatalogAchievementSummary, playSound } from '../store/gameState';import { FLOWERS } from '../data/flowers';
 import GardenSlot from './GardenSlot.vue';
 
 // 取得當前經驗值進度資訊
 const currentLevelInfo = computed(() => getLevelInfo(state.exp || 0));
+const dailyRewardStatus = computed(() => getDailyLoginStatus());
+const dailyMissionSummary = computed(() => getDailyMissionSummary());
+const achievementSummary = computed(() => getCatalogAchievementSummary());
 
 const emit = defineEmits(['change-tab']);
 const slotRefs = ref([]);
@@ -276,6 +279,19 @@ onUnmounted(() => {
       </div>
     </div>
 
+    <div class="daily-top-cluster" @touchmove.stop @mousedown.stop @touchstart.stop>
+      <button class="daily-top-btn reward" @click="playSound('button'); emit('change-tab', 'dailyReward')">
+        <span v-if="!dailyRewardStatus.claimedToday" class="notify-dot"></span>
+        <span class="top-icon">🎁</span>
+        <span class="top-label">登入獎勵</span>
+      </button>
+      <button class="daily-top-btn mission" @click="playSound('button'); emit('change-tab', 'dailyMission')">
+        <span v-if="dailyMissionSummary.claimableCount > 0" class="notify-dot mission-dot">{{ dailyMissionSummary.claimableCount }}</span>
+        <span class="top-icon">📋</span>
+        <span class="top-label">每日任務</span>
+      </button>
+    </div>
+
     <!-- 作用中 Buff Icons -->
     <div class="buff-bar" v-if="activeBuffsDisplay.length > 0">
       <div
@@ -357,6 +373,11 @@ onUnmounted(() => {
         <button class="action-btn inventory" @click="playSound('button'); emit('change-tab', 'inventory')">
           <span class="icon">🎒</span>
           <span class="label">道具</span>
+        </button>
+        <button class="action-btn achievement" @click="playSound('button'); emit('change-tab', 'achievement')">
+          <span v-if="achievementSummary.claimableCount > 0" class="notify-dot achievement-dot">{{ achievementSummary.claimableCount }}</span>
+          <span class="icon">🏆</span>
+          <span class="label">成就</span>
         </button>
       </div>
     </div>
@@ -518,6 +539,24 @@ onUnmounted(() => {
 .weather-name { font-weight: 900; font-size: 0.9rem; }
 .weather-speed { font-size: 0.75rem; color: #ffeaa7; font-weight: bold; }
 
+.daily-top-cluster {
+  position: absolute; top: 22px; right: 235px; z-index: 2100;
+  display: flex; gap: 10px; align-items: center;
+}
+.daily-top-btn {
+  position: relative; display: flex; align-items: center; gap: 6px;
+  min-width: 98px; height: 46px; padding: 4px 10px;
+  border: 3px solid #2d3436; border-radius: 18px;
+  color: #2d3436; font-weight: 900; cursor: pointer;
+  box-shadow: 0 4px 0 #2d3436;
+  touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+}
+.daily-top-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 #2d3436; }
+.daily-top-btn.reward { background: linear-gradient(180deg, #ffeaa7, #fd79a8); }
+.daily-top-btn.mission { background: linear-gradient(180deg, #74b9ff, #55efc4); }
+.top-icon { font-size: 1.45rem; filter: drop-shadow(0 2px 2px rgba(255,255,255,0.45)); }
+.top-label { font-size: 0.72rem; line-height: 1.1; white-space: nowrap; }
+
 /* 天氣濾鏡與特效 */
 .weather-overlay {
   position: absolute; inset: 0; z-index: 5; pointer-events: none;
@@ -646,6 +685,34 @@ onUnmounted(() => {
 .action-btn.catalog .icon { font-size: 2.2rem; }
 .action-btn.shop { background: #48dbfb; width: 65px; height: 65px; }
 .action-btn.inventory { background: #a29bfe; width: 60px; height: 60px; }
+.action-btn.achievement { background: linear-gradient(180deg, #ffeaa7, #f39c12); width: 62px; height: 62px; }
+.notify-dot {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  min-width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #ff4757;
+  border: 3px solid white;
+  box-shadow: 0 0 12px rgba(255, 71, 87, 0.8);
+  animation: notifyPulse 1s infinite alternate;
+  color: white;
+  font-size: 0.65rem;
+  font-weight: 900;
+  line-height: 1;
+  padding: 0 3px;
+}
+.mission-dot { background: #e84393; }
+.achievement-dot { background: #e67e22; }
+
+@keyframes notifyPulse {
+  from { transform: scale(0.85); }
+  to { transform: scale(1.15); }
+}
 
 /* 飛行動畫層 */
 .flying-layer { position: absolute; inset: 0; pointer-events: none; z-index: 5000; overflow: hidden; }
@@ -710,6 +777,11 @@ onUnmounted(() => {
   .action-btn.catalog { width: 75px; height: 75px; } 
   .action-btn.shop { width: 52px; height: 52px; }
   .action-btn.inventory { width: 48px; height: 48px; }
+  .action-btn.achievement { width: 50px; height: 50px; }
+  .daily-top-cluster { top: 22px; right: calc(max(10px, env(safe-area-inset-right)) + 198px); gap: 7px; }
+  .daily-top-btn { min-width: 78px; height: 38px; padding: 3px 7px; border-width: 2px; border-radius: 14px; }
+  .top-icon { font-size: 1.15rem; }
+  .top-label { font-size: 0.6rem; }
   
 /* 👇 2. 將花籃容器盡可能往左下角推 */
   .basket-container { 

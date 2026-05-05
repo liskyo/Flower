@@ -39,6 +39,7 @@ const SAVE_KEY = 'global_flower_game_save_v6'; // 升級版本以強制重置結
 
 const defaultState = {
   diamonds: 1000, // 給予一些初始鑽石方便測試
+  travelTickets: 0,
   currentCountry: 'Taiwan',
   currentScene: 1,
   unlockedScenes: { 'Taiwan': [1, 2, 3, 4], 'Japan': [1, 2, 3, 4], 'Korea': [1, 2, 3, 4], 'Thailand': [1, 2, 3, 4], 'Singapore': [1, 2, 3, 4] },
@@ -60,6 +61,20 @@ const defaultState = {
   exp: 0,
   level: 1,
   inventoryItems: {},
+  dailyLogin: {
+    cycleDay: 1,
+    lastClaimPeriodKey: null,
+    totalClaims: 0
+  },
+  dailyMissions: {
+    periodKey: null,
+    progress: {},
+    claimedTaskIds: [],
+    claimedMilestones: []
+  },
+  achievements: {
+    claimedIds: []
+  },
   lastActiveTime: Date.now(),
   lastSpawnTimes: {} // 紀錄每個花園的獨立生成時間
 };
@@ -73,6 +88,304 @@ export const WEATHER_TYPES = [
   { id: 'sunny', name: '晴天', speed: 1.1 }
 ];
 export const WEATHER_CYCLE_MS = 2 * 60 * 60 * 1000;
+
+export const DAILY_LOGIN_REWARDS = [
+  { day: 1, icon: '💎', name: '鑽石雨露', desc: '補充旅行基金', diamonds: 2000 },
+  { day: 2, icon: '☀️', name: '晴天娃娃', desc: '強制晴天 6 小時', itemId: 'sunnyDoll', itemName: '晴天娃娃', count: 1 },
+  { day: 3, icon: '💎', name: '閃耀鑽石袋', desc: '更豐厚的鑽石', diamonds: 6000 },
+  { day: 4, icon: '🌧️', name: '人造雨一階', desc: '生成效率加速道具', itemId: 'rain1', itemName: '人造雨一階', count: 1 },
+  { day: 5, icon: '💎', name: '皇家鑽石箱', desc: '大量鑽石獎勵', diamonds: 12000 },
+  { day: 6, icon: '⭐', name: '無敵星星一階', desc: '提高五星花出現率', itemId: 'star1', itemName: '無敵星星一階', count: 1 },
+  { day: 7, icon: '✈️', name: '出國機票', desc: '免費解鎖下一個國家一次', ticket: 1 }
+];
+
+export const DAILY_MISSIONS = [
+  { id: 'loginReward', icon: '🎁', title: '晨光簽到', desc: '領取每日登入獎勵 1 次', progressKey: 'loginClaims', target: 1, reward: { diamonds: 1500 } },
+  { id: 'harvest5', icon: '🌷', title: '採花暖身', desc: '採收 5 朵花', progressKey: 'harvests', target: 5, reward: { diamonds: 2500 } },
+  { id: 'switchScene3', icon: '🧭', title: '花園巡禮', desc: '切換場景 3 次', progressKey: 'switchScenes', target: 3, reward: { itemId: 'sunnyDoll', itemName: '晴天娃娃', count: 1 } },
+  { id: 'buyItem1', icon: '🛒', title: '補給採買', desc: '在商店購買 1 個道具', progressKey: 'purchases', target: 1, reward: { diamonds: 4500 } },
+  { id: 'useItem1', icon: '✨', title: '道具實戰', desc: '使用 1 個道具', progressKey: 'usedItems', target: 1, reward: { itemId: 'rain1', itemName: '人造雨一階', count: 1 } },
+  { id: 'earn10000', icon: '💎', title: '閃耀收成', desc: '透過採收獲得 10,000 鑽石', progressKey: 'diamondsEarned', target: 10000, reward: { diamonds: 7000 } },
+  { id: 'harvest25', icon: '🌺', title: '熟練花匠', desc: '採收 25 朵花', progressKey: 'harvests', target: 25, reward: { itemId: 'fert1', itemName: '肥料一階', count: 2 } },
+  { id: 'rare3', icon: '💐', title: '珍稀尋花', desc: '採收 3 朵四星以上花朵', progressKey: 'rareHarvests', target: 3, reward: { diamonds: 12000 } },
+  { id: 'travel1', icon: '🛫', title: '旅行足跡', desc: '前往或解鎖其他國家 1 次', progressKey: 'travels', target: 1, reward: { itemId: 'star1', itemName: '無敵星星一階', count: 1 } },
+  { id: 'harvest50', icon: '👑', title: '今日花王', desc: '採收 50 朵花', progressKey: 'harvests', target: 50, reward: { diamonds: 18000, itemId: 'star1', itemName: '無敵星星一階', count: 1 } }
+];
+
+export const DAILY_MISSION_MILESTONES = [
+  { count: 1, icon: '🥉', name: '青銅寶箱', reward: { diamonds: 3000 } },
+  { count: 4, icon: '🥈', name: '白銀寶箱', reward: { itemId: 'rain2', itemName: '人造雨二階', count: 1 } },
+  { count: 7, icon: '🥇', name: '黃金寶箱', reward: { diamonds: 20000, itemId: 'fert2', itemName: '肥料二階', count: 1 } },
+  { count: 10, icon: '🏆', name: '傳說寶箱', reward: { diamonds: 50000, itemId: 'star2', itemName: '無敵星星二階', count: 1 } }
+];
+
+const ACHIEVEMENT_COUNTRY_NAMES = {
+  Taiwan: '台灣',
+  Japan: '日本',
+  Korea: '韓國',
+  Thailand: '泰國',
+  Singapore: '新加坡'
+};
+
+const getRarityRank = (rarity) => rarity === 'Legendary' ? 6 : parseInt(rarity) || 1;
+
+const getNormalGoldReward = (flower) => ({
+  diamonds: 8000 + (getRarityRank(flower.rarity) * 6000)
+});
+
+export const getCatalogAchievementDefinitions = () => {
+  return FLOWERS.flatMap(flower => {
+    const countryName = ACHIEVEMENT_COUNTRY_NAMES[flower.country] || flower.country;
+    if (flower.rarity === 'Legendary') {
+      return [
+        {
+          id: `${flower.id}_legend_collect`,
+          flowerId: flower.id,
+          country: flower.country,
+          category: 'Legendary',
+          tier: 'collect',
+          icon: '🌟',
+          title: `${flower.name} 初次邂逅`,
+          desc: `收集 1 朵 ${countryName} 傳說花朵`,
+          target: 1,
+          reward: { diamonds: 50000 }
+        },
+        {
+          id: `${flower.id}_legend_bronze`,
+          flowerId: flower.id,
+          country: flower.country,
+          category: 'Legendary',
+          tier: 'bronze',
+          icon: '🥉',
+          title: `${flower.name} 銅牌典藏`,
+          desc: '傳說花朵達成銅牌採收數',
+          target: 10,
+          reward: { diamonds: 120000 }
+        },
+        {
+          id: `${flower.id}_legend_silver`,
+          flowerId: flower.id,
+          country: flower.country,
+          category: 'Legendary',
+          tier: 'silver',
+          icon: '🥈',
+          title: `${flower.name} 銀牌珍藏`,
+          desc: '傳說花朵達成銀牌採收數',
+          target: 20,
+          reward: { diamonds: 250000 }
+        },
+        {
+          id: `${flower.id}_legend_gold`,
+          flowerId: flower.id,
+          country: flower.country,
+          category: 'Legendary',
+          tier: 'gold',
+          icon: '🥇',
+          title: `${flower.name} 金牌傳說`,
+          desc: '傳說花朵達成金牌採收數',
+          target: 50,
+          reward: { diamonds: 500000, ticket: 1 }
+        }
+      ];
+    }
+
+    return [{
+      id: `${flower.id}_gold`,
+      flowerId: flower.id,
+      country: flower.country,
+      category: flower.country,
+      tier: 'gold',
+      icon: '🥇',
+      title: `${flower.name} 金牌圖鑑`,
+      desc: `${countryName}圖鑑金牌成就`,
+      target: 50,
+      reward: getNormalGoldReward(flower)
+    }];
+  });
+};
+
+const getDailyLoginPeriodStart = (timestamp = Date.now()) => {
+  const date = new Date(timestamp);
+  date.setHours(date.getHours() - 8);
+  date.setHours(8, 0, 0, 0);
+  return date;
+};
+
+export const getDailyLoginPeriodKey = (timestamp = Date.now()) => {
+  const periodStart = getDailyLoginPeriodStart(timestamp);
+  const year = periodStart.getFullYear();
+  const month = String(periodStart.getMonth() + 1).padStart(2, '0');
+  const day = String(periodStart.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
+export const getNextDailyLoginResetTime = (timestamp = Date.now()) => {
+  const nextReset = getDailyLoginPeriodStart(timestamp);
+  nextReset.setDate(nextReset.getDate() + 1);
+  return nextReset.getTime();
+};
+
+const createDailyMissionsState = (periodKey = getDailyLoginPeriodKey()) => ({
+  periodKey,
+  progress: {},
+  claimedTaskIds: [],
+  claimedMilestones: []
+});
+
+export const getDailyLoginStatus = () => {
+  ensureDailyLoginState();
+  const periodKey = getDailyLoginPeriodKey();
+  const claimedToday = state.dailyLogin.lastClaimPeriodKey === periodKey;
+  const activeDay = claimedToday
+    ? (state.dailyLogin.cycleDay === 1 ? 7 : state.dailyLogin.cycleDay - 1)
+    : state.dailyLogin.cycleDay;
+
+  return {
+    claimedToday,
+    activeDay,
+    nextResetAt: getNextDailyLoginResetTime(),
+    reward: DAILY_LOGIN_REWARDS[activeDay - 1]
+  };
+};
+
+const applyReward = (reward) => {
+  if (reward.diamonds) state.diamonds += reward.diamonds;
+  if (reward.ticket) state.travelTickets = (state.travelTickets || 0) + reward.ticket;
+  if (reward.itemId) {
+    if (!state.inventoryItems) state.inventoryItems = {};
+    state.inventoryItems[reward.itemId] = (state.inventoryItems[reward.itemId] || 0) + (reward.count || 1);
+  }
+};
+
+export const claimDailyLoginReward = () => {
+  ensureDailyLoginState();
+  const status = getDailyLoginStatus();
+  if (status.claimedToday) return { ok: false, reason: 'claimed', status };
+
+  applyReward(status.reward);
+  state.dailyLogin.lastClaimPeriodKey = getDailyLoginPeriodKey();
+  state.dailyLogin.totalClaims = (state.dailyLogin.totalClaims || 0) + 1;
+  state.dailyLogin.cycleDay = status.activeDay >= 7 ? 1 : status.activeDay + 1;
+  trackDailyMissionProgress('loginClaims');
+
+  return { ok: true, reward: status.reward, status: getDailyLoginStatus() };
+};
+
+export const getDailyMissionStatus = () => {
+  ensureDailyMissionState();
+  const tasks = DAILY_MISSIONS.map(task => {
+    const current = Math.min(state.dailyMissions.progress[task.progressKey] || 0, task.target);
+    const completed = current >= task.target;
+    const claimed = state.dailyMissions.claimedTaskIds.includes(task.id);
+    return {
+      ...task,
+      current,
+      completed,
+      claimed,
+      progressPercent: Math.min((current / task.target) * 100, 100)
+    };
+  });
+  const claimedCount = state.dailyMissions.claimedTaskIds.length;
+  const milestones = DAILY_MISSION_MILESTONES.map(milestone => ({
+    ...milestone,
+    unlocked: claimedCount >= milestone.count,
+    claimed: state.dailyMissions.claimedMilestones.includes(milestone.count)
+  }));
+
+  return {
+    periodKey: state.dailyMissions.periodKey,
+    nextResetAt: getNextDailyLoginResetTime(),
+    claimedCount,
+    tasks,
+    milestones,
+    claimableTaskCount: tasks.filter(task => task.completed && !task.claimed).length,
+    claimableMilestoneCount: milestones.filter(milestone => milestone.unlocked && !milestone.claimed).length
+  };
+};
+
+export const getDailyMissionSummary = () => {
+  const status = getDailyMissionStatus();
+  return {
+    claimedCount: status.claimedCount,
+    claimableCount: status.claimableTaskCount + status.claimableMilestoneCount
+  };
+};
+
+export const trackDailyMissionProgress = (progressKey, amount = 1) => {
+  ensureDailyMissionState();
+  state.dailyMissions.progress[progressKey] = (state.dailyMissions.progress[progressKey] || 0) + amount;
+};
+
+export const claimDailyMissionReward = (taskId) => {
+  ensureDailyMissionState();
+  const task = DAILY_MISSIONS.find(item => item.id === taskId);
+  if (!task) return { ok: false, reason: 'not-found' };
+  const current = state.dailyMissions.progress[task.progressKey] || 0;
+  if (current < task.target) return { ok: false, reason: 'incomplete' };
+  if (state.dailyMissions.claimedTaskIds.includes(taskId)) return { ok: false, reason: 'claimed' };
+
+  applyReward(task.reward);
+  state.dailyMissions.claimedTaskIds.push(taskId);
+  return { ok: true, reward: task.reward, task };
+};
+
+export const claimDailyMissionMilestone = (count) => {
+  ensureDailyMissionState();
+  const milestone = DAILY_MISSION_MILESTONES.find(item => item.count === count);
+  if (!milestone) return { ok: false, reason: 'not-found' };
+  if (state.dailyMissions.claimedTaskIds.length < count) return { ok: false, reason: 'locked' };
+  if (state.dailyMissions.claimedMilestones.includes(count)) return { ok: false, reason: 'claimed' };
+
+  applyReward(milestone.reward);
+  state.dailyMissions.claimedMilestones.push(count);
+  return { ok: true, reward: milestone.reward, milestone };
+};
+
+export const getCatalogAchievementStatus = () => {
+  ensureAchievementState();
+  const definitions = getCatalogAchievementDefinitions();
+  const achievements = definitions.map(achievement => {
+    const current = Math.min(state.inventory[achievement.flowerId] || 0, achievement.target);
+    const completed = current >= achievement.target;
+    const claimed = state.achievements.claimedIds.includes(achievement.id);
+    return {
+      ...achievement,
+      current,
+      completed,
+      claimed,
+      progressPercent: Math.min((current / achievement.target) * 100, 100)
+    };
+  });
+
+  return {
+    achievements,
+    total: achievements.length,
+    completedCount: achievements.filter(item => item.completed).length,
+    claimedCount: achievements.filter(item => item.claimed).length,
+    claimableCount: achievements.filter(item => item.completed && !item.claimed).length
+  };
+};
+
+export const getCatalogAchievementSummary = () => {
+  const status = getCatalogAchievementStatus();
+  return {
+    claimableCount: status.claimableCount,
+    completedCount: status.completedCount,
+    total: status.total
+  };
+};
+
+export const claimCatalogAchievement = (achievementId) => {
+  ensureAchievementState();
+  const achievement = getCatalogAchievementDefinitions().find(item => item.id === achievementId);
+  if (!achievement) return { ok: false, reason: 'not-found' };
+  if ((state.inventory[achievement.flowerId] || 0) < achievement.target) return { ok: false, reason: 'incomplete' };
+  if (state.achievements.claimedIds.includes(achievementId)) return { ok: false, reason: 'claimed' };
+
+  applyReward(achievement.reward);
+  state.achievements.claimedIds.push(achievementId);
+  return { ok: true, achievement, reward: achievement.reward };
+};
 
 export const getCurrentWeather = () => {
   if (state.activeBuffs?.sunnyDollUntil && Date.now() < state.activeBuffs.sunnyDollUntil) {
@@ -144,6 +457,41 @@ export const getLevelInfo = (totalExp) => {
 const savedData = localStorage.getItem(SAVE_KEY);
 export const state = reactive(savedData ? JSON.parse(savedData) : defaultState);
 
+function ensureDailyLoginState() {
+  if (typeof state.travelTickets !== 'number') state.travelTickets = 0;
+  if (!state.dailyLogin) {
+    state.dailyLogin = {
+      cycleDay: 1,
+      lastClaimPeriodKey: null,
+      totalClaims: 0
+    };
+  }
+  if (!state.dailyLogin.cycleDay || state.dailyLogin.cycleDay < 1 || state.dailyLogin.cycleDay > 7) {
+    state.dailyLogin.cycleDay = 1;
+  }
+  if (typeof state.dailyLogin.totalClaims !== 'number') state.dailyLogin.totalClaims = 0;
+}
+
+function ensureDailyMissionState() {
+  const periodKey = getDailyLoginPeriodKey();
+  if (!state.dailyMissions || state.dailyMissions.periodKey !== periodKey) {
+    state.dailyMissions = createDailyMissionsState(periodKey);
+  }
+  if (!state.dailyMissions.progress) state.dailyMissions.progress = {};
+  if (!Array.isArray(state.dailyMissions.claimedTaskIds)) state.dailyMissions.claimedTaskIds = [];
+  if (!Array.isArray(state.dailyMissions.claimedMilestones)) state.dailyMissions.claimedMilestones = [];
+}
+
+function ensureAchievementState() {
+  if (!state.achievements) {
+    state.achievements = { claimedIds: [] };
+  }
+  if (!Array.isArray(state.achievements.claimedIds)) state.achievements.claimedIds = [];
+}
+
+ensureDailyLoginState();
+ensureDailyMissionState();
+ensureAchievementState();
 
 // 兼容舊存檔：確保舊玩家具備 unlockedCountries
 if (!state.unlockedCountries) {
@@ -190,6 +538,9 @@ export const loadStateFromCloud = async (user) => {
     if (data && data.game_state && Object.keys(data.game_state).length > 0) {
       // 覆蓋當前狀態
       Object.assign(state, data.game_state);
+      ensureDailyLoginState();
+      ensureDailyMissionState();
+      ensureAchievementState();
       localStorage.setItem(SAVE_KEY, JSON.stringify(state));
     } else {
       // 若雲端無存檔，建立一筆新資料
@@ -324,6 +675,10 @@ export const harvestFlower = (slotId) => {
       state.inventory[flowerId] = (state.inventory[flowerId] || 0) + (1 * harvestMulti);
       state.exp = (state.exp || 0) + Math.round((flower.price * harvestMulti) / 10);
       state.level = getLevelInfo(state.exp).level;
+      trackDailyMissionProgress('harvests', harvestMulti);
+      trackDailyMissionProgress('diamondsEarned', flower.price * harvestMulti);
+      const rarityRank = flower.rarity === 'Legendary' ? 6 : parseInt(flower.rarity) || 1;
+      if (rarityRank >= 4) trackDailyMissionProgress('rareHarvests', harvestMulti);
     }
     slot.status = 'empty';
     slot.flowerId = null;
@@ -446,7 +801,11 @@ setInterval(() => {
 }, 500);
 
 export const setScene = (sceneId) => {
-  state.currentScene = Number(sceneId);
+  const nextScene = Number(sceneId);
+  if (state.currentScene !== nextScene) {
+    trackDailyMissionProgress('switchScenes');
+  }
+  state.currentScene = nextScene;
 };
 
 export const isSceneUnlocked = (country, scene) => {
@@ -474,6 +833,7 @@ export const resetGame = (mode = 'player') => {
 
     const freshState = {
       diamonds: mode === 'dev' ? 5000000 : 100000,
+      travelTickets: mode === 'dev' ? 3 : 0,
       currentCountry: 'Taiwan',
       currentScene: 1,
       unlockedScenes: { 'Taiwan': [1, 2, 3, 4], 'Japan': [1, 2, 3, 4], 'Korea': [1, 2, 3, 4], 'Thailand': [1, 2, 3, 4], 'Singapore': [1, 2, 3, 4] },
@@ -489,6 +849,15 @@ export const resetGame = (mode = 'player') => {
       inventoryItems: mode === 'player'
         ? { 'sunnyDoll': 3, 'rain1': 3, 'fert1': 3, 'star1': 3 }
         : {},
+      dailyLogin: {
+        cycleDay: 1,
+        lastClaimPeriodKey: null,
+        totalClaims: 0
+      },
+      dailyMissions: createDailyMissionsState(),
+      achievements: {
+        claimedIds: []
+      },
       lastActiveTime: Date.now(),
       lastSpawnTimes: {}
     };

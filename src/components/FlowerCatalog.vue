@@ -152,9 +152,15 @@ const processCatalogImage = (flower, e) => {
                     <span v-else>🌱</span>
                   </div>
                   <div class="m-medals">
-                    <div class="m-medal" :class="{ 'gold': (state.inventory[flower.id] || 0) >= 50 }"></div>
-                    <div class="m-medal" :class="{ 'silver': (state.inventory[flower.id] || 0) >= 20 }"></div>
-                    <div class="m-medal" :class="{ 'bronze': (state.inventory[flower.id] || 0) >= 10 }"></div>
+                    <div class="m-medal gold" :class="{ locked: (state.inventory[flower.id] || 0) < 50 }" title="金牌：採收 50 隻">
+                      <span>G</span>
+                    </div>
+                    <div class="m-medal silver" :class="{ locked: (state.inventory[flower.id] || 0) < 20 }" title="銀牌：採收 20 隻">
+                      <span>S</span>
+                    </div>
+                    <div class="m-medal bronze" :class="{ locked: (state.inventory[flower.id] || 0) < 10 }" title="銅牌：採收 10 隻">
+                      <span>B</span>
+                    </div>
                   </div>
                 </template>
                 <div v-else class="m-placeholder">
@@ -297,11 +303,46 @@ const processCatalogImage = (flower, e) => {
 .hidden-source { display: none; }
 .m-img { width: 100%; height: 100%; object-fit: contain; }
 
-.m-medals { position: absolute; right: 4px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 3px; }
-.m-medal { width: 10px; height: 10px; border-radius: 50%; border: 1px solid #3c1a1a; background: #e0e0e0; box-shadow: inset -1px -1px 2px rgba(0,0,0,0.3); }
-.m-medal.gold { background: #f1c40f; }
-.m-medal.silver { background: #bdc3c7; }
-.m-medal.bronze { background: #cd7f32; }
+.m-medals {
+  position: absolute; right: 5px; top: 50%; transform: translateY(-50%);
+  display: flex; flex-direction: column; gap: 5px; z-index: 3;
+}
+.m-medal {
+  position: relative; width: 15px; height: 15px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  border: 1.2px solid #3c1a1a; color: #3c1a1a;
+  font-size: 0.38rem; font-weight: 900; line-height: 1;
+  box-shadow: 0 1.5px 0 rgba(60,26,26,0.75), inset 0 1.5px 2px rgba(255,255,255,0.75), inset 0 -2px 3px rgba(0,0,0,0.22);
+}
+.m-medal::before {
+  content: ''; position: absolute; inset: 2.5px; border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.72); box-shadow: inset 0 0 0 1px rgba(60,26,26,0.16);
+}
+.m-medal::after {
+  content: ''; position: absolute; left: 50%; bottom: -5px; transform: translateX(-50%);
+  width: 9px; height: 6px; clip-path: polygon(0 0, 100% 0, 82% 100%, 50% 62%, 18% 100%);
+  background: linear-gradient(90deg, #c0392b 0 45%, #ffffff 45% 55%, #8e1b13 55% 100%);
+  border: 1px solid rgba(60,26,26,0.75); border-top: 0; z-index: -1;
+}
+.m-medal span { position: relative; z-index: 1; text-shadow: 0 1px 0 rgba(255,255,255,0.45); }
+.m-medal.gold {
+  background: radial-gradient(circle at 32% 24%, #fff8c9 0 18%, #ffd86b 19% 42%, #f1a70f 72%, #b56b00 100%);
+  box-shadow: 0 1.5px 0 #7a4700, 0 0 6px rgba(241,196,15,0.5), inset 0 1.5px 2px rgba(255,255,255,0.8), inset 0 -2px 4px rgba(89,48,0,0.28);
+}
+.m-medal.silver {
+  background: radial-gradient(circle at 32% 24%, #ffffff 0 18%, #dfe6e9 19% 45%, #95a5a6 72%, #636e72 100%);
+  box-shadow: 0 1.5px 0 #3d4a4d, 0 0 5px rgba(223,230,233,0.5), inset 0 1.5px 2px rgba(255,255,255,0.85), inset 0 -2px 4px rgba(45,52,54,0.24);
+}
+.m-medal.bronze {
+  background: radial-gradient(circle at 32% 24%, #ffd9ad 0 18%, #d98a48 19% 45%, #a85b22 74%, #6d3514 100%);
+  box-shadow: 0 1.5px 0 #4a220c, 0 0 5px rgba(205,127,50,0.4), inset 0 1.5px 2px rgba(255,255,255,0.65), inset 0 -2px 4px rgba(74,34,12,0.28);
+}
+.m-medal.locked {
+  color: rgba(60,26,26,0.42);
+  background: radial-gradient(circle at 32% 24%, #f3f0ea 0 18%, #d5d0c8 19% 48%, #9d9790 78%, #6f6a65 100%);
+  filter: grayscale(0.95); opacity: 0.55; box-shadow: 0 1.5px 0 rgba(60,26,26,0.55), inset 0 1.5px 2px rgba(255,255,255,0.55), inset 0 -2px 3px rgba(0,0,0,0.2);
+}
+.m-medal.locked::after { background: linear-gradient(90deg, #7f8c8d 0 45%, #dfe6e9 45% 55%, #636e72 55% 100%); }
 
 .m-placeholder .q-mark { font-size: 2rem; color: #bcaea0; font-weight: 900; }
 

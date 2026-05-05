@@ -1,10 +1,11 @@
 <script setup>
 import { computed } from 'vue';
-import { state } from '../store/gameState';
+import { state, trackDailyMissionProgress } from '../store/gameState';
 
 const emit = defineEmits(['back']);
 
 const allItems = [
+  { id: 'travelTicket', name: '✈️ 出國機票', desc: '可在地圖免費解鎖一個未開放國家', type: 'travel' },
   { id: 'sunnyDoll', name: '☀️ 晴天娃娃', desc: '強制天氣變晴天 6 小時', type: 'weather', duration: 6 },
   { id: 'rain1', name: '🌧️ 人造雨一階', desc: '全域生長速度 2 倍 (1小時)', type: 'rain', multi: 2, duration: 1 },
   { id: 'rain2', name: '🌧️ 人造雨二階', desc: '全域生長速度 4 倍 (1小時)', type: 'rain', multi: 4, duration: 1 },
@@ -24,17 +25,28 @@ const allItems = [
 ];
 
 const inventoryItems = computed(() => {
-  if (!state.inventoryItems) return [];
-  return Object.entries(state.inventoryItems)
+  const travelTicketItems = (state.travelTickets || 0) > 0
+    ? [{ ...allItems[0], count: state.travelTickets }]
+    : [];
+
+  if (!state.inventoryItems) return travelTicketItems;
+  const usableItems = Object.entries(state.inventoryItems)
     .filter(([_, count]) => count > 0)
     .map(([id, count]) => {
       const itemDef = allItems.find(i => i.id === id);
       return { ...itemDef, count };
     })
     .filter(item => item.name); // only valid items
+
+  return [...travelTicketItems, ...usableItems];
 });
 
 const useItem = (item) => {
+  if (item.type === 'travel') {
+    alert('出國機票請到地圖選擇未解鎖國家時使用。');
+    return;
+  }
+
   if (state.inventoryItems[item.id] > 0) {
     state.inventoryItems[item.id]--;
     const now = Date.now();
@@ -61,6 +73,7 @@ const useItem = (item) => {
       state.activeBuffs.starUntil = now + item.duration * 60 * 60 * 1000;
       state.activeBuffs.starMultiplier = item.multi;  
     }
+    trackDailyMissionProgress('usedItems');
     alert(`成功使用 ${item.name}！`);
   }
 };
@@ -83,8 +96,8 @@ const useItem = (item) => {
         <p>{{ item.desc }}</p>
         <div class="item-count">持有數量: {{ item.count }}</div>
         
-        <button @click="useItem(item)" class="buy-btn">
-          ✨ 立即使用
+        <button @click="useItem(item)" class="buy-btn" :class="{ travel: item.type === 'travel' }">
+          {{ item.type === 'travel' ? '🗺️ 地圖使用' : '✨ 立即使用' }}
         </button>
       </div>
     </div>
@@ -148,6 +161,7 @@ const useItem = (item) => {
   transition: all 0.1s; text-align: center; margin-top: auto;
 }
 .buy-btn:active { transform: translateY(2px); box-shadow: 0 2px 5px rgba(155, 89, 182, 0.4), inset 0 0 0 rgba(255,255,255,0); }
+.buy-btn.travel { background: linear-gradient(to bottom, #f1c40f, #e67e22); color: #2d3436; box-shadow: 0 3px 10px rgba(241, 196, 15, 0.4), inset 0 1px 0 rgba(255,255,255,0.35); }
 
 @media (max-width: 600px) {
   .inventory-overlay { padding: 20px; }

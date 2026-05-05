@@ -1,6 +1,6 @@
 <script setup>
 import { computed, ref } from 'vue';
-import { state } from '../store/gameState';
+import { state, trackDailyMissionProgress } from '../store/gameState';
 
 const emit = defineEmits(['back', 'select-country']);
 
@@ -21,10 +21,25 @@ const handleSelect = (countryId) => {
     if (state.currentCountry !== countryId) {
       state.currentCountry = countryId;
       state.currentScene = 1;
+      trackDailyMissionProgress('travels');
     }
     emit('select-country', countryId);
   } else {
     const cost = state.visitedCount * 1000000;
+    if ((state.travelTickets || 0) > 0) {
+      if (confirm(`使用 1 張出國機票解鎖 ${countries.find(c => c.id === countryId)?.name || '此國家'} 嗎？`)) {
+        state.travelTickets -= 1;
+        state.unlockedCountries.push(countryId);
+        state.visitedCount += 1;
+        state.currentCountry = countryId;
+        state.currentScene = 1;
+        trackDailyMissionProgress('travels');
+        alert("機票使用成功！準備降落！🛫");
+        emit('select-country', countryId);
+      }
+      return;
+    }
+
     if (confirm(`解鎖此國家需要 ${formatNumber(cost)} 鑽石作為機票費用。\n您確定要前往嗎？`)) {
       if (state.diamonds >= cost) {
         state.diamonds -= cost;
@@ -32,6 +47,7 @@ const handleSelect = (countryId) => {
         state.visitedCount += 1;
         state.currentCountry = countryId;
         state.currentScene = 1;
+        trackDailyMissionProgress('travels');
         alert("解鎖成功！準備降落！🛫");
         emit('select-country', countryId);
       } else {
@@ -48,6 +64,7 @@ const handleSelect = (countryId) => {
     <div class="top-info">
       <div class="map-title">🌍 選擇你要前往的國家</div>
       <div class="diamond-display">💎 您的鑽石: <span class="diamond-val">{{ formatNumber(state.diamonds) }}</span></div>
+      <div class="ticket-display">✈️ 出國機票: <span class="ticket-val">{{ state.travelTickets || 0 }}</span></div>
     </div>
     
     <div class="map-container">
@@ -75,9 +92,10 @@ const handleSelect = (countryId) => {
             <template v-if="country.id === selectedCountry">
               <div class="name">{{ country.flag }} {{ country.name }}</div>
               <div v-if="state.unlockedCountries.includes(country.id)" class="status unlocked">✅ 已解鎖</div>
+              <div v-else-if="(state.travelTickets || 0) > 0" class="status ticket">✈️ 可使用出國機票</div>
               <div v-else class="status locked">🔒 需 {{ formatNumber(state.visitedCount * 1000000) }} 鑽石</div>
               <button class="action-btn" @click.stop="handleSelect(country.id)">
-                {{ state.unlockedCountries.includes(country.id) ? '🛫 立即前往' : '💰 購買機票' }}
+                {{ state.unlockedCountries.includes(country.id) ? '🛫 立即前往' : (state.travelTickets || 0) > 0 ? '✈️ 使用機票' : '💰 購買機票' }}
               </button>
             </template>
           </template>
@@ -107,6 +125,8 @@ const handleSelect = (countryId) => {
 .map-title { font-size: 1.4rem; font-weight: 900; color: white; text-shadow: 0 3px 0 rgba(0,0,0,0.5); }
 .diamond-display { background: rgba(0,0,0,0.6); padding: 5px 12px; border-radius: 12px; border: 2px solid rgba(255,255,255,0.2); font-weight: bold; color: white; font-size: 0.9rem; }
 .diamond-val { color: #feca57; font-size: 1rem; }
+.ticket-display { background: rgba(255,255,255,0.12); padding: 5px 12px; border-radius: 12px; border: 2px solid rgba(254, 202, 87, 0.45); font-weight: bold; color: white; font-size: 0.9rem; }
+.ticket-val { color: #ffeaa7; font-size: 1rem; }
 
 .map-container {
   width: 95vw; max-width: 1200px; aspect-ratio: 2 / 1; position: relative; margin-top: 100px;
@@ -150,6 +170,7 @@ const handleSelect = (countryId) => {
 .country-label-fixed .status { font-size: 0.7rem; margin-top: 3px; font-weight: bold; }
 .country-label-fixed .status.unlocked { color: #2ecc71; }
 .country-label-fixed .status.locked { color: #e74c3c; }
+.country-label-fixed .status.ticket { color: #ffeaa7; }
 
 .action-btn {
   margin-top: 6px; width: 100%; padding: 4px; border-radius: 6px; font-weight: bold; font-size: 0.75rem;

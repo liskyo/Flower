@@ -1,6 +1,6 @@
 <script setup>
 import { computed } from 'vue';
-import { state } from '../store/gameState';
+import { state, trackDailyMissionProgress } from '../store/gameState';
 
 const emit = defineEmits(['back']);
 
@@ -36,6 +36,7 @@ const buyItem = (item) => {
     state.diamonds -= item.price;
     if (!state.inventoryItems) state.inventoryItems = {};
     state.inventoryItems[item.id] = (state.inventoryItems[item.id] || 0) + 1;
+    trackDailyMissionProgress('purchases');
     alert(`成功購買 ${item.name}！已放入道具箱中。`);
   } else {
     alert("鑽石不足！");
