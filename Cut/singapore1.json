@@ -1,0 +1,327 @@
+[
+    {
+      "id": "sg_legendary",
+      "name": "傳說·卓錦萬代蘭",
+      "rarity": "Legendary",
+      "growthTime": 1800,
+      "price": 12000,
+      "scene": 0,
+      "description": "新加坡國花，氣質穩到像國家預算表。對著它喊『Majulah』，它會淡定回你一句：Can lah。"
+    },
+    {
+      "id": "sg_s1_infinity",
+      "name": "無邊際泳池花",
+      "rarity": 1,
+      "growthTime": 5,
+      "price": 15,
+      "scene": 1,
+      "description": "花瓣平到像金沙無邊際泳池，站上去先想拍照、再想人生，最後想房價。"
+    },
+    {
+      "id": "sg_s1_casino",
+      "name": "發財籌碼花",
+      "rarity": 1,
+      "growthTime": 8,
+      "price": 25,
+      "scene": 1,
+      "description": "長得像賭場籌碼，香氣裡混著『這把穩了』和『完了啦』，是濱海灣專屬情緒香。"
+    },
+    {
+      "id": "sg_s1_shopping",
+      "name": "名牌購物袋花",
+      "rarity": 1,
+      "growthTime": 10,
+      "price": 30,
+      "scene": 1,
+      "description": "花瓣像精品購物袋，採收時自動播放刷卡聲，然後提醒你帳單明天到。"
+    },
+    {
+      "id": "sg_s1_highview",
+      "name": "頂樓觀景花",
+      "rarity": 1,
+      "growthTime": 12,
+      "price": 35,
+      "scene": 1,
+      "description": "這朵花長得特別高，花粉會隨風飄到隔壁馬來西亞，非常霸氣。"
+    },
+    {
+      "id": "sg_s1_lotus",
+      "name": "大蓮花建築花",
+      "rarity": 2,
+      "growthTime": 18,
+      "price": 50,
+      "scene": 1,
+      "description": "模仿藝術科學博物館的外型，長得像一隻攤開的手，隨時準備接住從天而降的財富。"
+    },
+    {
+      "id": "sg_s1_laser",
+      "name": "幻彩生輝花",
+      "rarity": 2,
+      "growthTime": 22,
+      "price": 65,
+      "scene": 1,
+      "description": "每天晚上八點會噴射雷射光束，是花園裡最吵鬧且最亮的存在。"
+    },
+    {
+      "id": "sg_s1_elevator",
+      "name": "快速電梯花",
+      "rarity": 2,
+      "growthTime": 25,
+      "price": 80,
+      "scene": 1,
+      "description": "生長速度極快，能在一秒鐘內長高五十層樓，讓負責採收的工頭感到耳鳴。"
+    },
+    {
+      "id": "sg_s1_suite",
+      "name": "總統套房花",
+      "rarity": 2,
+      "growthTime": 30,
+      "price": 100,
+      "scene": 1,
+      "description": "嬌貴無比，每晚需要用五星級的泉水灌溉，否則它會投訴你的服務品質。"
+    },
+    {
+      "id": "sg_s1_fine",
+      "name": "罰金花",
+      "rarity": 3,
+      "growthTime": 45,
+      "price": 180,
+      "scene": 1,
+      "description": "如果你採收時亂丟垃圾，這朵花會自動吐出一張 500 新幣的罰單。"
+    },
+    {
+      "id": "sg_s1_satay",
+      "name": "老巴剎沙嗲花",
+      "rarity": 3,
+      "growthTime": 55,
+      "price": 250,
+      "scene": 1,
+      "description": "自帶碳火焦香氣，花瓣長得像竹籤，是所有蜜蜂公認的宵夜首選。"
+    },
+    {
+      "id": "sg_s1_kaya",
+      "name": "咖椰吐司花",
+      "rarity": 3,
+      "growthTime": 65,
+      "price": 300,
+      "scene": 1,
+      "description": "綠色的咖椰醬花瓣配上黃色的奶油花蕊，咬下去滿口都是新加坡的早晨。"
+    },
+    {
+      "id": "sg_s1_kiasu",
+      "name": "怕輸花",
+      "rarity": 3,
+      "growthTime": 80,
+      "price": 400,
+      "scene": 1,
+      "description": "它會用面紙（Chope）佔領隔壁的花盆，確保自己永遠排在澆水清單的第一位。"
+    },
+    {
+      "id": "sg_s1_chef",
+      "name": "米其林主廚花",
+      "rarity": 4,
+      "growthTime": 100,
+      "price": 650,
+      "scene": 1,
+      "description": "每一瓣花瓣的擺盤都經過精確計算，採收時必須穿著正裝以示尊重。"
+    },
+    {
+      "id": "sg_s1_goldbot",
+      "name": "金磚機器人花",
+      "rarity": 4,
+      "growthTime": 130,
+      "price": 900,
+      "scene": 1,
+      "description": "全金屬打造，會自動計算花園的投資報酬率，並建議你賣掉那些不值錢的雜草。"
+    },
+    {
+      "id": "sg_s1_ferrari",
+      "name": "F1賽道花",
+      "rarity": 4,
+      "growthTime": 160,
+      "price": 1200,
+      "scene": 1,
+      "description": "花心有 F1 引擎轟鳴，手速慢 0.3 秒它就衝走，還會回頭嗆你：Try again, bro。"
+    },
+    {
+      "id": "sg_s1_ship",
+      "name": "天空之船花",
+      "rarity": 5,
+      "growthTime": 200,
+      "price": 2500,
+      "scene": 1,
+      "description": "巨大的船型花冠，承載著無數人的豪門夢，是這座城市天際線的王者。"
+    },
+    {
+      "id": "sg_s1_fortune",
+      "name": "一夕致富花",
+      "rarity": 5,
+      "growthTime": 300,
+      "price": 5000,
+      "scene": 1,
+      "description": "花瓣像鈔票滿天飛，採收後短暫覺得財富自由，三秒後回到現實：ERP 扣款中。"
+    },
+    {
+      "id": "sg_s2_water",
+      "name": "噴水魚尾獅花",
+      "rarity": 1,
+      "growthTime": 5,
+      "price": 20,
+      "scene": 2,
+      "description": "會朝你臉上連續噴水，降溫效果一流；唯一缺點是瀏海瞬間變魚尾獅同款。"
+    },
+    {
+      "id": "sg_s2_pose",
+      "name": "張嘴喝水花",
+      "rarity": 1,
+      "growthTime": 10,
+      "price": 35,
+      "scene": 2,
+      "description": "長得像一個正在張大嘴的觀光客，花瓣呈現完美的拍照借位角度。"
+    },
+    {
+      "id": "sg_s2_sunburn",
+      "name": "紅通通曬傷花",
+      "rarity": 1,
+      "growthTime": 15,
+      "price": 45,
+      "scene": 2,
+      "description": "花瓣邊緣是焦黑的，中心是通紅的。這就是不擦防曬油在海邊站一小時的下場。"
+    },
+    {
+      "id": "sg_s2_magnet",
+      "name": "觀光紀念品花",
+      "rarity": 1,
+      "growthTime": 18,
+      "price": 55,
+      "scene": 2,
+      "description": "花瓣具有磁性，會自動黏在你的冰箱上，撕都撕不下來。"
+    },
+    {
+      "id": "sg_s2_durian",
+      "name": "大榴槤建築花",
+      "rarity": 1,
+      "growthTime": 22,
+      "price": 65,
+      "scene": 2,
+      "description": "模仿濱海藝術中心。雖然外表刺刺的，但如果你懂得欣賞，它聞起來像天堂。"
+    },
+    {
+      "id": "sg_s2_icecream",
+      "name": "彩虹三明治冰花",
+      "rarity": 2,
+      "growthTime": 30,
+      "price": 100,
+      "scene": 2,
+      "description": "吐司夾著彩虹色的花瓣，採收時必須迅速，不然它會在 30 度的陽光下融化。"
+    },
+    {
+      "id": "sg_s2_cruise",
+      "name": "新加坡河船花",
+      "rarity": 2,
+      "growthTime": 35,
+      "price": 120,
+      "scene": 2,
+      "description": "花瓣像一艘木船，載著遊客在花盆的水積中緩慢繞行。"
+    },
+    {
+      "id": "sg_s2_fullerton",
+      "name": "老郵局花",
+      "rarity": 2,
+      "growthTime": 40,
+      "price": 150,
+      "scene": 2,
+      "description": "姿態古典莊嚴，曾是傳遞信件的中心，現在只負責收納遊客的打卡照。"
+    },
+    {
+      "id": "sg_s2_bridge",
+      "name": "安德遜橋花",
+      "rarity": 2,
+      "growthTime": 45,
+      "price": 180,
+      "scene": 2,
+      "description": "潔白且堅固的花莖，據說曾經有賽車從它身邊呼嘯而過，差點把它嚇壞。"
+    },
+    {
+      "id": "sg_s2_little",
+      "name": "迷你魚尾獅花",
+      "rarity": 3,
+      "growthTime": 60,
+      "price": 300,
+      "scene": 2,
+      "description": "躲在媽媽後面的小花，噴水力道較弱，像是一個正在練習吐口水的小北鼻。"
+    },
+    {
+      "id": "sg_s2_chilli",
+      "name": "辣椒螃蟹花",
+      "rarity": 3,
+      "growthTime": 70,
+      "price": 380,
+      "scene": 2,
+      "description": "花瓣是艷紅色的蟹螯，散發著濃郁的辣椒甜味，讓人忍不住想點一盤小饅頭。"
+    },
+    {
+      "id": "sg_s2_tiger",
+      "name": "虎牌啤酒花",
+      "rarity": 3,
+      "growthTime": 85,
+      "price": 450,
+      "scene": 2,
+      "description": "帶有麥芽香氣的花朵。請注意：這朵花在晚上 10 點半後禁止採收。"
+    },
+    {
+      "id": "sg_s2_singlish",
+      "name": "Can or Not花",
+      "rarity": 3,
+      "growthTime": 100,
+      "price": 550,
+      "scene": 2,
+      "description": "開花時連發『Can lah』『Can meh』『Aiyo』，是整座花園最道地的 Singlish 老師。"
+    },
+    {
+      "id": "sg_s2_skyline",
+      "name": "璀璨天際花",
+      "rarity": 4,
+      "growthTime": 130,
+      "price": 900,
+      "scene": 2,
+      "description": "花瓣會反射周圍摩天大樓的倒影，美到讓你忘記這座城市的物價有多高。"
+    },
+    {
+      "id": "sg_s2_floating",
+      "name": "浮動舞台花",
+      "rarity": 4,
+      "growthTime": 160,
+      "price": 1200,
+      "scene": 2,
+      "description": "長在水上的巨大平台花。每逢國慶日，它會承載著煙火在花園裡跳舞。"
+    },
+    {
+      "id": "sg_s2_history",
+      "name": "萊佛士登陸花",
+      "rarity": 4,
+      "growthTime": 180,
+      "price": 1500,
+      "scene": 2,
+      "description": "穿著白色西裝的優雅花朵，雙手插腰俯瞰著河流，思考著如何開發這片土地。"
+    },
+    {
+      "id": "sg_s2_ocean",
+      "name": "海洋之息花",
+      "rarity": 5,
+      "growthTime": 240,
+      "price": 3000,
+      "scene": 2,
+      "description": "帶著海水的鹹味與清涼。它是傳說中魚尾獅的呼吸結晶，能平定暴風雨。"
+    },
+    {
+      "id": "sg_s2_legend",
+      "name": "獅城覺醒花",
+      "rarity": 5,
+      "growthTime": 320,
+      "price": 6000,
+      "scene": 2,
+      "description": "當這朵花盛開時，整座花園都會響起雄獅的咆哮聲，威震四方。"
+    }
+  
+  ]
