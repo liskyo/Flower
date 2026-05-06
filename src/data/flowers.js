@@ -1,11 +1,26 @@
-// Import each country's data
-import taiwanData from './countries/taiwan.json';
-import japanData from './countries/japan.json';
-import koreaData from './countries/korea.json';
-import thailandData from './countries/thailand.json';
-import singaporeData from './countries/singapore.json';
+const countryModules = import.meta.glob('./countries/*.json', { eager: true });
+const preferredOrder = ['Taiwan', 'Japan', 'Korea', 'Thailand', 'Singapore'];
 
-const countryDataList = [taiwanData, japanData, koreaData, thailandData, singaporeData];
+const isCountryConfig = (data) => {
+  return !!data
+    && !Array.isArray(data)
+    && typeof data.id === 'string'
+    && Array.isArray(data.flowers);
+};
+
+export const COUNTRY_DATA_LIST = Object.values(countryModules)
+  .map((mod) => mod.default || mod)
+  .filter(isCountryConfig)
+  .sort((a, b) => {
+    const ai = preferredOrder.indexOf(a.id);
+    const bi = preferredOrder.indexOf(b.id);
+    if (ai !== -1 || bi !== -1) {
+      if (ai === -1) return 1;
+      if (bi === -1) return -1;
+      return ai - bi;
+    }
+    return a.id.localeCompare(b.id);
+  });
 
 // 定義不同稀有度對應的生長時間 (單位：秒)
 const RARITY_GROWTH_TIME = {
@@ -18,7 +33,7 @@ const RARITY_GROWTH_TIME = {
 };
 
 // Flatten all flowers and add the 'country' property automatically, overriding growthTime
-export const FLOWERS = countryDataList.flatMap(country => 
+export const FLOWERS = COUNTRY_DATA_LIST.flatMap(country => 
   country.flowers.map(f => ({ 
     ...f, 
     country: country.id,
@@ -27,12 +42,16 @@ export const FLOWERS = countryDataList.flatMap(country =>
 );
 
 // Aggregate country information
-export const COUNTRIES = countryDataList.map(country => ({
+export const COUNTRIES = COUNTRY_DATA_LIST.map(country => ({
   id: country.id,
   name: country.name,
   flag: country.flag,
   scenes: country.scenes
 }));
+
+export const SCENE_NAMES_BY_COUNTRY = Object.fromEntries(
+  COUNTRY_DATA_LIST.map(country => [country.id, country.sceneNames || []])
+);
 
 export const RARITY_LABELS = {
   "1": "Common",

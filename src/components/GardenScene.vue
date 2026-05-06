@@ -3,12 +3,8 @@
 <script setup>
 import { ref, onMounted, onUnmounted, computed, nextTick } from 'vue';
 import { state, autoSpawn, setScene, getCurrentGarden, harvestFlower, getCurrentWeather, isSceneUnlocked, getCurrentSpawnMultiplier, catchUpSpawning, getLevelInfo, getDailyLoginStatus, getDailyMissionSummary, getCatalogAchievementSummary, playSound } from '../store/gameState';
-import { FLOWERS } from '../data/flowers';
+import { FLOWERS, SCENE_NAMES_BY_COUNTRY } from '../data/flowers';
 import { getFlowerImagePath, getSceneBackgroundPath } from '../data/assetPaths';
-import taiwanData from '../data/countries/taiwan.json';
-import japanData from '../data/countries/japan.json';
-import koreaData from '../data/countries/korea.json';
-import singaporeData from '../data/countries/singapore.json';
 import GardenSlot from './GardenSlot.vue';
 
 // 取得當前經驗值進度資訊
@@ -58,15 +54,8 @@ const processBasketImage = () => {
   } catch (e) { processedBasketSrc.value = img.src; }
 };
 
-const sceneNamesByCountry = {
-  [taiwanData.id]: taiwanData.sceneNames || [],
-  [japanData.id]: japanData.sceneNames || [],
-  [koreaData.id]: koreaData.sceneNames || [],
-  [singaporeData.id]: singaporeData.sceneNames || []
-};
-
 const currentSceneNames = computed(() => {
-  const names = sceneNamesByCountry[state.currentCountry];
+  const names = SCENE_NAMES_BY_COUNTRY[state.currentCountry];
   if (Array.isArray(names) && names.length === 4) return names;
   return ["場景 1", "場景 2", "場景 3", "場景 4"];
 });
