@@ -2,7 +2,9 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted, computed, nextTick } from 'vue';
-import { state, autoSpawn, setScene, getCurrentGarden, harvestFlower, getCurrentWeather, isSceneUnlocked, getCurrentSpawnMultiplier, catchUpSpawning, getLevelInfo, getDailyLoginStatus, getDailyMissionSummary, getCatalogAchievementSummary, playSound } from '../store/gameState';import { FLOWERS } from '../data/flowers';
+import { state, autoSpawn, setScene, getCurrentGarden, harvestFlower, getCurrentWeather, isSceneUnlocked, getCurrentSpawnMultiplier, catchUpSpawning, getLevelInfo, getDailyLoginStatus, getDailyMissionSummary, getCatalogAchievementSummary, playSound } from '../store/gameState';
+import { FLOWERS } from '../data/flowers';
+import { getFlowerImagePath, getSceneBackgroundPath } from '../data/assetPaths';
 import taiwanData from '../data/countries/taiwan.json';
 import japanData from '../data/countries/japan.json';
 import koreaData from '../data/countries/korea.json';
@@ -251,7 +253,7 @@ const triggerFlyAnimation = (flower, startX, startY, imgUrl) => {
   
   flyingFlowers.value.push({
     id: flyId,
-    url: imgUrl || `/assets/flowers/${flower.country.toLowerCase()}/${flower.id}.png`,
+    url: imgUrl || getFlowerImagePath(flower.country, flower.id),
     startX, startY, endX, endY
   });
 
@@ -268,7 +270,7 @@ const triggerFlyAnimation = (flower, startX, startY, imgUrl) => {
 };
 
 const bgImageStyle = computed(() => ({
-  backgroundImage: `url('/assets/scenes/${state.currentCountry.toLowerCase()}/scene_${state.currentCountry.toLowerCase()}_${state.currentScene}.png')`,
+  backgroundImage: `url('${getSceneBackgroundPath(state.currentCountry, state.currentScene)}')`,
 }));
 
 const currentGarden = computed(() => getCurrentGarden());

@@ -2,6 +2,7 @@
 import { computed, ref, onMounted } from 'vue';
 import { state, hasSilverMedalForAllCountryFlowers } from '../store/gameState';
 import { FLOWERS, COUNTRIES } from '../data/flowers';
+import { getFlowerImagePath } from '../data/assetPaths';
 
 const emit = defineEmits(['back']);
 
@@ -144,7 +145,7 @@ const processCatalogImage = (flower, e) => {
                 <template v-if="isCollected(flower.id)">
                   <div class="m-thumb">
                     <img 
-                      :src="`/assets/flowers/${flower.country.toLowerCase()}/${flower.id}.png`" 
+                      :src="getFlowerImagePath(flower.country, flower.id)" 
                       class="hidden-source" 
                       @load="processCatalogImage(flower, $event)"
                     />

@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "check:assets": "node scripts/check-assets.mjs",
+    "check:assets:warn": "node scripts/check-assets.mjs --warn-only"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.105.1",

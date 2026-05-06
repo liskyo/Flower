@@ -1,6 +1,7 @@
 <script setup>
 import { computed, ref, onUnmounted, watch } from 'vue';
 import { FLOWERS } from '../data/flowers';
+import { getFlowerImagePath } from '../data/assetPaths';
 import { state, harvestFlower, calculateEffectiveElapsedTime, getWitherMultiplier, globalTicker, playSound } from '../store/gameState';
 
 const props = defineProps(['slotData']);
@@ -228,7 +229,7 @@ defineExpose({ triggerHarvest, getSlotStatus });
       ></div>
       <div v-if="slotData.status !== 'empty' && flower" class="flower-container-v3" :style="{ transform: `scale(${growthScale})` }">
         <div class="flower-render-box">
-          <img ref="imgRef" :src="`/assets/flowers/${flower.country.toLowerCase()}/${flower.id}.png`" class="hidden-core" @load="processImage" />
+          <img ref="imgRef" :src="getFlowerImagePath(flower.country, flower.id)" class="hidden-core" @load="processImage" />
           <canvas ref="canvasRef" class="hidden-core"></canvas>
           <img v-if="processedSrc" :src="processedSrc" class="final-flower-img" :class="getGlowClass(flower?.rarity)" />
         </div>
