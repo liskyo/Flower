@@ -1,0 +1,326 @@
+ [
+    {
+      "id": "th_s3_hat",
+      "name": "斗笠草帽花",
+      "rarity": 1,
+      "growthTime": 5,
+      "price": 15,
+      "scene": 3,
+      "description": "花瓣像編織的草帽。雖然不能遮陽，但戴在毛毛蟲頭上非常可愛。"
+    },
+    {
+      "id": "th_s3_mango",
+      "name": "芒果糯米花",
+      "rarity": 1,
+      "growthTime": 10,
+      "price": 30,
+      "scene": 3,
+      "description": "黃色芒果花瓣配上白色糯米花蕊。請自備椰漿，否則吃起來乾乾的。"
+    },
+    {
+      "id": "th_s3_mud",
+      "name": "河水泥漿花",
+      "rarity": 1,
+      "growthTime": 15,
+      "price": 45,
+      "scene": 3,
+      "description": "長在濁水溪裡的奇蹟。雖然顏色像巧克力，但千萬別放進嘴裡。"
+    },
+    {
+      "id": "th_s3_fan",
+      "name": "傳統竹扇花",
+      "rarity": 1,
+      "growthTime": 20,
+      "price": 55,
+      "scene": 3,
+      "description": "它會自動搧風幫自己降溫。採收它的人，這輩子都不會流汗腋下濕。"
+    },
+    {
+      "id": "th_s3_pancake",
+      "name": "椰子小脆餅花",
+      "rarity": 1,
+      "growthTime": 25,
+      "price": 75,
+      "scene": 3,
+      "description": "花瓣很薄很脆。稍微用力就會碎掉，所以採收時必須屏住呼吸。"
+    },
+    {
+      "id": "th_s3_noodle",
+      "name": "一小碗船麵花",
+      "rarity": 2,
+      "growthTime": 35,
+      "price": 110,
+      "scene": 3,
+      "description": "花瓣像細長的米粉。它的份量很小，你必須一次採收十朵才能飽。"
+    },
+    {
+      "id": "th_s3_bargain",
+      "name": "殺價必勝花",
+      "rarity": 2,
+      "growthTime": 45,
+      "price": 150,
+      "scene": 3,
+      "description": "當你採收這朵花時，系統會自動跳出『打五折』的優惠，非常實惠。"
+    },
+    {
+      "id": "th_s3_fruit",
+      "name": "火龍果戰士花",
+      "rarity": 2,
+      "growthTime": 55,
+      "price": 200,
+      "scene": 3,
+      "description": "外表火紅帶刺，內心卻是一片雪白。缺點是採收後你的手會變紫紅色。"
+    },
+    {
+      "id": "th_s3_coconut",
+      "name": "整顆椰子花",
+      "rarity": 2,
+      "growthTime": 65,
+      "price": 280,
+      "scene": 3,
+      "description": "這朵花自帶插管。雖然喝不到水，但聽著裡面的晃動聲就很療癒。"
+    },
+    {
+      "id": "th_s3_crocodile",
+      "name": "烤鱷魚肉花",
+      "rarity": 3,
+      "growthTime": 85,
+      "price": 450,
+      "scene": 3,
+      "description": "外皮像鱷魚鱗片一樣粗糙。聞起來像雞肉，但長得像一場噩夢。"
+    },
+    {
+      "id": "th_s3_boat",
+      "name": "滿載而歸船花",
+      "rarity": 3,
+      "growthTime": 100,
+      "price": 600,
+      "scene": 3,
+      "description": "花瓣上堆滿了各種微縮水果。採收它等於採收了整個菜市場。"
+    },
+    {
+      "id": "th_s3_canal",
+      "name": "迷宮水道花",
+      "rarity": 3,
+      "growthTime": 120,
+      "price": 800,
+      "scene": 3,
+      "description": "花莖交錯複雜，像曼谷的運河。採收它時很容易迷路在花叢中。"
+    },
+    {
+      "id": "th_s3_firefly",
+      "name": "夜遊螢火花",
+      "rarity": 3,
+      "growthTime": 145,
+      "price": 950,
+      "scene": 3,
+      "description": "躲在葉子底下發光。據說只有划船技術一流的高手才能在水面採到它。"
+    },
+    {
+      "id": "th_s3_sweat",
+      "name": "熱浪汗水花",
+      "rarity": 4,
+      "growthTime": 180,
+      "price": 1400,
+      "scene": 3,
+      "description": "花瓣上掛滿了晶瑩的『汗珠』。它象徵著水上市場最真實的人群溫度。"
+    },
+    {
+      "id": "th_s3_traffic",
+      "name": "水道塞船花",
+      "rarity": 4,
+      "growthTime": 220,
+      "price": 1900,
+      "scene": 3,
+      "description": "十幾朵花擠在一起互不相讓。你必須先買一朵花的禮物，另一朵才肯離開。"
+    },
+    {
+      "id": "th_s3_bridge",
+      "name": "石橋倒影花",
+      "rarity": 4,
+      "growthTime": 260,
+      "price": 2600,
+      "scene": 3,
+      "description": "半圓形的花朵，水面下的倒影組成一個完美的圓。意境深遠且價格昂貴。"
+    },
+    {
+      "id": "th_s3_golden",
+      "name": "黃金水道傳奇",
+      "rarity": 5,
+      "growthTime": 320,
+      "price": 5500,
+      "scene": 3,
+      "description": "傳說中能召喚出黃金小船的花。採收後，你花園裡的水位會自動上升。"
+    },
+    {
+      "id": "th_s3_spirit",
+      "name": "河神祝福花",
+      "rarity": 5,
+      "growthTime": 400,
+      "price": 9000,
+      "scene": 3,
+      "description": "帶著曼谷河水的靈魂。據說能保佑你在現實世界裡開車永遠不塞車。"
+    },
+    {
+      "id": "th_s4_bell",
+      "name": "寺廟清脆鐘花",
+      "rarity": 1,
+      "growthTime": 8,
+      "price": 20,
+      "scene": 4,
+      "description": "風吹過會發出叮噹聲。聽著它，你的血壓會降到跟清邁人的生活步調一樣慢。"
+    },
+    {
+      "id": "th_s4_coffee",
+      "name": "泰北咖啡豆花",
+      "rarity": 1,
+      "growthTime": 12,
+      "price": 40,
+      "scene": 4,
+      "description": "深褐色的花瓣，提神效果極佳。半夜種下它，你的遊戲角色會三天不睡覺。"
+    },
+    {
+      "id": "th_s4_mist",
+      "name": "茵他儂霧花",
+      "rarity": 1,
+      "growthTime": 18,
+      "price": 55,
+      "scene": 4,
+      "description": "長在寒冷的山頭。它會吐出薄薄的白煙，讓你的花盆自帶仙氣。"
+    },
+    {
+      "id": "th_s4_wall",
+      "name": "古城紅磚花",
+      "rarity": 1,
+      "growthTime": 25,
+      "price": 70,
+      "scene": 4,
+      "description": "硬得像石頭。它見證過無數的歷史，現在只想安靜地曬太陽。"
+    },
+    {
+      "id": "th_s4_slow",
+      "name": "悠閒慢活花",
+      "rarity": 1,
+      "growthTime": 30,
+      "price": 85,
+      "scene": 4,
+      "description": "它長大的速度慢到你以為它已經枯萎了。別催，這就是清邁精神。"
+    },
+    {
+      "id": "th_s4_umbrella",
+      "name": "博桑紙傘花",
+      "rarity": 2,
+      "growthTime": 40,
+      "price": 120,
+      "scene": 4,
+      "description": "色彩繽紛，繪滿了花草。採收它時記得別淋雨，因為它是紙糊的。"
+    },
+    {
+      "id": "th_s4_curry",
+      "name": "泰北金麵花",
+      "rarity": 2,
+      "growthTime": 50,
+      "price": 180,
+      "scene": 4,
+      "description": "花心藏著一撮炸得酥脆的麵條。它是清邁文青最愛的午餐，也是最美的花。"
+    },
+    {
+      "id": "th_s4_silver",
+      "name": "銀廟雕花",
+      "rarity": 2,
+      "growthTime": 60,
+      "price": 250,
+      "scene": 4,
+      "description": "全銀色的精緻雕刻。據說這朵花只在滿月時開放，且拒絕被女生碰（誤）。"
+    },
+    {
+      "id": "th_s4_lantern",
+      "name": "天燈願望花",
+      "rarity": 2,
+      "growthTime": 75,
+      "price": 320,
+      "scene": 4,
+      "description": "它會慢慢往上漂浮。採收前請先在花瓣上寫下『我想變瘦』，雖然不會實現。"
+    },
+    {
+      "id": "th_s4_elephant",
+      "name": "便便紙環保花",
+      "rarity": 3,
+      "growthTime": 95,
+      "price": 480,
+      "scene": 4,
+      "description": "用大象便便纖維做成的紙花。雖然名字不好聽，但它聞起來有一種大地的味道。"
+    },
+    {
+      "id": "th_s4_nimman",
+      "name": "寧曼路網美花",
+      "rarity": 3,
+      "growthTime": 115,
+      "price": 650,
+      "scene": 4,
+      "description": "自帶濾鏡效果。不論你用多爛的相機拍它，它看起來都像是在拍雜誌封面。"
+    },
+    {
+      "id": "th_s4_bamboo",
+      "name": "竹林隱士花",
+      "rarity": 3,
+      "growthTime": 140,
+      "price": 850,
+      "scene": 4,
+      "description": "細長的身體，高風亮節。它會跟著泰北的民謠節奏輕輕搖擺。"
+    },
+    {
+      "id": "th_s4_suthep",
+      "name": "素帖山光花",
+      "rarity": 3,
+      "growthTime": 165,
+      "price": 1100,
+      "scene": 4,
+      "description": "這朵花會引導你走向解脫。當然，前題是你得先爬完那幾百個階梯。"
+    },
+    {
+      "id": "th_s4_lion",
+      "name": "古城石獅花",
+      "rarity": 4,
+      "growthTime": 200,
+      "price": 1800,
+      "scene": 4,
+      "description": "守護古城大門的威武花朵。它會保護你的花園不被隔壁的雜草入侵。"
+    },
+    {
+      "id": "th_s4_sakura",
+      "name": "北方粉櫻花",
+      "rarity": 4,
+      "growthTime": 240,
+      "price": 2500,
+      "scene": 4,
+      "description": "泰國版的櫻花。雖然花期很短，但粉紅色的浪漫程度絕對不輸給日本。"
+    },
+    {
+      "id": "th_s4_lanna",
+      "name": "蘭納王朝花",
+      "rarity": 4,
+      "growthTime": 290,
+      "price": 3200,
+      "scene": 4,
+      "description": "華麗的傳統造型。種下它，你的花園會瞬間變得非常有貴族氣息。"
+    },
+    {
+      "id": "th_s4_zen",
+      "name": "無我禪意花",
+      "rarity": 5,
+      "growthTime": 360,
+      "price": 6000,
+      "scene": 4,
+      "description": "你看不見它，但它確實在那裡。只有心境平和的人才能感應到它的存在。"
+    },
+    {
+      "id": "th_s4_future",
+      "name": "古城不朽之魂",
+      "rarity": 5,
+      "growthTime": 450,
+      "price": 10000,
+      "scene": 4,
+      "description": "跨越千年的能量結晶。它融合了清邁所有的陽光、雨水與笑容。"
+    }
+  ]
