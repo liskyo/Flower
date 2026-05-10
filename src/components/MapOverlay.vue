@@ -23,6 +23,7 @@ const maps = [
 ];
 
 const countryMeta = [
+  { id: 'Flower', name: '花靈之境', flag: '🌸' },
   { id: 'Taiwan', name: '台灣', flag: '🇹🇼' },
   { id: 'Japan', name: '日本', flag: '🇯🇵' },
   { id: 'Korea', name: '韓國', flag: '🇰🇷' },

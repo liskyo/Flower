@@ -1,5 +1,5 @@
 const countryModules = import.meta.glob('./countries/*.json', { eager: true });
-const preferredOrder = ['Taiwan', 'Japan', 'Korea', 'Thailand', 'Singapore'];
+const preferredOrder = ['Flower', 'Taiwan', 'Japan', 'Korea', 'Thailand', 'Singapore'];
 
 const isCountryConfig = (data) => {
   return !!data

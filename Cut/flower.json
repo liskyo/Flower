@@ -1,0 +1,326 @@
+[
+    {
+      "id": "tw_s1_taipei101_spirit",
+      "name": "台北101花靈",
+      "rarity": 1,
+      "growthTime": 10,
+      "price": 20,
+      "scene": 1,
+      "description": "以信義天際線為冠的花靈，花瓣閃著玻璃帷幕的光，守護著城市的節奏。"
+    },
+    {
+      "id": "tw_s1_shilin_night_spirit",
+      "name": "士林夜市花靈",
+      "rarity": 1,
+      "growthTime": 12,
+      "price": 28,
+      "scene": 1,
+      "description": "燈火與人潮化作花冠，散發小吃香氣，是夜色裡最熱鬧的精靈。"
+    },
+    {
+      "id": "tw_s1_tamsui_sunset_spirit",
+      "name": "淡水夕陽花靈",
+      "rarity": 3,
+      "growthTime": 28,
+      "price": 95,
+      "scene": 1,
+      "description": "餘暉染紅的花瓣如河面波光，每一片都藏著一首河岸的情歌。"
+    },
+    {
+      "id": "tw_s1_yangmingshan_spirit",
+      "name": "陽明山花靈",
+      "rarity": 3,
+      "growthTime": 32,
+      "price": 110,
+      "scene": 1,
+      "description": "霧與草香織成斗篷，在箭竹與芒草間漫步的山之守護者。"
+    },
+    {
+      "id": "tw_s1_elephant_mtn_spirit",
+      "name": "象山花靈",
+      "rarity": 3,
+      "growthTime": 35,
+      "price": 125,
+      "scene": 1,
+      "description": "登高望遠的旅人化形，花冠如台北盆地邊緣的一抹翠綠剪影。"
+    },
+    {
+      "id": "tw_s1_maokong_spirit",
+      "name": "貓空花靈",
+      "rarity": 4,
+      "growthTime": 52,
+      "price": 280,
+      "scene": 1,
+      "description": "茶香與山嵐纏繞指尖，在纜車與茶園之間輕聲哼著採茶謠。"
+    },
+    {
+      "id": "tw_s1_npm_spirit",
+      "name": "故宮花靈",
+      "rarity": 4,
+      "growthTime": 55,
+      "price": 310,
+      "scene": 1,
+      "description": "青銅與翠玉的光澤凝於花萼，舉手投足盡是千年文物的優雅。"
+    },
+    {
+      "id": "tw_s1_cks_spirit",
+      "name": "中正紀念堂花靈",
+      "rarity": 4,
+      "growthTime": 58,
+      "price": 340,
+      "scene": 1,
+      "description": "藍白廣場映在裙擺，莊嚴而溫柔，守著城市中心的寧靜時刻。"
+    },
+    {
+      "id": "tw_s1_ximending_spirit",
+      "name": "西門町花靈",
+      "rarity": 4,
+      "growthTime": 60,
+      "price": 360,
+      "scene": 1,
+      "description": "霓虹與塗鴉拼貼成翅膀，永遠走在潮流最前線的街頭精靈。"
+    },
+    {
+      "id": "tw_s1_beitou_hot_spirit",
+      "name": "北投溫泉花靈",
+      "rarity": 4,
+      "growthTime": 62,
+      "price": 380,
+      "scene": 1,
+      "description": "硫磺白霧為紗，足尖掠過溫泉溪，帶走旅人一身疲憊。"
+    },
+    {
+      "id": "tw_s1_zhongxiao_spirit",
+      "name": "忠孝東路花靈",
+      "rarity": 4,
+      "growthTime": 64,
+      "price": 400,
+      "scene": 1,
+      "description": "捷運與百貨的脈動化為花紋，在東區街角與你擦肩而過。"
+    },
+    {
+      "id": "tw_s1_dadaocheng_spirit",
+      "name": "大稻埕花靈",
+      "rarity": 4,
+      "growthTime": 66,
+      "price": 420,
+      "scene": 1,
+      "description": "紅磚與藥舖香氣縈繞，老台北的記憶在她髮間開成一朵朵迪化街。"
+    },
+    {
+      "id": "tw_s1_jiufen_spirit",
+      "name": "九份花靈",
+      "rarity": 4,
+      "growthTime": 68,
+      "price": 440,
+      "scene": 1,
+      "description": "階梯與紅燈籠點亮夜色，山城霧氣中回眸的一抹金瓜石微光。"
+    },
+    {
+      "id": "tw_s1_pingxi_lantern_spirit",
+      "name": "平溪天燈花靈",
+      "rarity": 4,
+      "growthTime": 70,
+      "price": 460,
+      "scene": 1,
+      "description": "願望寫在花瓣上，乘風而起，與天燈一同飄向鐵道上的星空。"
+    },
+    {
+      "id": "tw_s1_yehliu_queen_spirit",
+      "name": "野柳女王頭花靈",
+      "rarity": 5,
+      "growthTime": 95,
+      "price": 720,
+      "scene": 1,
+      "description": "海風雕琢的冠冕，佇立北海岸，見證潮汐與歲月的溫柔侵略。"
+    },
+    {
+      "id": "tw_s1_north_gate_spirit",
+      "name": "北門花靈",
+      "rarity": 4,
+      "growthTime": 72,
+      "price": 480,
+      "scene": 1,
+      "description": "城牆記憶與鐵道交會，拱門剪影是她最堅毅的裙襬線條。"
+    },
+    {
+      "id": "tw_s1_arena_spirit",
+      "name": "臺北小巨蛋花靈",
+      "rarity": 5,
+      "growthTime": 100,
+      "price": 850,
+      "scene": 1,
+      "description": "掌聲與燈束在花冠爆開，每一場演出都是她最燦爛的花期。"
+    },
+    {
+      "id": "tw_s1_miramar_wheel_spirit",
+      "name": "美麗華摩天輪花靈",
+      "rarity": 5,
+      "growthTime": 102,
+      "price": 880,
+      "scene": 1,
+      "description": "緩慢旋轉的霓虹光環，把城市夜景織進層層花瓣之中。"
+    },
+    {
+      "id": "tw_s1_xingtian_spirit",
+      "name": "行天宮花靈",
+      "rarity": 5,
+      "growthTime": 105,
+      "price": 920,
+      "scene": 1,
+      "description": "香火繚繞成薄霧披肩，靜默卻溫暖，庇佑熙攘街巷裡的祈願。"
+    },
+    {
+      "id": "tw_s1_songshan_creative_spirit",
+      "name": "松山文創花靈",
+      "rarity": 5,
+      "growthTime": 108,
+      "price": 950,
+      "scene": 1,
+      "description": "老菸廠磚牆與展覽光影交錯，創意與歷史在她指尖開花。"
+    },
+    {
+      "id": "tw_s1_taipei_bridge_spirit",
+      "name": "台北橋花靈",
+      "rarity": 5,
+      "growthTime": 110,
+      "price": 980,
+      "scene": 1,
+      "description": "機車瀑布的轟鳴化為披風，橋上是她最自由的伸展台。"
+    },
+    {
+      "id": "tw_s1_shilin_res_spirit",
+      "name": "士林官邸花靈",
+      "rarity": 5,
+      "growthTime": 112,
+      "price": 1000,
+      "scene": 1,
+      "description": "玫瑰與庭園小徑藏於裙擺，四季花展是她輪流換上的禮服。"
+    },
+    {
+      "id": "tw_s1_water_museum_spirit",
+      "name": "自來水博物館花靈",
+      "rarity": 4,
+      "growthTime": 74,
+      "price": 500,
+      "scene": 1,
+      "description": "紅磚圓拱與清水記憶，水滴形花紋在陽光下閃著工業時代的美。"
+    },
+    {
+      "id": "tw_s1_huashan_spirit",
+      "name": "華山文創花靈",
+      "rarity": 4,
+      "growthTime": 76,
+      "price": 520,
+      "scene": 1,
+      "description": "酒廠老牆與市集手作香氣，文青與藝術在她髮間長成藤蔓。"
+    },
+    {
+      "id": "tw_s1_raohe_spirit",
+      "name": "饒河街夜市花靈",
+      "rarity": 5,
+      "growthTime": 125,
+      "price": 2200,
+      "scene": 1,
+      "description": "廟口香火與胡椒餅蒸氣交織，松山脚下的夜色因她而更加飽滿。"
+    },
+    {
+      "id": "tw_s1_xinyi_spirit",
+      "name": "信義商圈花靈",
+      "rarity": 5,
+      "growthTime": 130,
+      "price": 2600,
+      "scene": 1,
+      "description": "百貨櫥窗與跨年煙火倒映裙擺，繁華中心最耀眼的一朵花。"
+    },
+    {
+      "id": "tw_s1_fort_san_spirit",
+      "name": "紅毛城花靈",
+      "rarity": 5,
+      "growthTime": 135,
+      "price": 3000,
+      "scene": 1,
+      "description": "磚紅城牆與淡水河口風，殖民與海風的故事繡進她的披風。"
+    },
+    {
+      "id": "tw_s1_shilin_ball_spirit",
+      "name": "士林棒球場花靈",
+      "rarity": 5,
+      "growthTime": 140,
+      "price": 3400,
+      "scene": 1,
+      "description": "全壘打弧線劃過天際，吶喊與啤酒泡沫是她最熱血的花粉。"
+    },
+    {
+      "id": "tw_s1_taipei_zoo_spirit",
+      "name": "臺北市立動物園花靈",
+      "rarity": 5,
+      "growthTime": 145,
+      "price": 3800,
+      "scene": 1,
+      "description": "木柵山線與貓熊竹香，自然教室裡最活潑的守護精靈。"
+    },
+    {
+      "id": "tw_s1_bitan_spirit",
+      "name": "碧潭花靈",
+      "rarity": 5,
+      "growthTime": 150,
+      "price": 4200,
+      "scene": 1,
+      "description": "吊橋與小舟剪開湖面，水色天光是她最清涼的裙擺。"
+    },
+    {
+      "id": "tw_s1_baishihu_spirit",
+      "name": "白石湖花靈",
+      "rarity": 5,
+      "growthTime": 155,
+      "price": 4600,
+      "scene": 1,
+      "description": "草莓田與山谷步道環繞，內湖山線的一抹甜香花靈。"
+    },
+    {
+      "id": "tw_s1_neihu_tech_spirit",
+      "name": "內湖科技園區花靈",
+      "rarity": 5,
+      "growthTime": 160,
+      "price": 5000,
+      "scene": 1,
+      "description": "玻璃大樓與創投節奏化為幾何花紋，未來感與咖啡香並存。"
+    },
+    {
+      "id": "tw_s1_shezidao_spirit",
+      "name": "社子島花靈",
+      "rarity": 5,
+      "growthTime": 165,
+      "price": 5400,
+      "scene": 1,
+      "description": "沙洲與河港風向交會，島嶼上的風箏與稻田是她最自由的髮絲。"
+    },
+    {
+      "id": "tw_s1_taipei_music_spirit",
+      "name": "北流音樂中心花靈",
+      "rarity": 5,
+      "growthTime": 170,
+      "price": 5800,
+      "scene": 1,
+      "description": "聲學與曲面建築共鳴，音符在花瓣邊緣跳著當代的節拍。"
+    },
+    {
+      "id": "tw_s1_rainbow_bridge_spirit",
+      "name": "彩虹橋花靈",
+      "rarity": 5,
+      "growthTime": 175,
+      "price": 6200,
+      "scene": 1,
+      "description": "松山與內湖之間的弧光，夜裡的燈帶是她最溫柔的項鍊。"
+    },
+    {
+      "id": "tw_s1_metro_spirit",
+      "name": "台北捷運花靈",
+      "rarity": 5,
+      "growthTime": 180,
+      "price": 6800,
+      "scene": 1,
+      "description": "路網色票與轉乘節奏織成花冠，載著城市每天的起承轉合。"
+    }
+  ]

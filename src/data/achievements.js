@@ -1,6 +1,7 @@
 import { FLOWERS } from './flowers';
 
 export const ACHIEVEMENT_COUNTRY_NAMES = {
+  Flower: '花靈之境',
   Taiwan: '台灣',
   Japan: '日本',
   Korea: '韓國',

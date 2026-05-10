@@ -7,7 +7,7 @@ import { getFlowerImagePath } from '../data/assetPaths';
 const emit = defineEmits(['back']);
 
 // 分籤邏輯
-const selectedCountry = ref('Taiwan');
+const selectedCountry = ref('Flower');
 const categories = computed(() => [
   ...COUNTRIES.map(c => ({ id: c.id, name: c.name })),
   { id: 'Legendary', name: '傳說' }

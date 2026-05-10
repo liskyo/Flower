@@ -1,5 +1,5 @@
 import { reactive, watch } from 'vue';
-import { FLOWERS } from '../data/flowers';
+import { FLOWERS, COUNTRIES } from '../data/flowers';
 import { DAILY_LOGIN_REWARDS, DAILY_MISSIONS, DAILY_MISSION_MILESTONES } from '../data/rewards';
 import { getCatalogAchievementDefinitions } from '../data/achievements';
 
@@ -43,6 +43,7 @@ const SAVE_KEY = 'global_flower_game_save_v6'; // 保留既有 key，透過 save
 const SAVE_VERSION = 2;
 
 export const MAP_HOTSPOT_DEFAULTS = {
+  Flower: { x: 50, y: 55 },
   Taiwan: { x: 56, y: 61 },
   Japan: { x: 90, y: 21 },
   Korea: { x: 64, y: 30 },
@@ -50,14 +51,71 @@ export const MAP_HOTSPOT_DEFAULTS = {
   Singapore: { x: 50, y: 69 }
 };
 
+const buildUnlockedScenesDefault = () =>
+  Object.fromEntries(
+    COUNTRIES.map((c) => {
+      const n = Math.max(1, Number(c.scenes) || 4);
+      return [c.id, Array.from({ length: n }, (_, i) => i + 1)];
+    })
+  );
+
+const initDefaultGardens = () => {
+  const gardens = {};
+  const lastSpawnTimes = {};
+  COUNTRIES.forEach((country) => {
+    const maxScene = Math.max(1, Number(country.scenes) || 4);
+    for (let scene = 1; scene <= maxScene; scene++) {
+      const key = `${country.id}_${scene}`;
+      gardens[key] = Array.from({ length: 24 }, (_, i) => ({
+        id: i,
+        flowerId: null,
+        startTime: null,
+        status: 'empty'
+      }));
+      lastSpawnTimes[key] = Date.now();
+    }
+  });
+  return { gardens, lastSpawnTimes };
+};
+
+const { gardens: initialGardens, lastSpawnTimes: initialLastSpawnTimes } = initDefaultGardens();
+
+const ALL_COUNTRY_IDS = COUNTRIES.map((c) => c.id);
+
+const ensureGardensAndSpawnsForState = (targetState) => {
+  if (!targetState.gardens || typeof targetState.gardens !== 'object') {
+    targetState.gardens = {};
+  }
+  if (!targetState.lastSpawnTimes || typeof targetState.lastSpawnTimes !== 'object') {
+    targetState.lastSpawnTimes = {};
+  }
+  COUNTRIES.forEach((country) => {
+    const maxScene = Math.max(1, Number(country.scenes) || 4);
+    for (let scene = 1; scene <= maxScene; scene++) {
+      const key = `${country.id}_${scene}`;
+      if (!targetState.gardens[key]) {
+        targetState.gardens[key] = Array.from({ length: 24 }, (_, i) => ({
+          id: i,
+          flowerId: null,
+          startTime: null,
+          status: 'empty'
+        }));
+      }
+      if (!targetState.lastSpawnTimes[key]) {
+        targetState.lastSpawnTimes[key] = Date.now();
+      }
+    }
+  });
+};
+
 const defaultState = {
   saveVersion: SAVE_VERSION,
   isDevMode: false,
   diamonds: 1000, // 給予一些初始鑽石方便測試
-  currentCountry: 'Taiwan',
+  currentCountry: 'Flower',
   currentScene: 1,
-  unlockedScenes: { 'Taiwan': [1, 2, 3, 4], 'Japan': [1, 2, 3, 4], 'Korea': [1, 2, 3, 4], 'Thailand': [1, 2, 3, 4], 'Singapore': [1, 2, 3, 4] },
-  unlockedCountries: ['Taiwan'],
+  unlockedScenes: buildUnlockedScenesDefault(),
+  unlockedCountries: ['Flower'],
   visitedCount: 1,
   inventory: {},
   medals: {},
@@ -91,8 +149,10 @@ const defaultState = {
     claimedIds: []
   },
   lastActiveTime: Date.now(),
-  lastSpawnTimes: {} // 紀錄每個花園的獨立生成時間
+  lastSpawnTimes: initialLastSpawnTimes // 紀錄每個花園的獨立生成時間
 };
+
+Object.assign(defaultState.gardens, initialGardens);
 
 import { supabase } from '../supabase';
 
@@ -397,17 +457,6 @@ export const getLevelInfo = (totalExp) => {
   return { level, currentLevelExp, expNeeded, progressPercent };
 };
 
-// 初始化各場景花園
-['Taiwan', 'Japan', 'Korea', 'Thailand', 'Singapore'].forEach(country => {
-  [1, 2, 3, 4].forEach(scene => {
-    const key = `${country}_${scene}`;
-    defaultState.gardens[key] = Array.from({ length: 24 }, (_, i) => ({
-      id: i, flowerId: null, startTime: null, status: 'empty'
-    }));
-    defaultState.lastSpawnTimes[key] = Date.now();
-  });
-});
-
 const cloneDefaultState = () => JSON.parse(JSON.stringify(defaultState));
 const savedData = localStorage.getItem(SAVE_KEY);
 export const state = reactive(migrateState(savedData ? JSON.parse(savedData) : cloneDefaultState()));
@@ -511,9 +560,8 @@ ensureMapHotspotState();
 
 // 兼容舊存檔：確保舊玩家具備 unlockedCountries
 if (!state.unlockedCountries) {
-  state.unlockedCountries = ['Taiwan'];
+  state.unlockedCountries = ['Flower'];
   state.visitedCount = 1;
-  // 如果玩家的存檔正在日本，就補上解鎖狀態
   if (state.currentCountry === 'Japan') {
     state.unlockedCountries.push('Japan');
     state.visitedCount = 2;
@@ -524,15 +572,29 @@ if (!state.lastSpawnTimes) {
   state.lastSpawnTimes = {};
 }
 
-// 兼容舊存檔：確保新國家的 unlockedScenes 存在 (加上台灣)
-['Taiwan', 'Japan', 'Korea', 'Thailand', 'Singapore'].forEach(c => {
-  if (!state.unlockedScenes[c]) state.unlockedScenes[c] = [1, 2, 3, 4];
-  // 確保補上計時器結構
-  [1, 2, 3, 4].forEach(s => {
-    const key = `${c}_${s}`;
-    if (!state.lastSpawnTimes[key]) state.lastSpawnTimes[key] = Date.now();
-  });
+// 兼容舊存檔：依各國 scenes 補齊 unlockedScenes、gardens、lastSpawnTimes
+if (!state.unlockedScenes || typeof state.unlockedScenes !== 'object') {
+  state.unlockedScenes = buildUnlockedScenesDefault();
+}
+COUNTRIES.forEach((c) => {
+  const maxScene = Math.max(1, Number(c.scenes) || 4);
+  const fullRange = Array.from({ length: maxScene }, (_, i) => i + 1);
+  let scenes = state.unlockedScenes[c.id];
+  if (!Array.isArray(scenes) || scenes.length === 0) {
+    state.unlockedScenes[c.id] = [...fullRange];
+  } else {
+    const filtered = [...new Set(scenes.map(Number).filter((s) => s >= 1 && s <= maxScene))].sort(
+      (a, b) => a - b
+    );
+    state.unlockedScenes[c.id] = filtered.length ? filtered : [...fullRange];
+    if (!state.unlockedScenes[c.id].includes(1)) {
+      state.unlockedScenes[c.id] = [1, ...state.unlockedScenes[c.id].filter((s) => s !== 1)].sort(
+        (a, b) => a - b
+      );
+    }
+  }
 });
+ensureGardensAndSpawnsForState(state);
 
 let currentUser = null;
 let saveTimeout = null;
@@ -861,11 +923,11 @@ export const resetGame = (mode = 'player') => {
       saveVersion: SAVE_VERSION,
       isDevMode: mode === 'dev',
       diamonds: mode === 'dev' ? 5000000 : 100000,
-      currentCountry: 'Taiwan',
+      currentCountry: 'Flower',
       currentScene: 1,
-      unlockedScenes: { 'Taiwan': [1, 2, 3, 4], 'Japan': [1, 2, 3, 4], 'Korea': [1, 2, 3, 4], 'Thailand': [1, 2, 3, 4], 'Singapore': [1, 2, 3, 4] },
-      unlockedCountries: mode === 'dev' ? ['Taiwan', 'Japan', 'Korea', 'Thailand', 'Singapore'] : ['Taiwan'],
-      visitedCount: mode === 'dev' ? 5 : 1,
+      unlockedScenes: buildUnlockedScenesDefault(),
+      unlockedCountries: mode === 'dev' ? [...ALL_COUNTRY_IDS] : ['Flower'],
+      visitedCount: mode === 'dev' ? ALL_COUNTRY_IDS.length : 1,
       inventory: mode === 'dev' ? devInventory : {},
       medals: {},
       gardens: {},
@@ -890,15 +952,7 @@ export const resetGame = (mode = 'player') => {
       lastSpawnTimes: {}
     };
 
-    ['Taiwan', 'Japan', 'Korea', 'Thailand', 'Singapore'].forEach(country => {
-      [1, 2, 3, 4].forEach(scene => {
-        const key = `${country}_${scene}`;
-        freshState.gardens[key] = Array.from({ length: 24 }, (_, i) => ({
-          id: i, flowerId: null, startTime: null, status: 'empty'
-        }));
-        freshState.lastSpawnTimes[key] = Date.now();
-      });
-    });
+    ensureGardensAndSpawnsForState(freshState);
 
     Object.assign(state, freshState);
     localStorage.setItem(SAVE_KEY, JSON.stringify(state));
