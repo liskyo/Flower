@@ -232,6 +232,7 @@ defineExpose({ triggerHarvest, getSlotStatus });
           <img ref="imgRef" :src="getFlowerImagePath(flower.country, flower.id)" class="hidden-core" @load="processImage" />
           <canvas ref="canvasRef" class="hidden-core"></canvas>
           <img v-if="processedSrc" :src="processedSrc" class="final-flower-img" :class="getGlowClass(flower?.rarity)" />
+          <div v-if="slotData.status === 'ready'" class="harvest-hint-bubble" aria-hidden="true">!</div>
         </div>
       </div>
       
@@ -319,8 +320,36 @@ defineExpose({ triggerHarvest, getSlotStatus });
 }
 
 .flower-render-box {
+  position: relative;
   width: 100%; height: 100%;
   display: flex; align-items: center; justify-content: center;
+}
+
+.harvest-hint-bubble {
+  position: absolute;
+  top: 2%;
+  right: 6%;
+  min-width: 1.05rem;
+  height: 1.05rem;
+  padding: 0 4px;
+  background: #fff;
+  border: 2px solid #4a3728;
+  border-radius: 999px;
+  color: #ff4757;
+  font-weight: 900;
+  font-size: 0.72rem;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.18);
+  z-index: 8;
+  animation: hintBob 0.9s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+@keyframes hintBob {
+  from { transform: translateY(0); }
+  to { transform: translateY(-4px); }
 }
 
 .hidden-core { display: none; }

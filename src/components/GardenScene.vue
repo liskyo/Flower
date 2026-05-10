@@ -7,6 +7,34 @@ import { FLOWERS, SCENE_NAMES_BY_COUNTRY } from '../data/flowers';
 import { getFlowerImagePath, getSceneBackgroundPath } from '../data/assetPaths';
 import { getItemDefinition } from '../data/items';
 import GardenSlot from './GardenSlot.vue';
+import GardenUiIcons from './GardenUiIcons.vue';
+
+/** 花槽錯落位移（參考圖二：自然庭園感，非死板網格） */
+const GARDEN_ORGANIC = [
+  { x: 6, y: -14, r: -5, s: 1.06 },
+  { x: 14, y: -5, r: 4, s: 0.96 },
+  { x: -9, y: -11, r: -3, s: 1.03 },
+  { x: 11, y: 5, r: 6, s: 0.97 },
+  { x: -12, y: 0, r: -4, s: 1.05 },
+  { x: 5, y: -9, r: 3, s: 1.07 },
+  { x: -7, y: -3, r: -2, s: 0.96 },
+  { x: 13, y: 11, r: 5, s: 1.01 },
+  { x: 9, y: -7, r: -6, s: 1.04 },
+  { x: -11, y: 9, r: 2, s: 0.98 },
+  { x: 7, y: 7, r: -4, s: 1.02 },
+  { x: -15, y: -1, r: 7, s: 0.94 },
+  { x: 1, y: 13, r: -3, s: 1.02 },
+  { x: 15, y: 5, r: 4, s: 0.97 },
+  { x: -5, y: -9, r: -2, s: 1.05 },
+  { x: -2, y: 15, r: 3, s: 1 },
+];
+
+const slotOrganicStyle = (idx) => {
+  const o = GARDEN_ORGANIC[idx] || { x: 0, y: 0, r: 0, s: 1 };
+  return {
+    transform: `translate(${o.x}%, ${o.y}%) rotate(${o.r}deg) scale(${o.s})`,
+  };
+};
 
 // 取得當前經驗值進度資訊
 const currentLevelInfo = computed(() => getLevelInfo(state.exp || 0));
@@ -103,10 +131,16 @@ const startSpawnTimer = () => {
   spawnMultiplier.value = getCurrentSpawnMultiplier();
 };
 
-const getWeatherIcon = (id) => {
-  const map = { storm: '⛈️', cloudy: '☁️', rainy: '🌧️', sunny: '☀️' };
-  return map[id] || '☀️';
-};
+const weatherIconKind = computed(() => {
+  const id = currentWeather.value?.id || 'sunny';
+  const map = {
+    sunny: 'weatherSunny',
+    cloudy: 'weatherCloudy',
+    rainy: 'weatherRainy',
+    storm: 'weatherStorm',
+  };
+  return map[id] || 'weatherSunny';
+});
 
 const stormElements = ref([]);
 let stormIdCounter = 0;
@@ -442,25 +476,33 @@ onUnmounted(() => {
       <div class="portrait-ui">
         <header class="portrait-topbar">
           <div class="player-block" :title="`經驗 ${currentLevelInfo.currentLevelExp} / ${currentLevelInfo.expNeeded}`">
-            <div class="avatar-circle">🌸</div>
+            <div class="avatar-circle">
+              <GardenUiIcons kind="avatarFlower" :size="30" />
+            </div>
             <div class="lvl-banner">Lv. {{ state.level || 1 }}</div>
           </div>
 
           <div class="currency-block">
             <div class="currency-row petals-row">
-              <span class="cur-icon" aria-hidden="true">🌺</span>
+              <span class="cur-icon-wrap" aria-hidden="true">
+                <GardenUiIcons kind="petal" :size="18" />
+              </span>
               <span class="cur-val">{{ formatNumber(petalTotal) }}</span>
               <button type="button" class="cur-plus" @click="playSound('button'); emit('change-tab', 'shop')">+</button>
             </div>
             <div class="currency-row gems-row">
-              <span class="cur-icon" aria-hidden="true">💎</span>
+              <span class="cur-icon-wrap" aria-hidden="true">
+                <GardenUiIcons kind="diamond" :size="18" />
+              </span>
               <span class="cur-val">{{ formatNumber(state.diamonds) }}</span>
               <button type="button" class="cur-plus" @click="playSound('button'); emit('change-tab', 'shop')">+</button>
             </div>
           </div>
 
           <div class="gear-wrap">
-            <button type="button" class="gear-btn" @click="showSettings = !showSettings">⚙️</button>
+            <button type="button" class="gear-btn" @click="showSettings = !showSettings" aria-label="設定">
+              <GardenUiIcons kind="gear" :size="22" />
+            </button>
             <div v-if="showSettings" class="settings-dropdown">
               <button type="button" @click="showSettings = false; emit('change-tab', 'inventory')">🎒 道具箱</button>
               <button type="button" @click="showSettings = false; emit('change-tab', 'map')">🗺️ 世界地圖</button>
@@ -471,7 +513,9 @@ onUnmounted(() => {
 
         <div class="sign-and-ency">
           <div class="wood-sign">
-            <span class="weather-emoji">{{ getWeatherIcon(currentWeather.id) }}</span>
+            <span class="weather-glyph" aria-hidden="true">
+              <GardenUiIcons :kind="weatherIconKind" :size="22" />
+            </span>
             <span class="sign-weather">{{ currentWeather.name }}</span>
             <span class="sign-time">{{ gameClock }}</span>
             <span class="sign-eff">{{ Math.round(spawnMultiplier * 100) }}%</span>
@@ -483,7 +527,7 @@ onUnmounted(() => {
             @mousedown.stop
             @click="playSound('button'); emit('change-tab', 'catalog')"
           >
-            <span class="fab-ico">📖</span>
+            <span class="fab-ico"><GardenUiIcons kind="book" :size="22" /></span>
             <span class="fab-lbl">圖鑑</span>
           </button>
         </div>
@@ -510,21 +554,21 @@ onUnmounted(() => {
         <aside class="left-rail" @touchmove.stop.prevent @mousedown.stop>
           <button type="button" class="rail-item" @click="playSound('button'); emit('change-tab', 'dailyMission')">
             <span v-if="taskBadgeCount > 0" class="rail-badge">{{ taskBadgeCount }}</span>
-            <span class="rail-ico">📋</span>
+            <span class="rail-ico"><GardenUiIcons kind="clipboard" :size="22" /></span>
             <span class="rail-txt">任務</span>
           </button>
           <button type="button" class="rail-item rail-tool" @click="quickUseRain">
-            <span class="rail-ico">🚿</span>
+            <span class="rail-ico"><GardenUiIcons kind="water" :size="22" /></span>
             <span class="rail-txt">澆水壺</span>
             <span class="rail-sub">×{{ rainOwned }}</span>
           </button>
           <button type="button" class="rail-item rail-tool" @click="quickUseFert">
-            <span class="rail-ico">🧪</span>
+            <span class="rail-ico"><GardenUiIcons kind="fertilizer" :size="22" /></span>
             <span class="rail-txt">花肥</span>
             <span class="rail-sub">×{{ fertOwned }}</span>
           </button>
           <button type="button" class="rail-item rail-tool" @click="quickUseStar">
-            <span class="rail-ico">🦋</span>
+            <span class="rail-ico"><GardenUiIcons kind="butterfly" :size="22" /></span>
             <span class="rail-txt">蝴蝶燈</span>
             <span class="rail-sub" :class="{ on: butterflyOn }">{{ butterflyOn ? 'ON' : '—' }}</span>
           </button>
@@ -550,16 +594,20 @@ onUnmounted(() => {
           </nav>
 
           <div class="garden-stage">
-            <div class="cloud-fixed-base"></div>
             <div class="flowers-fixed-grid">
-              <GardenSlot
-                v-for="slot in currentGarden.slice(0, 16)"
+              <div
+                v-for="(slot, idx) in currentGarden.slice(0, 16)"
                 :key="`${state.currentCountry}_${state.currentScene}_${slot.id}`"
-                :ref="el => slotRefs[slot.id] = el"
-                :slot-data="slot"
-                @swipe="handleSwipe"
-                @harvest-animate="handleHarvestAnimate"
-              />
+                class="slot-organic-wrap"
+                :style="slotOrganicStyle(idx)"
+              >
+                <GardenSlot
+                  :ref="el => slotRefs[slot.id] = el"
+                  :slot-data="slot"
+                  @swipe="handleSwipe"
+                  @harvest-animate="handleHarvestAnimate"
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -584,20 +632,20 @@ onUnmounted(() => {
 
         <nav class="bottom-dock" @touchmove.stop.prevent @mousedown.stop>
           <button type="button" class="dock-btn" @click="playSound('button'); emit('change-tab', 'catalog')">
-            <span class="dock-ico">📖</span>
+            <span class="dock-ico"><GardenUiIcons kind="book" :size="24" /></span>
             <span class="dock-lbl">圖鑑</span>
           </button>
           <button type="button" class="dock-btn" @click="playSound('button'); emit('change-tab', 'shop')">
-            <span class="dock-ico">🏪</span>
+            <span class="dock-ico"><GardenUiIcons kind="shop" :size="24" /></span>
             <span class="dock-lbl">商店</span>
           </button>
           <button type="button" class="dock-btn" @click="playSound('button'); emit('change-tab', 'map')">
-            <span class="dock-ico">🪴</span>
+            <span class="dock-ico"><GardenUiIcons kind="pot" :size="24" /></span>
             <span class="dock-lbl">花園佈置</span>
           </button>
           <button type="button" class="dock-btn" @click="playSound('button'); emit('change-tab', 'activityHub')">
             <span v-if="activityBadgeCount > 0" class="dock-badge">{{ activityBadgeCount }}</span>
-            <span class="dock-ico">🎁</span>
+            <span class="dock-ico"><GardenUiIcons kind="gift" :size="24" /></span>
             <span class="dock-lbl">活動</span>
           </button>
         </nav>
@@ -792,7 +840,7 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.35rem;
+  line-height: 0;
   box-shadow: 0 3px 0 #4a3728, inset 0 2px 0 rgba(255,255,255,0.5);
 }
 .lvl-banner {
@@ -829,7 +877,13 @@ onUnmounted(() => {
 .gems-row {
   background: linear-gradient(90deg, rgba(162, 155, 254, 0.35), rgba(74, 55, 40, 0.92));
 }
-.cur-icon { font-size: 1rem; }
+.cur-icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  line-height: 0;
+}
 .cur-val {
   flex: 1;
   font-size: 0.78rem;
@@ -865,10 +919,14 @@ onUnmounted(() => {
   border-radius: 50%;
   border: 3px solid #4a3728;
   background: linear-gradient(180deg, #dfe6e9, #b2bec3);
-  font-size: 1.1rem;
   cursor: pointer;
   box-shadow: 0 3px 0 #2d1f14;
   touch-action: manipulation;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  line-height: 0;
 }
 .gear-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 #2d1f14; }
 
@@ -926,7 +984,12 @@ onUnmounted(() => {
   box-shadow: 0 4px 0 #3d2b1f, inset 0 1px 0 rgba(255,255,255,0.35);
   max-width: 62%;
 }
-.weather-emoji { font-size: 1.1rem; }
+.weather-glyph {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
+}
 .sign-weather {
   font-weight: 900;
   font-size: 0.82rem;
@@ -968,7 +1031,12 @@ onUnmounted(() => {
   touch-action: manipulation;
 }
 .ency-fab:active { transform: translateY(calc(-50% + 2px)); }
-.fab-ico { font-size: 1.2rem; line-height: 1; }
+.fab-ico {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
+}
 .fab-lbl {
   font-size: 0.55rem;
   font-weight: 900;
@@ -1048,7 +1116,12 @@ onUnmounted(() => {
   -webkit-tap-highlight-color: transparent;
 }
 .rail-item:active { transform: translateY(2px); box-shadow: 0 2px 0 #3d2b1f; }
-.rail-ico { font-size: 1.25rem; line-height: 1; }
+.rail-ico {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
+}
 .rail-txt {
   font-size: 0.58rem;
   font-weight: 900;
@@ -1142,33 +1215,39 @@ onUnmounted(() => {
   max-height: 42vh;
   margin-top: 4px;
 }
-.cloud-fixed-base {
+.garden-stage::after {
+  content: '';
   position: absolute;
-  inset: 8% 4%;
-  background-image: url('/cloud.png');
-  background-size: auto 100%;
-  background-position: center;
-  background-repeat: repeat-x;
-  border-radius: 120px;
-  overflow: hidden;
-  opacity: 0.72;
-  filter: drop-shadow(0 0 12px rgba(255,255,255,0.45)) blur(0.5px);
-  z-index: 1;
+  inset: 0;
+  background: radial-gradient(ellipse 100% 75% at 50% 58%, rgba(39, 174, 96, 0.09), transparent 70%);
+  pointer-events: none;
+  z-index: 0;
 }
 .flowers-fixed-grid {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 92%;
-  height: 88%;
-  z-index: 10;
+  width: 94%;
+  height: 90%;
+  z-index: 2;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   grid-template-rows: repeat(4, 1fr);
-  gap: 4px 3px;
+  gap: 2px 8px;
   align-items: center;
   justify-items: center;
+}
+.slot-organic-wrap {
+  width: 100%;
+  height: 100%;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform-origin: 50% 68%;
+  position: relative;
+  z-index: 1;
 }
 
 .harvest-cta {
@@ -1281,7 +1360,12 @@ onUnmounted(() => {
   transform: translateY(3px);
   box-shadow: 0 2px 0 #3d2b1f, inset 0 2px 0 rgba(255,255,255,0.25);
 }
-.dock-ico { font-size: 1.35rem; line-height: 1; }
+.dock-ico {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
+}
 .dock-lbl {
   font-size: 0.58rem;
   font-weight: 900;
