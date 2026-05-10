@@ -1,10 +1,11 @@
 // GardenScene.vue
 
 <script setup>
-import { ref, onMounted, onUnmounted, computed, nextTick } from 'vue';
-import { state, autoSpawn, setScene, getCurrentGarden, harvestFlower, getCurrentWeather, isSceneUnlocked, getCurrentSpawnMultiplier, catchUpSpawning, getLevelInfo, getDailyLoginStatus, getDailyMissionSummary, getCatalogAchievementSummary, playSound } from '../store/gameState';
+import { ref, onMounted, onUnmounted, computed } from 'vue';
+import { state, setScene, getCurrentGarden, getCurrentWeather, isSceneUnlocked, getCurrentSpawnMultiplier, catchUpSpawning, getLevelInfo, getDailyLoginStatus, getDailyMissionSummary, getCatalogAchievementSummary, playSound, consumeInventoryItem, getInventoryItemCount, trackDailyMissionProgress } from '../store/gameState';
 import { FLOWERS, SCENE_NAMES_BY_COUNTRY } from '../data/flowers';
 import { getFlowerImagePath, getSceneBackgroundPath } from '../data/assetPaths';
+import { getItemDefinition } from '../data/items';
 import GardenSlot from './GardenSlot.vue';
 
 // 取得當前經驗值進度資訊
@@ -17,6 +18,11 @@ const activityBadgeCount = computed(() => {
     + dailyMissionSummary.value.claimableCount
     + achievementSummary.value.claimableCount;
 });
+
+/** 左側「任務」紅點：每日簽到 + 可領任務 */
+const taskBadgeCount = computed(() =>
+  (dailyRewardStatus.value.claimedToday ? 0 : 1) + dailyMissionSummary.value.claimableCount
+);
 
 const emit = defineEmits(['change-tab']);
 const slotRefs = ref([]);
@@ -264,18 +270,142 @@ const bgImageStyle = computed(() => ({
 
 const currentGarden = computed(() => getCurrentGarden());
 
+const petalTotal = computed(() => {
+  let s = 0;
+  for (const v of Object.values(state.inventory || {})) s += Number(v) || 0;
+  return s;
+});
+
+const harvestableCount = computed(() =>
+  currentGarden.value.filter(s => s.status === 'ready' || s.status === 'withered').length
+);
+
+const rainOwned = computed(() =>
+  ['rain1', 'rain2', 'rain3', 'rain4', 'rain5'].reduce((n, id) => n + getInventoryItemCount(id), 0)
+);
+const fertOwned = computed(() =>
+  ['fert1', 'fert2', 'fert3', 'fert4', 'fert5'].reduce((n, id) => n + getInventoryItemCount(id), 0)
+);
+
+const butterflyOn = computed(() => {
+  void tickerTime.value;
+  const t = state.activeBuffs?.starUntil;
+  return !!(t && Date.now() < t);
+});
+
+const gameClock = ref('');
+let clockTimer = null;
+const tickClock = () => {
+  const d = new Date();
+  gameClock.value = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+};
+
+const showSettings = ref(false);
+
+const ensureBuffs = () => {
+  if (!state.activeBuffs) {
+    state.activeBuffs = {
+      sunnyDollUntil: null,
+      rainUntil: null,
+      rainMultiplier: 1,
+      fertilizerUntil: null,
+      fertilizerMultiplier: 1,
+      starUntil: null,
+      starMultiplier: 1
+    };
+  }
+};
+
+const applyConsumedItem = (item) => {
+  if (!item || item.type === 'travel') return;
+  ensureBuffs();
+  const now = Date.now();
+  if (item.type === 'weather') {
+    state.activeBuffs.sunnyDollUntil = now + item.duration * 60 * 60 * 1000;
+  } else if (item.type === 'rain') {
+    state.activeBuffs.rainUntil = now + item.duration * 60 * 60 * 1000;
+    state.activeBuffs.rainMultiplier = item.multi;
+  } else if (item.type === 'fertilizer') {
+    state.activeBuffs.fertilizerUntil = now + item.duration * 60 * 60 * 1000;
+    state.activeBuffs.fertilizerMultiplier = item.multi;
+  } else if (item.type === 'star') {
+    state.activeBuffs.starUntil = now + item.duration * 60 * 60 * 1000;
+    state.activeBuffs.starMultiplier = item.multi;
+  }
+  trackDailyMissionProgress('usedItems');
+};
+
+const tryQuickUse = (itemId, failTab) => {
+  const item = getItemDefinition(itemId);
+  if (!item || item.type === 'travel') return;
+  if (!consumeInventoryItem(itemId, 1)) {
+    playSound('error');
+    emit('change-tab', failTab);
+    return;
+  }
+  playSound('buy');
+  applyConsumedItem(item);
+};
+
+const quickUseRain = () => {
+  for (const id of ['rain1', 'rain2', 'rain3', 'rain4', 'rain5']) {
+    if (getInventoryItemCount(id) > 0) {
+      tryQuickUse(id, 'shop');
+      return;
+    }
+  }
+  playSound('error');
+  emit('change-tab', 'shop');
+};
+
+const quickUseFert = () => {
+  for (const id of ['fert1', 'fert2', 'fert3', 'fert4', 'fert5']) {
+    if (getInventoryItemCount(id) > 0) {
+      tryQuickUse(id, 'shop');
+      return;
+    }
+  }
+  playSound('error');
+  emit('change-tab', 'shop');
+};
+
+const quickUseStar = () => {
+  for (const id of ['star1', 'star2', 'star3', 'star4', 'star5']) {
+    if (getInventoryItemCount(id) > 0) {
+      tryQuickUse(id, 'inventory');
+      return;
+    }
+  }
+  playSound('button');
+  emit('change-tab', 'inventory');
+};
+
+const harvestAllReady = () => {
+  playSound('button');
+  let n = 0;
+  currentGarden.value.forEach(slot => {
+    if (slot.status === 'ready' || slot.status === 'withered') {
+      const comp = slotRefs.value[slot.id];
+      comp?.triggerHarvest?.();
+      n++;
+    }
+  });
+  if (n === 0) playSound('error');
+};
+
 onMounted(() => {
   catchUpSpawning();
   document.addEventListener('visibilitychange', handleVisibilityChange);
-  
+
   startSpawnTimer();
+  tickClock();
+  clockTimer = setInterval(tickClock, 1000);
   weatherTimer = setInterval(() => {
     currentWeather.value = getCurrentWeather();
     spawnMultiplier.value = getCurrentSpawnMultiplier();
     tickerTime.value = Date.now();
   }, 5000);
-  
-  // 👇 補上：暴風雨專用的龍捲風生成計時器
+
   stormTimer = setInterval(() => {
     if (currentWeather.value?.id === 'storm') spawnStormElement();
   }, 1200);
@@ -284,13 +414,13 @@ onMounted(() => {
 onUnmounted(() => {
   document.removeEventListener('visibilitychange', handleVisibilityChange);
   clearInterval(weatherTimer);
-  clearInterval(stormTimer); 
+  clearInterval(stormTimer);
+  if (clockTimer) clearInterval(clockTimer);
 });
 </script>
 
 <template>
-  <div class="scene-bg-full" :style="bgImageStyle"></div>
-  <div 
+  <div
     class="garden-scene"
     @mousedown="startSwiping"
     @mouseup="stopSwiping"
@@ -299,132 +429,185 @@ onUnmounted(() => {
     @touchend="stopSwiping"
     @touchmove.prevent="handleTouchMove"
   >
-    <div class="scene-bg-wrapper">
-      <div class="scene-bg-full" :style="bgImageStyle"></div>
-    </div>
-
-
-    <!-- 左上角：仿圖3的等級/資訊列 -->
-    <div class="top-hud">
-      <div class="level-box">
-        <div class="hud-title">{{ state.currentCountry === 'Taiwan' ? '台灣花園' : state.currentCountry === 'Japan' ? '日本花園' : state.currentCountry + '花園' }}</div>
-        <!-- 加入 title 屬性，長按或鼠標停留可看具體數字 -->
-        <div class="hud-level" :title="`經驗值: ${currentLevelInfo.currentLevelExp} / ${currentLevelInfo.expNeeded}`">Lv. {{ state.level || 1 }}</div>
-        <div class="progress-bar">
-          <!-- 改用新計算出來的精確百分比 -->
-          <div class="progress-fill" :style="{ width: `${currentLevelInfo.progressPercent}%` }"></div>
-        </div>
+    <div class="portrait-shell">
+      <div class="scene-bg-wrapper">
+        <div class="scene-bg-full portrait-bg" :style="bgImageStyle"></div>
       </div>
-      <div class="diamond-display">💎 {{ state.diamonds }}</div>
-    </div>
 
-    <!-- 右上角：天氣指示器 -->
-    <div class="weather-hud">
-      <div class="weather-icon-large">{{ getWeatherIcon(currentWeather.id) }}</div>
-      <div class="weather-info">
-        <div class="weather-name">{{ currentWeather.name }}</div>
-        <div class="weather-speed">生成效率 {{ Math.round(spawnMultiplier * 100) }}%</div>
-      </div>
-    </div>
-
-    <div class="daily-top-cluster" @touchmove.stop @mousedown.stop @touchstart.stop>
-      <button class="daily-top-btn activity" @click="playSound('button'); emit('change-tab', 'activityHub')">
-        <span v-if="activityBadgeCount > 0" class="notify-dot">{{ activityBadgeCount }}</span>
-        <span class="top-icon">🎪</span>
-        <span class="top-label">活動中心</span>
-      </button>
-    </div>
-
-    <!-- 作用中 Buff Icons -->
-    <div class="buff-bar" v-if="activeBuffsDisplay.length > 0">
-      <div
-        v-for="buff in activeBuffsDisplay" :key="buff.name"
-        class="buff-icon" @click.stop="showBuffTooltip(buff)"
-      >
-        <span class="buff-emoji">{{ buff.icon }}</span>
-        <span class="buff-remain">{{ buff.remain }}m</span>
-      </div>
-      <Transition name="fade">
-        <div v-if="buffTooltip" class="buff-tooltip" @click="buffTooltip = null">
-          <strong>{{ buffTooltip.icon }} {{ buffTooltip.name }}</strong>
-          <span>{{ buffTooltip.desc }}</span>
-          <span>剩餘 {{ buffTooltip.remain }} 分鐘</span>
-        </div>
-      </Transition>
-    </div>
-
-    <div class="scene-overlay-ui">
-      <!-- 天氣視覺特效層 -->
-      <div class="weather-overlay" :class="currentWeather.id">
+      <div class="weather-overlay-root" :class="currentWeather.id">
         <div class="rain-layer"></div>
-        <!-- 👇 修改條件：暴風雨、小雨、陰天 都會有這個濾鏡層 -->
         <div v-if="['storm', 'rainy', 'cloudy'].includes(currentWeather.id)" class="water-drop-filter"></div>
       </div>
-      <div class="landmark-nav" @touchmove.stop @mousedown.stop @touchstart.stop>
-        <template v-for="(name, index) in currentSceneNames" :key="index">
-          <button 
-            v-if="isSceneUnlocked(state.currentCountry, index + 1)"
-            :class="{ active: state.currentScene === (index + 1) }"
-            @click="playSound('button'); setScene(index + 1)"
-            class="landmark-btn"
+
+      <div class="portrait-ui">
+        <header class="portrait-topbar">
+          <div class="player-block" :title="`經驗 ${currentLevelInfo.currentLevelExp} / ${currentLevelInfo.expNeeded}`">
+            <div class="avatar-circle">🌸</div>
+            <div class="lvl-banner">Lv. {{ state.level || 1 }}</div>
+          </div>
+
+          <div class="currency-block">
+            <div class="currency-row petals-row">
+              <span class="cur-icon" aria-hidden="true">🌺</span>
+              <span class="cur-val">{{ formatNumber(petalTotal) }}</span>
+              <button type="button" class="cur-plus" @click="playSound('button'); emit('change-tab', 'shop')">+</button>
+            </div>
+            <div class="currency-row gems-row">
+              <span class="cur-icon" aria-hidden="true">💎</span>
+              <span class="cur-val">{{ formatNumber(state.diamonds) }}</span>
+              <button type="button" class="cur-plus" @click="playSound('button'); emit('change-tab', 'shop')">+</button>
+            </div>
+          </div>
+
+          <div class="gear-wrap">
+            <button type="button" class="gear-btn" @click="showSettings = !showSettings">⚙️</button>
+            <div v-if="showSettings" class="settings-dropdown">
+              <button type="button" @click="showSettings = false; emit('change-tab', 'inventory')">🎒 道具箱</button>
+              <button type="button" @click="showSettings = false; emit('change-tab', 'map')">🗺️ 世界地圖</button>
+              <button type="button" class="muted" @click="showSettings = false">關閉</button>
+            </div>
+          </div>
+        </header>
+
+        <div class="sign-and-ency">
+          <div class="wood-sign">
+            <span class="weather-emoji">{{ getWeatherIcon(currentWeather.id) }}</span>
+            <span class="sign-weather">{{ currentWeather.name }}</span>
+            <span class="sign-time">{{ gameClock }}</span>
+            <span class="sign-eff">{{ Math.round(spawnMultiplier * 100) }}%</span>
+          </div>
+          <button
+            type="button"
+            class="ency-fab"
+            @touchmove.stop.prevent
+            @mousedown.stop
+            @click="playSound('button'); emit('change-tab', 'catalog')"
           >
-            {{ name }}
+            <span class="fab-ico">📖</span>
+            <span class="fab-lbl">圖鑑</span>
           </button>
-          <button v-else class="landmark-btn locked-scene" disabled>
-            🔒 {{ name }} <span class="unlock-progress">({{ getSceneUnlockProgress(state.currentCountry, index + 1) }}%)</span>
-          </button>
-        </template>
-      </div>
-      
-      <div class="absolute-garden-container">
-        <div class="cloud-fixed-base"></div>
-        <div class="flowers-fixed-grid">
-          <GardenSlot 
-            v-for="slot in currentGarden.slice(0, 16)" 
-            :key="`${state.currentCountry}_${state.currentScene}_${slot.id}`" 
-            :ref="el => slotRefs[slot.id] = el"
-            :slot-data="slot" 
-            @swipe="handleSwipe"
-            @harvest-animate="handleHarvestAnimate"
-          />
         </div>
-      </div>
 
-      <!-- 左下角：花籃 -->
-      <div class="basket-container" ref="basketRef">
-        <img ref="basketImgRef" src="/flowerbasket.png" @load="processBasketImage" style="display:none" />
-        <canvas ref="basketCanvasRef" style="display:none"></canvas>
-        <img v-if="processedBasketSrc" :src="processedBasketSrc" class="basket-img-real" />
-        <div v-else class="basket-img">🧺</div>
-        <div class="basket-label">花籃</div>
-      </div>
+        <div v-if="activeBuffsDisplay.length" class="buff-strip">
+          <div
+            v-for="buff in activeBuffsDisplay"
+            :key="buff.name"
+            class="buff-chip"
+            @click.stop="showBuffTooltip(buff)"
+          >
+            <span>{{ buff.icon }}</span>
+            <small>{{ buff.remain }}m</small>
+          </div>
+          <Transition name="fade">
+            <div v-if="buffTooltip" class="buff-tooltip-portrait" @click="buffTooltip = null">
+              <strong>{{ buffTooltip.icon }} {{ buffTooltip.name }}</strong>
+              <span>{{ buffTooltip.desc }}</span>
+              <span>剩餘 {{ buffTooltip.remain }} 分鐘</span>
+            </div>
+          </Transition>
+        </div>
 
-      <!-- 右下角：功能按鍵群組 (同樣加入 touchmove.stop 防護罩) -->
-      <div class="action-cluster" @touchmove.stop @mousedown.stop @touchstart.stop>
-        <button class="action-btn map" @click="playSound('button'); emit('change-tab', 'map')">
-          <span class="icon">🗺️</span>
-          <span class="label">地圖</span>
+        <aside class="left-rail" @touchmove.stop.prevent @mousedown.stop>
+          <button type="button" class="rail-item" @click="playSound('button'); emit('change-tab', 'dailyMission')">
+            <span v-if="taskBadgeCount > 0" class="rail-badge">{{ taskBadgeCount }}</span>
+            <span class="rail-ico">📋</span>
+            <span class="rail-txt">任務</span>
+          </button>
+          <button type="button" class="rail-item rail-tool" @click="quickUseRain">
+            <span class="rail-ico">🚿</span>
+            <span class="rail-txt">澆水壺</span>
+            <span class="rail-sub">×{{ rainOwned }}</span>
+          </button>
+          <button type="button" class="rail-item rail-tool" @click="quickUseFert">
+            <span class="rail-ico">🧪</span>
+            <span class="rail-txt">花肥</span>
+            <span class="rail-sub">×{{ fertOwned }}</span>
+          </button>
+          <button type="button" class="rail-item rail-tool" @click="quickUseStar">
+            <span class="rail-ico">🦋</span>
+            <span class="rail-txt">蝴蝶燈</span>
+            <span class="rail-sub" :class="{ on: butterflyOn }">{{ butterflyOn ? 'ON' : '—' }}</span>
+          </button>
+        </aside>
+
+        <div class="scene-overlay-ui">
+          <nav class="landmark-strip" @touchmove.stop.prevent @mousedown.stop>
+            <template v-for="(name, index) in currentSceneNames" :key="index">
+              <button
+                v-if="isSceneUnlocked(state.currentCountry, index + 1)"
+                type="button"
+                :class="{ active: state.currentScene === (index + 1) }"
+                class="landmark-chip"
+                @click="playSound('button'); setScene(index + 1)"
+              >
+                {{ name }}
+              </button>
+              <button v-else type="button" class="landmark-chip locked" disabled>
+                🔒 {{ name }}
+                <span class="unlock-p">({{ getSceneUnlockProgress(state.currentCountry, index + 1) }}%)</span>
+              </button>
+            </template>
+          </nav>
+
+          <div class="garden-stage">
+            <div class="cloud-fixed-base"></div>
+            <div class="flowers-fixed-grid">
+              <GardenSlot
+                v-for="slot in currentGarden.slice(0, 16)"
+                :key="`${state.currentCountry}_${state.currentScene}_${slot.id}`"
+                :ref="el => slotRefs[slot.id] = el"
+                :slot-data="slot"
+                @swipe="handleSwipe"
+                @harvest-animate="handleHarvestAnimate"
+              />
+            </div>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          class="harvest-cta"
+          ref="basketRef"
+          @touchmove.stop.prevent
+          @mousedown.stop
+          @click="harvestAllReady"
+        >
+          <img ref="basketImgRef" src="/flowerbasket.png" alt="" class="basket-preload" @load="processBasketImage" />
+          <canvas ref="basketCanvasRef" class="basket-preload"></canvas>
+          <span class="harvest-basket-visual">
+            <img v-if="processedBasketSrc" :src="processedBasketSrc" class="harvest-basket-img" alt="" />
+            <span v-else class="harvest-basket-emoji">🧺</span>
+          </span>
+          <span class="harvest-label">採收</span>
+          <span v-if="harvestableCount > 0" class="harvest-count-badge">{{ harvestableCount }}</span>
         </button>
-        <button class="action-btn catalog" @click="playSound('button'); emit('change-tab', 'catalog')">
-          <span class="icon">📖</span>
-          <span class="label">圖鑑</span>
-        </button>
-        <button class="action-btn shop" @click="playSound('button'); emit('change-tab', 'shop')">
-          <span class="icon">🛒</span>
-          <span class="label">商店</span>
-        </button>
-        <button class="action-btn inventory" @click="playSound('button'); emit('change-tab', 'inventory')">
-          <span class="icon">🎒</span>
-          <span class="label">道具</span>
-        </button>
+
+        <nav class="bottom-dock" @touchmove.stop.prevent @mousedown.stop>
+          <button type="button" class="dock-btn" @click="playSound('button'); emit('change-tab', 'catalog')">
+            <span class="dock-ico">📖</span>
+            <span class="dock-lbl">圖鑑</span>
+          </button>
+          <button type="button" class="dock-btn" @click="playSound('button'); emit('change-tab', 'shop')">
+            <span class="dock-ico">🏪</span>
+            <span class="dock-lbl">商店</span>
+          </button>
+          <button type="button" class="dock-btn" @click="playSound('button'); emit('change-tab', 'map')">
+            <span class="dock-ico">🪴</span>
+            <span class="dock-lbl">花園佈置</span>
+          </button>
+          <button type="button" class="dock-btn" @click="playSound('button'); emit('change-tab', 'activityHub')">
+            <span v-if="activityBadgeCount > 0" class="dock-badge">{{ activityBadgeCount }}</span>
+            <span class="dock-ico">🎁</span>
+            <span class="dock-lbl">活動</span>
+          </button>
+        </nav>
       </div>
     </div>
 
-    <!-- 飛行動畫層 -->
     <div class="flying-layer">
-      <div 
-        v-for="flower in flyingFlowers" 
-        :key="flower.id" 
+      <div
+        v-for="flower in flyingFlowers"
+        :key="flower.id"
         class="flying-flower-x"
         :style="{
           '--startX': `${flower.startX}px`,
@@ -433,7 +616,7 @@ onUnmounted(() => {
           '--endY': `${flower.endY}px`
         }"
       >
-        <img :src="flower.url" class="flying-flower-y" />
+        <img :src="flower.url" class="flying-flower-y" alt="" />
       </div>
     </div>
 
@@ -462,339 +645,704 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
-/* GardenScene.vue */
-.garden-scene { 
-  position: fixed; /* 👈 同樣改成 fixed */
-  inset: 0; 
-  width: 100vw; height: 100vh; overflow: hidden; 
+.garden-scene {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  background: #1e272e;
 }
-/* --- 找到這三段並替換 --- */
-.scene-bg-wrapper { 
-  position: absolute; inset: 0; z-index: 0; overflow: hidden; 
-  background-color: #87CEEB; /* 加上天空底色，以防圖片載入前閃爍 */
+
+.portrait-shell {
+  position: relative;
+  width: 100%;
+  max-width: 440px;
+  height: 100%;
+  max-height: 100dvh;
+  overflow: hidden;
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.06), 0 0 48px rgba(0,0,0,0.45);
+}
+
+.scene-bg-wrapper {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  background: linear-gradient(180deg, #87ceeb 0%, #b8e994 55%, #78e08f 100%);
 }
 
 .scene-bg-full {
-  position: absolute; 
+  position: absolute;
   inset: 0;
-  width: 100%;   
+  width: 100%;
   height: 100%;
-  
-  /* 💡 讓高度 100% 貼齊螢幕，寬度依照原圖比例自動延伸，絕不變形 */
-  background-size: auto 100%; 
-  
-  /* 💡 自動左右複製貼上，填滿無限延伸的畫面 */
-  background-repeat: repeat-x; 
-  background-position: 0 0;
-  
-  /* 💡 改用背景座標位移來做動畫 */
-  animation: scrollGardenBg 150s linear infinite;
 }
 
-/* 補上專屬於花園背景的捲動動畫 */
-@keyframes scrollGardenBg {
-  0% { background-position: 0 0; }
-  100% { background-position: -4000px 0; } 
+.portrait-bg {
+  background-size: cover;
+  background-position: center bottom;
+  background-repeat: no-repeat;
+  animation: none;
 }
 
-/* 預設水滴濾鏡效果 (暴風雨：高模糊、快水滴) */
-.water-drop-filter {
-  position: absolute; inset: 0; pointer-events: none; z-index: 10;
-  
-  background-image:
-    radial-gradient(4px 5px at 15% 25%, rgba(255,255,255,0.7) 0%, transparent 80%),
-    radial-gradient(5px 6px at 85% 15%, rgba(255,255,255,0.5) 0%, transparent 80%),
-    radial-gradient(3px 4px at 45% 65%, rgba(255,255,255,0.6) 0%, transparent 80%),
-    radial-gradient(6px 8px at 75% 75%, rgba(255,255,255,0.4) 0%, transparent 80%),
-    radial-gradient(2px 3px at 20% 80%, rgba(255,255,255,0.5) 0%, transparent 80%);
-  background-size: 150px 150px; 
-  
-  backdrop-filter: blur(1.5px) contrast(1.1); 
-  animation: dropSlide 5s linear infinite;
+.weather-overlay-root {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  transition: background 2s ease;
+  overflow: hidden;
 }
-
-@keyframes dropSlide {
-  0% { background-position: 0 0; }
-  100% { background-position: 0 150px; } 
-}
-
-/* 👇 新增：小雨狀態下的濾鏡 (微弱水滴、低模糊) */
-.rainy .water-drop-filter {
-  opacity: 0.5;
-  backdrop-filter: blur(0.5px) contrast(1.05); /* 降低模糊，讓花朵維持清晰 */
-  animation-duration: 10s; /* 水滴滑落速度變慢 */
-}
-
-/* 👇 新增：陰天狀態下的濾鏡 (純起霧，沒有水滴) */
-.cloudy .water-drop-filter {
-  background-image: none; /* 隱藏水滴 */
-  backdrop-filter: blur(1.2px) contrast(1.0); /* 單純玻璃起霧感 */
-  background-color: rgba(255, 255, 255, 0.05); /* 加上極淡的白霧 */
-}
-
-
-@keyframes stormFly {
-  0% { left: -15%; opacity: 0; }
-  10% { opacity: 1; }
-  90% { opacity: 1; }
-  100% { left: 110%; opacity: 0; }
-}
-
-/* 作用中 Buff 欄 */
-.buff-bar {
-  position: absolute; top: 100px; left: 15px; z-index: 3000;
-  display: flex; flex-direction: column; gap: 6px;
-}
-.buff-icon {
-  display: flex; flex-direction: column; align-items: center;
-  background: rgba(0,0,0,0.7); border: 2px solid rgba(255,255,255,0.3);
-  border-radius: 12px; padding: 4px 8px; cursor: pointer;
-  transition: all 0.2s;
-}
-.buff-icon:hover { transform: scale(1.1); }
-.buff-emoji { font-size: 1.6rem; }
-.buff-remain { font-size: 0.6rem; color: #ffeaa7; font-weight: 900; }
-.buff-tooltip {
-  position: absolute; bottom: 0; left: 70px;
-  background: rgba(0,0,0,0.9); border: 2px solid #ffeaa7; border-radius: 10px;
-  padding: 8px 12px; color: white; min-width: 180px;
-  display: flex; flex-direction: column; gap: 3px; font-size: 0.85rem;
-}
-.buff-tooltip strong { font-size: 1rem; color: #ffeaa7; }
-
-.scene-overlay-ui { position: relative; z-index: 100; height: 100%; width: 100%; }
-
-/* 左上角 HUD */
-.top-hud {
-  position: absolute; top: 15px; left: 15px; z-index: 2000; display: flex; align-items: center; gap: 10px;
-}
-.level-box {
-  background: rgba(255, 255, 255, 0.9); border: 3px solid #2d3436; border-radius: 10px;
-  padding: 5px 15px; box-shadow: 0 4px 0 #2d3436; position: relative;
-}
-.hud-title { font-size: 0.8rem; font-weight: 900; color: #2d3436; }
-.hud-level { font-size: 1.1rem; font-weight: 900; color: #2d3436; margin-bottom: 2px; }
-.progress-bar { width: 100px; height: 10px; background: #dfe6e9; border: 2px solid #2d3436; border-radius: 5px; overflow: hidden; }
-.progress-fill { width: 40%; height: 100%; background: #00b894; }
-
-.weather-icon {
-  background: white; border: 3px solid #2d3436; width: 40px; height: 40px;
-  border-radius: 50%; display: flex; align-items: center; justify-content: center;
-  font-size: 1.5rem; box-shadow: 0 4px 0 #2d3436;
-}
-.diamond-display {
-  background: white; border: 3px solid #2d3436; padding: 5px 12px;
-  border-radius: 20px; font-weight: 900; box-shadow: 0 4px 0 #2d3436; color: #2d3436;
-}
-
-/* 右上角天氣面板 */
-.weather-hud {
-  position: absolute; top: 15px; right: 15px; z-index: 2000;
-  display: flex; align-items: center; gap: 8px;
-  background: rgba(45, 52, 54, 0.85); border: 2px solid rgba(255,255,255,0.3);
-  padding: 6px 12px; border-radius: 20px; color: white; box-shadow: 0 4px 0 rgba(0,0,0,0.5);
-}
-.weather-icon-large { font-size: 1.8rem; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.5)); }
-.weather-info { display: flex; flex-direction: column; }
-.weather-name { font-weight: 900; font-size: 0.9rem; }
-.weather-speed { font-size: 0.75rem; color: #ffeaa7; font-weight: bold; }
-
-.daily-top-cluster {
-  position: absolute; top: 22px; right: 235px; z-index: 2100;
-  display: flex; gap: 10px; align-items: center;
-}
-.daily-top-btn {
-  position: relative; display: flex; align-items: center; gap: 6px;
-  min-width: 98px; height: 46px; padding: 4px 10px;
-  border: 3px solid #2d3436; border-radius: 18px;
-  color: #2d3436; font-weight: 900; cursor: pointer;
-  box-shadow: 0 4px 0 #2d3436;
-  touch-action: manipulation; -webkit-tap-highlight-color: transparent;
-}
-.daily-top-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 #2d3436; }
-.daily-top-btn.activity { background: linear-gradient(180deg, #ffeaa7, #55efc4); }
-.top-icon { font-size: 1.45rem; filter: drop-shadow(0 2px 2px rgba(255,255,255,0.45)); }
-.top-label { font-size: 0.72rem; line-height: 1.1; white-space: nowrap; }
-
-/* 天氣濾鏡與特效 */
-.weather-overlay {
-  position: absolute; inset: 0; z-index: 5; pointer-events: none;
-  transition: background 2s ease; overflow: hidden;
-}
-.weather-overlay.storm { 
-  background: rgba(10, 15, 30, 0.6); 
+.weather-overlay-root.storm {
+  background: rgba(10, 15, 30, 0.55);
   animation: lightning 5s infinite;
 }
-.weather-overlay.cloudy { background: rgba(50, 55, 65, 0.35); }
-.weather-overlay.rainy { background: rgba(30, 45, 60, 0.25); }
-.weather-overlay.sunny { background: rgba(255, 230, 150, 0.1); }
+.weather-overlay-root.cloudy { background: rgba(50, 55, 65, 0.3); }
+.weather-overlay-root.rainy { background: rgba(30, 45, 60, 0.22); }
+.weather-overlay-root.sunny { background: rgba(255, 230, 150, 0.08); }
 
 .rain-layer {
-  position: absolute; inset: -20% -10%; 
-  background-image: linear-gradient(165deg, transparent 45%, rgba(255,255,255,0.4) 46%, transparent 47%);
-  background-size: 20px 80px; background-position: 0 0;
-  animation: rainFall 0.4s linear infinite; opacity: 0;
+  position: absolute;
+  inset: -20% -10%;
+  background-image: linear-gradient(165deg, transparent 45%, rgba(255,255,255,0.35) 46%, transparent 47%);
+  background-size: 20px 80px;
+  animation: rainFall 0.4s linear infinite;
+  opacity: 0;
 }
-.storm .rain-layer { opacity: 0; display: none; } /* 👈 徹底隱藏暴風雨的滿天白線 */
-/* --- 找到這行並替換 --- */
-.rainy .rain-layer { 
-  opacity: 0; 
-  display: none; /* 徹底隱藏小雨的線條，只保留水滴濾鏡 */
-}@keyframes rainFall {
+.storm .rain-layer { display: none; }
+.rainy .rain-layer { display: none; }
+
+@keyframes rainFall {
   0% { background-position: 0 0; }
   100% { background-position: -40px 100vh; }
 }
 @keyframes lightning {
-  0%, 90% { background-color: rgba(10, 15, 30, 0.6); }
-  92% { background-color: rgba(255, 255, 255, 0.2); }
-  94% { background-color: rgba(10, 15, 30, 0.6); }
-  96% { background-color: rgba(255, 255, 255, 0.4); }
-  100% { background-color: rgba(10, 15, 30, 0.6); }
+  0%, 90% { background-color: rgba(10, 15, 30, 0.55); }
+  92% { background-color: rgba(255, 255, 255, 0.15); }
+  94% { background-color: rgba(10, 15, 30, 0.55); }
+  96% { background-color: rgba(255, 255, 255, 0.3); }
+  100% { background-color: rgba(10, 15, 30, 0.55); }
 }
 
-/* Landmark Nav */
-.landmark-nav {
-  position: absolute; top: 80px; left: 0; right: 0; display: flex; justify-content: center; gap: 8px; z-index: 1000;
-}
-/* 修改上方場景按鈕 */
-.landmark-btn {
-  background: white; border: 3px solid #2d3436; padding: 8px 16px; border-radius: 50px;
-  font-weight: 900; font-size: 0.8rem; box-shadow: 0 3px 0 #2d3436; cursor: pointer; transition: all 0.1s;
-  
-  /* 👇 加入這兩行，強制消除手機瀏覽器的 300ms 點擊延遲 */
-  touch-action: manipulation;
-  -webkit-tap-highlight-color: transparent;
-}
-.landmark-btn.active { background: #ffd100; transform: translateY(2px); box-shadow: 0 1px 0 #2d3436; }
-.landmark-btn.locked-scene { background: #636e72; color: #b2bec3; cursor: not-allowed; opacity: 0.7; }
-/* --- 找到 核心種植區 這段並替換 --- */
-.absolute-garden-container {
-  position: absolute; top: 60%; left: 50%; transform: translate(-50%, -50%);
-  width: 95vw; 
-  max-width: 800px;      /* 原本是 600px，拉大電腦版雲朵極限 */
-  aspect-ratio: 2.5 / 1; /* 原本是 3 / 1，讓雲朵變高一點以容納大花朵 */
-  z-index: 10;
-}
-.cloud-fixed-base {
-  position: absolute; inset: 5%; background-image: url('/cloud.png');
-  background-size: auto 100%; background-position: center; background-repeat: repeat-x;
-  border-radius: 200px; overflow: hidden; opacity: 0.7; filter: drop-shadow(0 0 15px rgba(255,255,255,0.5)) blur(1px); z-index: 1;
-}
-.flowers-fixed-grid {
-  position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%);
-  width: 90%;            /* 原本 85%，讓網格更貼近雲朵邊緣 */
-  height: 75%;           /* 原本 60%，讓上下兩排花距拉開 */
-  z-index: 10; display: grid;
-  grid-template-columns: repeat(8, 1fr); grid-template-rows: repeat(2, 1fr); gap: 15px 5px;
-  align-items: center; justify-items: center;
-}
-
-/* 左下角花籃 */
-.basket-container {
-  position: absolute; bottom: 15%; left: 15%; z-index: 1500;
-  display: flex; flex-direction: column; align-items: center;
-  transform: scale(1.2);
-}
-.basket-img-real {
-  width: 80px; height: 80px; object-fit: contain;
-  filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.4));
-}
-.basket-img {
-  font-size: 5rem; text-shadow: 2px 2px 0 rgba(0,0,0,0.3);
-}
-.basket-label {
-  background: #2d3436; color: white; padding: 3px 10px; border-radius: 12px;
-  font-size: 0.85rem; font-weight: 900; border: 2px solid white; box-shadow: 0 3px 0 rgba(0,0,0,0.5);
-  margin-top: -15px; z-index: 2;
-}
-.shake { animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both; }
-@keyframes shake {
-  10%, 90% { transform: translate3d(-1px, 0, 0); }
-  20%, 80% { transform: translate3d(2px, 0, 0); }
-  30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
-  40%, 60% { transform: translate3d(4px, 0, 0); }
-}
-
-/* 右下角群組按鈕 */
-.action-cluster {
-  position: absolute; bottom: 30px; right: 30px; z-index: 1500;
-  display: flex; flex-direction: column; gap: 15px; align-items: flex-end;
-}
-/* 修改右下角圓形按鈕 */
-.action-btn {
-  background: #fff; border: 4px solid #2d3436; border-radius: 50%;
-  width: 70px; height: 70px; display: flex; flex-direction: column; align-items: center; justify-content: center;
-  cursor: pointer; box-shadow: 0 6px 0 #2d3436; transition: all 0.1s; position: relative;
-  
-  /* 👇 同樣加入這兩行 */
-  touch-action: manipulation;
-  -webkit-tap-highlight-color: transparent;
-}
-.action-btn:active { transform: translateY(4px); box-shadow: 0 2px 0 #2d3436; }
-.action-btn .icon { font-size: 1.8rem; }
-.action-btn .label {
-  position: absolute; bottom: -12px; background: #2d3436; color: white;
-  font-size: 0.7rem; font-weight: 900; padding: 2px 8px; border-radius: 10px;
-  border: 2px solid white; white-space: nowrap;
-}
-
-.action-btn.map { background: #feca57; width: 60px; height: 60px; }
-.action-btn.map .icon { font-size: 1.4rem; }
-.action-btn.catalog { background: #ff6b6b; width: 85px; height: 85px; }
-.action-btn.catalog .icon { font-size: 2.2rem; }
-.action-btn.shop { background: #48dbfb; width: 65px; height: 65px; }
-.action-btn.inventory { background: #a29bfe; width: 60px; height: 60px; }
-.notify-dot {
+.water-drop-filter {
   position: absolute;
-  top: -3px;
-  right: -3px;
-  min-width: 18px;
-  height: 18px;
+  inset: 0;
+  pointer-events: none;
+  z-index: 10;
+  background-image:
+    radial-gradient(4px 5px at 15% 25%, rgba(255,255,255,0.65) 0%, transparent 80%),
+    radial-gradient(5px 6px at 85% 15%, rgba(255,255,255,0.45) 0%, transparent 80%),
+    radial-gradient(3px 4px at 45% 65%, rgba(255,255,255,0.55) 0%, transparent 80%);
+  background-size: 150px 150px;
+  backdrop-filter: blur(1.2px) contrast(1.08);
+  animation: dropSlide 5s linear infinite;
+}
+.rainy .water-drop-filter {
+  opacity: 0.5;
+  backdrop-filter: blur(0.45px) contrast(1.04);
+  animation-duration: 10s;
+}
+.cloudy .water-drop-filter {
+  background-image: none;
+  backdrop-filter: blur(1px) contrast(1);
+  background-color: rgba(255, 255, 255, 0.05);
+}
+@keyframes dropSlide {
+  0% { background-position: 0 0; }
+  100% { background-position: 0 150px; }
+}
+
+.portrait-ui {
+  position: relative;
+  z-index: 10;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: max(8px, env(safe-area-inset-top)) max(10px, env(safe-area-inset-right)) max(10px, env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left));
+  pointer-events: none;
+}
+.portrait-ui > * {
+  pointer-events: auto;
+}
+
+.portrait-topbar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  z-index: 50;
+}
+
+.player-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+.avatar-circle {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #ffeaa7, #fab1a0);
+  border: 3px solid #4a3728;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
-  background: #ff4757;
-  border: 3px solid white;
-  box-shadow: 0 0 12px rgba(255, 71, 87, 0.8);
-  animation: notifyPulse 1s infinite alternate;
-  color: white;
+  font-size: 1.35rem;
+  box-shadow: 0 3px 0 #4a3728, inset 0 2px 0 rgba(255,255,255,0.5);
+}
+.lvl-banner {
   font-size: 0.65rem;
   font-weight: 900;
+  color: #fff;
+  background: #4a3728;
+  padding: 2px 10px;
+  border-radius: 8px;
+  border: 2px solid #2d1f14;
+  box-shadow: 0 2px 0 #2d1f14;
+}
+
+.currency-block {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  max-width: 200px;
+}
+.currency-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(74, 55, 40, 0.92);
+  border: 2px solid #2d1f14;
+  border-radius: 999px;
+  padding: 4px 8px 4px 10px;
+  box-shadow: 0 3px 0 #2d1f14;
+}
+.petals-row {
+  background: linear-gradient(90deg, rgba(253, 121, 168, 0.35), rgba(74, 55, 40, 0.92));
+}
+.gems-row {
+  background: linear-gradient(90deg, rgba(162, 155, 254, 0.35), rgba(74, 55, 40, 0.92));
+}
+.cur-icon { font-size: 1rem; }
+.cur-val {
+  flex: 1;
+  font-size: 0.78rem;
+  font-weight: 900;
+  color: #fff;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cur-plus {
+  width: 22px;
+  height: 22px;
+  border-radius: 8px;
+  border: 2px solid #2d1f14;
+  background: linear-gradient(180deg, #ffeaa7, #fdcb6e);
+  font-weight: 900;
+  font-size: 0.85rem;
   line-height: 1;
-  padding: 0 3px;
+  color: #2d1f14;
+  cursor: pointer;
+  flex-shrink: 0;
+  touch-action: manipulation;
+}
+.cur-plus:active { transform: translateY(1px); }
+
+.gear-wrap {
+  position: relative;
+}
+.gear-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 3px solid #4a3728;
+  background: linear-gradient(180deg, #dfe6e9, #b2bec3);
+  font-size: 1.1rem;
+  cursor: pointer;
+  box-shadow: 0 3px 0 #2d1f14;
+  touch-action: manipulation;
+}
+.gear-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 #2d1f14; }
+
+.settings-dropdown {
+  position: absolute;
+  top: 46px;
+  right: 0;
+  min-width: 160px;
+  background: rgba(45, 52, 54, 0.98);
+  border: 2px solid #ffeaa7;
+  border-radius: 12px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  z-index: 200;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+}
+.settings-dropdown button {
+  border: none;
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-weight: 800;
+  font-size: 0.8rem;
+  cursor: pointer;
+  background: #636e72;
+  color: #fff;
+  touch-action: manipulation;
+}
+.settings-dropdown button.muted {
+  background: #2d3436;
+  color: #b2bec3;
 }
 
-@keyframes notifyPulse {
-  from { transform: scale(0.85); }
-  to { transform: scale(1.15); }
+.sign-and-ency {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 4px;
+  position: relative;
+  z-index: 40;
 }
 
-/* 飛行動畫層 */
-.flying-layer { position: absolute; inset: 0; pointer-events: none; z-index: 5000; overflow: hidden; }
-.feedback-layer { position: absolute; inset: 0; pointer-events: none; z-index: 6500; overflow: hidden; }
+.wood-sign {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 6px 10px;
+  padding: 8px 14px;
+  background: linear-gradient(180deg, #d4a574, #a67c52);
+  border: 3px solid #4a3728;
+  border-radius: 10px;
+  box-shadow: 0 4px 0 #3d2b1f, inset 0 1px 0 rgba(255,255,255,0.35);
+  max-width: 62%;
+}
+.weather-emoji { font-size: 1.1rem; }
+.sign-weather {
+  font-weight: 900;
+  font-size: 0.82rem;
+  color: #2d1f14;
+}
+.sign-time {
+  font-weight: 900;
+  font-size: 0.85rem;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+  background: rgba(45, 31, 20, 0.35);
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+.sign-eff {
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: #2d1f14;
+  opacity: 0.85;
+}
 
-/* 負責 X 軸水平等速移動 */
+.ency-fab {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 3px solid #4a3728;
+  background: linear-gradient(180deg, #ffeaa7, #fdcb6e);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  cursor: pointer;
+  box-shadow: 0 4px 0 #3d2b1f;
+  touch-action: manipulation;
+}
+.ency-fab:active { transform: translateY(calc(-50% + 2px)); }
+.fab-ico { font-size: 1.2rem; line-height: 1; }
+.fab-lbl {
+  font-size: 0.55rem;
+  font-weight: 900;
+  color: #2d1f14;
+  line-height: 1;
+}
+
+.buff-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+  padding-left: 72px;
+  padding-right: 58px;
+  position: relative;
+  z-index: 35;
+  min-height: 0;
+}
+.buff-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(0,0,0,0.65);
+  border: 2px solid rgba(255,234,167,0.4);
+  border-radius: 999px;
+  padding: 3px 8px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  color: #fff;
+  touch-action: manipulation;
+}
+.buff-chip small { color: #ffeaa7; font-weight: 800; font-size: 0.6rem; }
+.buff-tooltip-portrait {
+  position: absolute;
+  left: 72px;
+  top: 100%;
+  margin-top: 4px;
+  background: rgba(0,0,0,0.92);
+  border: 2px solid #ffeaa7;
+  border-radius: 10px;
+  padding: 8px 12px;
+  color: #fff;
+  font-size: 0.78rem;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  z-index: 100;
+  max-width: 220px;
+}
+.buff-tooltip-portrait strong { color: #ffeaa7; }
+
+.left-rail {
+  position: absolute;
+  left: max(4px, env(safe-area-inset-left));
+  top: 22%;
+  bottom: 28%;
+  width: 64px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 45;
+  pointer-events: auto;
+}
+.rail-item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 8px 4px;
+  border-radius: 14px;
+  border: 3px solid #4a3728;
+  background: linear-gradient(180deg, #fff8e7, #f0d9b5);
+  box-shadow: 0 4px 0 #3d2b1f;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+.rail-item:active { transform: translateY(2px); box-shadow: 0 2px 0 #3d2b1f; }
+.rail-ico { font-size: 1.25rem; line-height: 1; }
+.rail-txt {
+  font-size: 0.58rem;
+  font-weight: 900;
+  color: #2d1f14;
+  line-height: 1.1;
+  text-align: center;
+}
+.rail-sub {
+  font-size: 0.55rem;
+  font-weight: 800;
+  color: #636e72;
+}
+.rail-sub.on {
+  color: #00b894;
+  font-weight: 900;
+}
+.rail-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  border-radius: 50%;
+  background: #ff4757;
+  color: #fff;
+  font-size: 0.6rem;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #fff;
+  box-shadow: 0 2px 8px rgba(255,71,87,0.6);
+}
+
+.scene-overlay-ui {
+  flex: 1;
+  position: relative;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 68px 0 72px;
+  z-index: 20;
+}
+
+.landmark-strip {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 6px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  max-width: 100%;
+  padding: 6px 2px 8px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  touch-action: manipulation;
+}
+.landmark-strip::-webkit-scrollbar { display: none; }
+
+.landmark-chip {
+  flex: 0 0 auto;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 2px solid #4a3728;
+  background: rgba(255,255,255,0.95);
+  font-size: 0.62rem;
+  font-weight: 900;
+  color: #2d1f14;
+  box-shadow: 0 3px 0 #3d2b1f;
+  cursor: pointer;
+  white-space: nowrap;
+  touch-action: manipulation;
+}
+.landmark-chip.active {
+  background: linear-gradient(180deg, #ffeaa7, #fdcb6e);
+}
+.landmark-chip.locked {
+  background: #636e72;
+  color: #dfe6e9;
+  cursor: not-allowed;
+  opacity: 0.85;
+}
+.unlock-p { font-size: 0.55rem; color: #ffeaa7; margin-left: 2px; }
+
+.garden-stage {
+  position: relative;
+  flex: 1;
+  width: 100%;
+  min-height: 140px;
+  max-height: 42vh;
+  margin-top: 4px;
+}
+.cloud-fixed-base {
+  position: absolute;
+  inset: 8% 4%;
+  background-image: url('/cloud.png');
+  background-size: auto 100%;
+  background-position: center;
+  background-repeat: repeat-x;
+  border-radius: 120px;
+  overflow: hidden;
+  opacity: 0.72;
+  filter: drop-shadow(0 0 12px rgba(255,255,255,0.45)) blur(0.5px);
+  z-index: 1;
+}
+.flowers-fixed-grid {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 92%;
+  height: 88%;
+  z-index: 10;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+  gap: 4px 3px;
+  align-items: center;
+  justify-items: center;
+}
+
+.harvest-cta {
+  position: relative;
+  align-self: center;
+  margin-top: 6px;
+  margin-bottom: 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 28px 10px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  z-index: 50;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+.basket-preload {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.harvest-basket-visual {
+  width: 72px;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.35));
+}
+.harvest-basket-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.harvest-basket-emoji { font-size: 3.2rem; line-height: 1; }
+.harvest-label {
+  margin-top: -6px;
+  padding: 4px 22px;
+  background: #4a3728;
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 900;
+  border-radius: 999px;
+  border: 3px solid #fff1d6;
+  box-shadow: 0 4px 0 #2d1f14;
+}
+.harvest-count-badge {
+  position: absolute;
+  top: 4px;
+  right: 12px;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 50%;
+  background: #ff4757;
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #fff;
+  box-shadow: 0 2px 8px rgba(255,71,87,0.55);
+}
+
+.harvest-cta.shake .harvest-basket-visual {
+  animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+}
+@keyframes shake {
+  10%, 90% { transform: translate3d(-1px, 0, 0); }
+  20%, 80% { transform: translate3d(2px, 0, 0); }
+  30%, 50%, 70% { transform: translate3d(-3px, 0, 0); }
+  40%, 60% { transform: translate3d(3px, 0, 0); }
+}
+
+.bottom-dock {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 8px;
+  padding: 8px 4px 4px;
+  z-index: 60;
+}
+.dock-btn {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 4px 8px;
+  border-radius: 50%;
+  aspect-ratio: 1;
+  max-width: 76px;
+  margin: 0 auto;
+  border: 3px solid #4a3728;
+  background: linear-gradient(180deg, #e8c9a0, #c49a6c);
+  box-shadow: 0 5px 0 #3d2b1f, inset 0 2px 0 rgba(255,255,255,0.35);
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+.dock-btn:active {
+  transform: translateY(3px);
+  box-shadow: 0 2px 0 #3d2b1f, inset 0 2px 0 rgba(255,255,255,0.25);
+}
+.dock-ico { font-size: 1.35rem; line-height: 1; }
+.dock-lbl {
+  font-size: 0.58rem;
+  font-weight: 900;
+  color: #2d1f14;
+  line-height: 1.1;
+  text-align: center;
+}
+.dock-badge {
+  position: absolute;
+  top: 2px;
+  right: 6px;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #ff4757;
+  color: #fff;
+  font-size: 0.55rem;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #fff;
+  z-index: 2;
+}
+
+.flying-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 5000;
+  overflow: hidden;
+}
+.feedback-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 6500;
+  overflow: hidden;
+}
+
 .flying-flower-x {
-  position: absolute; top: 0; left: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
   animation: flyX 0.6s linear forwards;
 }
-
-/* 負責 Y 軸垂直拋物線移動與縮放 */
 .flying-flower-y {
-  width: 45px; height: 45px; object-fit: contain;
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
   animation: flyY 0.6s ease-in forwards;
 }
-
 @keyframes flyX {
   0% { transform: translateX(var(--startX)); }
   100% { transform: translateX(var(--endX)); }
 }
 @keyframes flyY {
   0% { transform: translateY(var(--startY)) scale(1); opacity: 1; }
-  35% { transform: translateY(calc(var(--startY) - 100px)) scale(1.3); opacity: 1; } /* 拋高且變大 */
-  80% { transform: translateY(calc(var(--endY) - 20px)) scale(0.6); opacity: 1; } /* 掉落到開口時縮小 */
-  100% { transform: translateY(var(--endY)) scale(0); opacity: 0; } /* 瞬間消失模擬掉進去 */
+  35% { transform: translateY(calc(var(--startY) - 80px)) scale(1.25); opacity: 1; }
+  80% { transform: translateY(calc(var(--endY) - 16px)) scale(0.55); opacity: 1; }
+  100% { transform: translateY(var(--endY)) scale(0); opacity: 0; }
 }
 
 .harvest-feedback {
@@ -808,7 +1356,7 @@ onUnmounted(() => {
   border: 2px solid rgba(45, 52, 54, 0.9);
   background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(255,234,167,0.92));
   color: #2d3436;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: 900;
   white-space: nowrap;
   box-shadow: 0 4px 0 rgba(45,52,54,0.85), 0 0 16px rgba(255,234,167,0.55);
@@ -816,30 +1364,29 @@ onUnmounted(() => {
 }
 .harvest-feedback small {
   color: #e67e22;
-  font-size: 0.72rem;
+  font-size: 0.68rem;
 }
 .harvest-feedback.rare {
   background: linear-gradient(180deg, #fff8c9, #fd79a8);
   box-shadow: 0 4px 0 rgba(45,52,54,0.85), 0 0 24px rgba(253,121,168,0.75);
 }
-
 @keyframes harvestFloat {
   0% { opacity: 0; transform: translate(-50%, -20%) scale(0.75); }
-  18% { opacity: 1; transform: translate(-50%, -70%) scale(1.12); }
-  100% { opacity: 0; transform: translate(-50%, -155%) scale(0.9); }
+  18% { opacity: 1; transform: translate(-50%, -70%) scale(1.1); }
+  100% { opacity: 0; transform: translate(-50%, -140%) scale(0.9); }
 }
 
 .rare-burst {
   position: absolute;
-  width: 78px;
-  height: 78px;
+  width: 72px;
+  height: 72px;
   transform: translate(-50%, -50%);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   font-weight: 900;
   text-shadow: 0 2px 4px rgba(0,0,0,0.55);
   background:
@@ -852,68 +1399,22 @@ onUnmounted(() => {
     radial-gradient(circle, rgba(255,255,255,0.95) 0 10%, rgba(255,255,255,0.6) 11% 30%, transparent 31%),
     conic-gradient(from 0deg, #ff00de, #00d4ff, #55efc4, #ffeaa7, #ff00de);
 }
-
 @keyframes rareBurst {
   0% { opacity: 0; transform: translate(-50%, -50%) scale(0.2) rotate(0deg); filter: blur(2px); }
   25% { opacity: 1; transform: translate(-50%, -50%) scale(1.05) rotate(80deg); filter: blur(0); }
-  100% { opacity: 0; transform: translate(-50%, -50%) scale(1.55) rotate(220deg); filter: blur(2px); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(1.5) rotate(220deg); filter: blur(2px); }
 }
 
-/* --- 找到 @media 裡面的這兩段並替換 --- */
-@media (max-width: 1024px) {
-  .absolute-garden-container { 
-    max-width: 100vw;
-    width: 88vw;           /* 讓雲朵夠寬 */
-    top: 56%;              /* 避開上方選單 */
-    left: 45%;             /* 稍微偏左，完美閃避右側的圖鑑按鈕 */
-    transform: translate(-50%, -50%);
-    aspect-ratio: 2.3 / 1; 
-  }
-  
-  /* 控制網格大小，確保絕對不會超出雲朵邊界 */
-  .flowers-fixed-grid { 
-    width: 82%;            /* 網格寬度小於雲朵範圍 */
-    height: 65%;           /* 網格高度小於雲朵範圍 */
-    top: 50%; 
-    left: 50%; 
-    transform: translate(-50%, -50%);
-    gap: 2px 4px;          /* 保留微小間距，茂密又整齊 */
-  }
-  
-  /* 功能按鈕確保貼緊右側安全區 */
-  .action-cluster { 
-    bottom: 20px; 
-    right: max(15px, env(safe-area-inset-right)); 
-    gap: 10px; 
-  }
-  
-  .action-btn { width: 55px; height: 55px; border-width: 3px; }
-  .action-btn .icon { font-size: 1.5rem; }
-  .action-btn .label { font-size: 0.65rem; bottom: -10px; }
-  
-  .action-btn.map { width: 48px; height: 48px; }
-  .action-btn.map .icon { font-size: 1.2rem; }
-  .action-btn.catalog { width: 75px; height: 75px; } 
-  .action-btn.shop { width: 52px; height: 52px; }
-  .action-btn.inventory { width: 48px; height: 48px; }
-  .daily-top-cluster { top: 22px; right: calc(max(10px, env(safe-area-inset-right)) + 198px); gap: 7px; }
-  .daily-top-btn { min-width: 78px; height: 38px; padding: 3px 7px; border-width: 2px; border-radius: 14px; }
-  .top-icon { font-size: 1.15rem; }
-  .top-label { font-size: 0.6rem; }
-  
-/* 👇 2. 將花籃容器盡可能往左下角推 */
-  .basket-container { 
-    bottom: 15px; /* 原本是 10%，改用絕對像素壓到最底部 */
-    left: max(15px, env(safe-area-inset-left)); /* 緊貼左側安全區 */
-  }}
-  .basket-img-real {
-    width: 65px !important;  /* 強制覆寫原本的 80px，縮小花籃圖片 */
-    height: 65px !important; 
-  }
+.fade-enter-active, .fade-leave-active { transition: opacity 0.2s; }
+.fade-enter-from, .fade-leave-to { opacity: 0; }
 
-  .unlock-progress {
-  color: #ffeaa7;
-  font-size: 0.7rem;
-  margin-left: 2px;
+@media (min-width: 520px) {
+  .portrait-shell {
+    margin-top: env(safe-area-inset-top);
+    margin-bottom: env(safe-area-inset-bottom);
+    border-radius: 16px;
+    max-height: calc(100dvh - 24px);
   }
+}
+
 </style>

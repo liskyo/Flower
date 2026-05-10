@@ -65,12 +65,12 @@ const doLogout = async () => {
 
 <template>
   <div class="game-container">
-    <!-- 橫向螢幕鎖定提示 (僅在手機直向時顯示) -->
+    <!-- 直向遊玩：僅在手機橫向時提示轉回直立 -->
     <div class="orientation-warning">
       <div class="warning-content">
         <div class="rotate-icon">📱</div>
-        <h2>請將手機轉為橫向</h2>
-        <p>為了最佳的遊玩體驗，<br>請解鎖畫面旋轉並橫向持握手機。</p>
+        <h2>請將手機轉為直立</h2>
+        <p>本遊戲以直立畫面設計，<br>請將裝置直向持握以獲得最佳體驗。</p>
       </div>
     </div>
 
@@ -185,7 +185,7 @@ html, body {
   100% { transform: rotate(-90deg); }
 }
 
-@media screen and (max-width: 900px) and (orientation: portrait) {
+@media screen and (max-width: 900px) and (orientation: landscape) {
   .orientation-warning { display: flex; }
 }
 </style>
