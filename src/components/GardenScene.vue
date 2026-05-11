@@ -4,12 +4,14 @@
 import { ref, onMounted, onUnmounted, computed } from 'vue';
 import { state, setScene, getCurrentGarden, getCurrentWeather, isSceneUnlocked, getCurrentSpawnMultiplier, catchUpSpawning, getLevelInfo, getDailyLoginStatus, getDailyMissionSummary, getCatalogAchievementSummary, playSound, consumeInventoryItem, getInventoryItemCount, trackDailyMissionProgress } from '../store/gameState';
 import { FLOWERS, SCENE_NAMES_BY_COUNTRY } from '../data/flowers';
-import { getFlowerImagePath, getSceneBackgroundPath } from '../data/assetPaths';
+import { getFlowerImagePath, getSceneBackgroundPath, getIconPath, ICON_CATEGORY, COMMON_ICON } from '../data/assetPaths';
 import { getItemDefinition } from '../data/items';
 import GardenSlot from './GardenSlot.vue';
 import GardenUiIcons from './GardenUiIcons.vue';
 
-/** 花槽錯落位移（參考圖二：自然庭園感，非死板網格） */
+/** 頂欄花幣／鑽石條圖（圖內含數字框，文字用絕對定位疊上） */
+const petalCurrencyBarSrc = getIconPath(ICON_CATEGORY.CURRENCY, COMMON_ICON.CUR_PETAL);
+const diamondCurrencyBarSrc = getIconPath(ICON_CATEGORY.CURRENCY, COMMON_ICON.CUR_DIAMOND);
 const GARDEN_ORGANIC = [
   // 3 排 8 朵：第一排 3、中排 2、底排 3 — 偏移盡量小避免分散
   { x: -2, y: -3, r: -4, s: 1.05 },
@@ -539,19 +541,15 @@ onUnmounted(() => {
           </div>
 
           <div class="currency-block">
-            <div class="currency-row petals-row">
-              <span class="cur-icon-wrap" aria-hidden="true">
-                <GardenUiIcons kind="petal" :size="18" />
-              </span>
-              <span class="cur-val">{{ formatCompact(petalTotal) }}</span>
-              <button type="button" class="cur-plus" @click="playSound('button'); emit('change-tab', 'shop')">+</button>
+            <div class="currency-row currency-row--graphic petals-row">
+              <img class="currency-graphic" :src="petalCurrencyBarSrc" alt="" draggable="false" />
+              <span class="cur-val cur-val--overlay">{{ formatCompact(petalTotal) }}</span>
+              <button type="button" class="cur-plus cur-plus--overlay" @click="playSound('button'); emit('change-tab', 'shop')">+</button>
             </div>
-            <div class="currency-row gems-row">
-              <span class="cur-icon-wrap" aria-hidden="true">
-                <GardenUiIcons kind="diamond" :size="18" />
-              </span>
-              <span class="cur-val">{{ formatCompact(state.diamonds) }}</span>
-              <button type="button" class="cur-plus" @click="playSound('button'); emit('change-tab', 'shop')">+</button>
+            <div class="currency-row currency-row--graphic gems-row">
+              <img class="currency-graphic" :src="diamondCurrencyBarSrc" alt="" draggable="false" />
+              <span class="cur-val cur-val--overlay">{{ formatCompact(state.diamonds) }}</span>
+              <button type="button" class="cur-plus cur-plus--overlay" @click="playSound('button'); emit('change-tab', 'shop')">+</button>
             </div>
           </div>
 
@@ -908,6 +906,7 @@ onUnmounted(() => {
   display: flex;
   flex-direction: row;
   justify-content: center;
+  align-items: flex-start;
   gap: 6px;
   max-width: none;
   padding-top: 2px;
@@ -923,11 +922,99 @@ onUnmounted(() => {
   padding: 5px 7px 5px 9px;
   box-shadow: 0 3px 0 #2d1f14;
 }
+/* 使用整張 HUD 長條圖：數字與 + 疊在圖上預留區（可依美術微調 CSS 變數） */
+.currency-row--graphic {
+  position: relative;
+  flex: 0 1 auto;
+  width: min(156px, 44vw);
+  max-width: 100%;
+  padding: 0;
+  margin: 0;
+  border: none;
+  border-radius: 0;
+  background: transparent !important;
+  box-shadow: none;
+  line-height: 0;
+  --cur-slot-left: 38%;
+  --cur-slot-right: 26%;
+  --cur-slot-y: 50%;
+  --cur-plus-right: 3%;
+  --cur-plus-size: 22px;
+}
+.currency-row--graphic.petals-row {
+  --cur-slot-left: 39%;
+  --cur-slot-right: 27%;
+  --cur-plus-right: 4%;
+}
+.currency-row--graphic.gems-row {
+  --cur-slot-left: 39%;
+  --cur-slot-right: 27%;
+  --cur-plus-right: 4%;
+}
+.currency-graphic {
+  display: block;
+  width: 100%;
+  height: auto;
+  vertical-align: top;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+.currency-row--graphic .cur-val--overlay {
+  position: absolute;
+  left: var(--cur-slot-left);
+  right: var(--cur-slot-right);
+  top: var(--cur-slot-y);
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: clamp(0.65rem, 3.1vw, 0.8rem);
+  font-weight: 900;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: 1.15;
+  pointer-events: none;
+  letter-spacing: 0.02em;
+}
+.currency-row--graphic .cur-plus--overlay {
+  position: absolute;
+  right: var(--cur-plus-right);
+  top: var(--cur-slot-y);
+  transform: translateY(-50%);
+  width: var(--cur-plus-size);
+  height: var(--cur-plus-size);
+  padding: 0;
+  border-radius: 8px;
+  border: 2px solid #2d1f14;
+  background: linear-gradient(180deg, #ffeaa7, #fdcb6e);
+  font-weight: 900;
+  font-size: clamp(0.72rem, 3vw, 0.85rem);
+  line-height: 1;
+  color: #2d1f14;
+  cursor: pointer;
+  touch-action: manipulation;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 0 rgba(45, 31, 20, 0.35);
+  z-index: 2;
+}
+.currency-row--graphic .cur-plus--overlay:active { transform: translateY(calc(-50% + 1px)); }
 .petals-row {
   background: linear-gradient(90deg, rgba(253, 121, 168, 0.35), rgba(74, 55, 40, 0.92));
 }
 .gems-row {
   background: linear-gradient(90deg, rgba(162, 155, 254, 0.35), rgba(74, 55, 40, 0.92));
+}
+.currency-row--graphic.petals-row,
+.currency-row--graphic.gems-row {
+  background: transparent !important;
 }
 .cur-icon-wrap {
   display: flex;
