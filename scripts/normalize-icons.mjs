@@ -30,7 +30,16 @@ async function safeRename(dir, from, to) {
   const a = join(dir, from);
   const b = join(dir, to);
   if (!(await exists(a))) return;
-  if (await exists(b) && from.toLowerCase() !== to.toLowerCase()) {
+  if (a === b) return;
+  const aLow = a.toLowerCase();
+  const bLow = b.toLowerCase();
+  if (aLow === bLow) {
+    const tmp = join(dir, `__icon_tmp_${Date.now()}_${Math.random().toString(36).slice(2)}.png`);
+    await rename(a, tmp);
+    await rename(tmp, b);
+    return;
+  }
+  if (await exists(b)) {
     await unlink(a);
     return;
   }
@@ -68,6 +77,16 @@ async function main() {
   ];
   for (const [from, to] of toolsCaseFix) {
     await safeRename(tools, from, to);
+  }
+
+  /** 其餘 tool_*.PNG 一律轉成小寫 .png（避免 Linux 404） */
+  if (await exists(tools)) {
+    const tf = await readdir(tools);
+    for (const name of tf) {
+      if (/^tool_[a-z0-9_]+\.PNG$/i.test(name) && name.endsWith('.PNG')) {
+        await safeRename(tools, name, name.replace(/\.PNG$/, '.png'));
+      }
+    }
   }
 
   const toolsDelete = [

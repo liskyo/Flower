@@ -9,9 +9,9 @@ import { getItemDefinition } from '../data/items';
 import GardenSlot from './GardenSlot.vue';
 import GardenUiIcons from './GardenUiIcons.vue';
 
-/** 頂欄花幣／鑽石條圖（圖內含數字框，文字用絕對定位疊上） */
-const petalCurrencyBarSrc = getIconPath(ICON_CATEGORY.CURRENCY, COMMON_ICON.CUR_PETAL);
-const diamondCurrencyBarSrc = getIconPath(ICON_CATEGORY.CURRENCY, COMMON_ICON.CUR_DIAMOND);
+/** 頂欄花幣／鑽石：僅用個別 icon 圖 + 數字，不加長條／棕色底圖 */
+const petalCurrencyIconSrc = getIconPath(ICON_CATEGORY.CURRENCY, COMMON_ICON.CUR_PETAL);
+const diamondCurrencyIconSrc = getIconPath(ICON_CATEGORY.CURRENCY, COMMON_ICON.CUR_DIAMOND);
 const iconUiTask = getIconPath(ICON_CATEGORY.UI, COMMON_ICON.UI_TASK);
 const iconUiSettings = getIconPath(ICON_CATEGORY.UI, COMMON_ICON.UI_SETTINGS);
 const iconDockCatalog = getIconPath(ICON_CATEGORY.UI, COMMON_ICON.DOCK_CATALOG);
@@ -550,15 +550,15 @@ onUnmounted(() => {
           </div>
 
           <div class="currency-block">
-            <div class="currency-row currency-row--graphic petals-row">
-              <img class="currency-graphic" :src="petalCurrencyBarSrc" alt="" draggable="false" />
-              <span class="cur-val cur-val--overlay">{{ formatCompact(petalTotal) }}</span>
-              <button type="button" class="cur-plus cur-plus--overlay" @click="playSound('button'); emit('change-tab', 'shop')">+</button>
+            <div class="currency-row currency-row--bare petals-row">
+              <img class="png-icon-currency" :src="petalCurrencyIconSrc" alt="" draggable="false" />
+              <span class="cur-val">{{ formatCompact(petalTotal) }}</span>
+              <button type="button" class="cur-plus" @click="playSound('button'); emit('change-tab', 'shop')">+</button>
             </div>
-            <div class="currency-row currency-row--graphic gems-row">
-              <img class="currency-graphic" :src="diamondCurrencyBarSrc" alt="" draggable="false" />
-              <span class="cur-val cur-val--overlay">{{ formatCompact(state.diamonds) }}</span>
-              <button type="button" class="cur-plus cur-plus--overlay" @click="playSound('button'); emit('change-tab', 'shop')">+</button>
+            <div class="currency-row currency-row--bare gems-row">
+              <img class="png-icon-currency" :src="diamondCurrencyIconSrc" alt="" draggable="false" />
+              <span class="cur-val">{{ formatCompact(state.diamonds) }}</span>
+              <button type="button" class="cur-plus" @click="playSound('button'); emit('change-tab', 'shop')">+</button>
             </div>
           </div>
 
@@ -923,7 +923,7 @@ onUnmounted(() => {
 .currency-row {
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
   flex: 0 1 132px;
   background: rgba(74, 55, 40, 0.92);
   border: 2px solid #2d1f14;
@@ -931,99 +931,42 @@ onUnmounted(() => {
   padding: 5px 7px 5px 9px;
   box-shadow: 0 3px 0 #2d1f14;
 }
-/* 使用整張 HUD 長條圖：數字與 + 疊在圖上預留區（可依美術微調 CSS 變數） */
-.currency-row--graphic {
-  position: relative;
+/* 花幣／鑽石：只用你的 icon + 數字，無長條底圖、無咖啡色藥丸底 */
+.currency-row--bare {
   flex: 0 1 auto;
-  width: min(156px, 44vw);
-  max-width: 100%;
-  padding: 0;
+  max-width: min(200px, 46vw);
+  padding: 2px 4px 2px 2px;
   margin: 0;
+  background: transparent !important;
   border: none;
   border-radius: 0;
-  background: transparent !important;
   box-shadow: none;
-  line-height: 0;
-  --cur-slot-left: 38%;
-  --cur-slot-right: 26%;
-  --cur-slot-y: 50%;
-  --cur-plus-right: 3%;
-  --cur-plus-size: 22px;
+  gap: 8px;
 }
-.currency-row--graphic.petals-row {
-  --cur-slot-left: 39%;
-  --cur-slot-right: 27%;
-  --cur-plus-right: 4%;
-}
-.currency-row--graphic.gems-row {
-  --cur-slot-left: 39%;
-  --cur-slot-right: 27%;
-  --cur-plus-right: 4%;
-}
-.currency-graphic {
+.png-icon-currency {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  flex-shrink: 0;
   display: block;
-  width: 100%;
-  height: auto;
-  vertical-align: top;
   pointer-events: none;
   user-select: none;
   -webkit-user-drag: none;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.35));
 }
-.currency-row--graphic .cur-val--overlay {
-  position: absolute;
-  left: var(--cur-slot-left);
-  right: var(--cur-slot-right);
-  top: var(--cur-slot-y);
-  transform: translateY(-50%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  font-size: clamp(0.65rem, 3.1vw, 0.8rem);
+.currency-row--bare .cur-val {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.88rem;
   font-weight: 900;
   color: #fff;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  line-height: 1.15;
-  pointer-events: none;
-  letter-spacing: 0.02em;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.65), 0 0 1px rgba(0,0,0,0.8);
 }
-.currency-row--graphic .cur-plus--overlay {
-  position: absolute;
-  right: var(--cur-plus-right);
-  top: var(--cur-slot-y);
-  transform: translateY(-50%);
-  width: var(--cur-plus-size);
-  height: var(--cur-plus-size);
-  padding: 0;
-  border-radius: 8px;
-  border: 2px solid #2d1f14;
-  background: linear-gradient(180deg, #ffeaa7, #fdcb6e);
-  font-weight: 900;
-  font-size: clamp(0.72rem, 3vw, 0.85rem);
-  line-height: 1;
-  color: #2d1f14;
-  cursor: pointer;
-  touch-action: manipulation;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 2px 0 rgba(45, 31, 20, 0.35);
-  z-index: 2;
-}
-.currency-row--graphic .cur-plus--overlay:active { transform: translateY(calc(-50% + 1px)); }
-.petals-row {
-  background: linear-gradient(90deg, rgba(253, 121, 168, 0.35), rgba(74, 55, 40, 0.92));
-}
-.gems-row {
-  background: linear-gradient(90deg, rgba(162, 155, 254, 0.35), rgba(74, 55, 40, 0.92));
-}
-.currency-row--graphic.petals-row,
-.currency-row--graphic.gems-row {
-  background: transparent !important;
+.currency-row--bare .cur-plus {
+  width: 28px;
+  height: 28px;
+  font-size: 0.95rem;
+  border-radius: 10px;
 }
 .cur-icon-wrap {
   display: flex;
@@ -1062,8 +1005,8 @@ onUnmounted(() => {
   position: relative;
 }
 .gear-btn {
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   border: 3px solid #4a3728;
   background: linear-gradient(180deg, #dfe6e9, #b2bec3);
@@ -1078,10 +1021,10 @@ onUnmounted(() => {
 }
 .gear-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 #2d1f14; }
 
-/* public/assets/icons 內 PNG（檔名小寫，與 getIconPath 一致） */
+/* public/assets/icons 內 PNG（檔名小寫 .png，見 npm run icons:normalize） */
 .png-icon-gear {
-  width: 26px;
-  height: 26px;
+  width: 34px;
+  height: 34px;
   object-fit: contain;
   display: block;
   pointer-events: none;
@@ -1089,8 +1032,8 @@ onUnmounted(() => {
   -webkit-user-drag: none;
 }
 .png-icon-fab {
-  width: 30px;
-  height: 30px;
+  width: 42px;
+  height: 42px;
   object-fit: contain;
   display: block;
   pointer-events: none;
@@ -1098,8 +1041,8 @@ onUnmounted(() => {
   -webkit-user-drag: none;
 }
 .png-icon-task {
-  width: 30px;
-  height: 30px;
+  width: 42px;
+  height: 42px;
   object-fit: contain;
   display: block;
   pointer-events: none;
@@ -1107,8 +1050,8 @@ onUnmounted(() => {
   -webkit-user-drag: none;
 }
 .png-icon-rail {
-  width: 30px;
-  height: 30px;
+  width: 44px;
+  height: 44px;
   object-fit: contain;
   display: block;
   pointer-events: none;
@@ -1116,8 +1059,8 @@ onUnmounted(() => {
   -webkit-user-drag: none;
 }
 .png-icon-dock {
-  width: 34px;
-  height: 34px;
+  width: 48px;
+  height: 48px;
   object-fit: contain;
   display: block;
   pointer-events: none;
@@ -1255,7 +1198,7 @@ onUnmounted(() => {
   flex-wrap: wrap;
   gap: 6px;
   margin-top: 6px;
-  padding-left: 72px;
+  padding-left: 80px;
   padding-right: 58px;
   position: relative;
   z-index: 35;
@@ -1277,7 +1220,7 @@ onUnmounted(() => {
 .buff-chip small { color: #ffeaa7; font-weight: 800; font-size: 0.6rem; }
 .buff-tooltip-portrait {
   position: absolute;
-  left: 72px;
+  left: 80px;
   top: 100%;
   margin-top: 4px;
   background: rgba(0,0,0,0.92);
@@ -1339,7 +1282,7 @@ onUnmounted(() => {
   position: absolute;
   left: max(4px, env(safe-area-inset-left));
   bottom: 96px;
-  width: 60px;
+  width: 72px;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -1411,7 +1354,7 @@ onUnmounted(() => {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 0 46px 0 62px;
+  padding: 0 46px 0 78px;
   z-index: 20;
 }
 
