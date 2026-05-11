@@ -4,7 +4,7 @@ export const DAILY_LOGIN_REWARDS = [
   { day: 3, icon: '💎', name: '閃耀鑽石袋', desc: '更豐厚的鑽石', diamonds: 6000 },
   { day: 4, icon: '🌧️', name: '人造雨一階', desc: '生成效率加速道具', itemId: 'rain1', count: 1 },
   { day: 5, icon: '💎', name: '皇家鑽石箱', desc: '大量鑽石獎勵', diamonds: 12000 },
-  { day: 6, icon: '⭐', name: '無敵星星一階', desc: '提高五星花出現率', itemId: 'star1', count: 1 },
+  { day: 6, icon: '🦋', name: '蝴蝶燈一階', desc: '提高五星花出現率', itemId: 'star1', count: 1 },
   { day: 7, icon: '✈️', name: '出國機票', desc: '免費解鎖下一個國家一次', itemId: 'travelTicket', count: 1 }
 ];
 

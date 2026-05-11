@@ -128,7 +128,7 @@ export const ITEM_DEFINITIONS = {
   },
   star1: {
     id: 'star1',
-    name: '⭐ 無敵星星一階',
+    name: '🦋 蝴蝶燈一階',
     desc: '五星機率 2 倍 (30分鐘)',
     type: 'star',
     multi: 2,
@@ -139,7 +139,7 @@ export const ITEM_DEFINITIONS = {
   },
   star2: {
     id: 'star2',
-    name: '⭐ 無敵星星二階',
+    name: '🦋 蝴蝶燈二階',
     desc: '五星機率 2 倍 (60分鐘)',
     type: 'star',
     multi: 2,
@@ -150,7 +150,7 @@ export const ITEM_DEFINITIONS = {
   },
   star3: {
     id: 'star3',
-    name: '⭐ 無敵星星三階',
+    name: '🦋 蝴蝶燈三階',
     desc: '五星機率 2 倍 (120分鐘)',
     type: 'star',
     multi: 2,
@@ -161,7 +161,7 @@ export const ITEM_DEFINITIONS = {
   },
   star4: {
     id: 'star4',
-    name: '⭐ 無敵星星四階',
+    name: '🦋 蝴蝶燈四階',
     desc: '五星機率 3 倍 (60分鐘)',
     type: 'star',
     multi: 3,
@@ -172,7 +172,7 @@ export const ITEM_DEFINITIONS = {
   },
   star5: {
     id: 'star5',
-    name: '⭐ 無敵星星五階',
+    name: '🦋 蝴蝶燈五階',
     desc: '五星機率 3 倍 (120分鐘)',
     type: 'star',
     multi: 3,

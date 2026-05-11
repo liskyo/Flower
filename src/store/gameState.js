@@ -676,7 +676,7 @@ const getWeight = (rarity) => {
   if (r === 3) return 30;
   if (r === 4) return 20;
   if (r === 5) {
-    // 👇 檢查是否有無敵星星效果
+    // 👇 檢查是否有蝴蝶燈效果
     let starMulti = 1;
     if (state.activeBuffs?.starUntil && Date.now() < state.activeBuffs.starUntil) {
       starMulti = state.activeBuffs.starMultiplier || 1;

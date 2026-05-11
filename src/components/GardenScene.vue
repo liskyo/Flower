@@ -11,15 +11,15 @@ import GardenUiIcons from './GardenUiIcons.vue';
 
 /** 花槽錯落位移（參考圖二：自然庭園感，非死板網格） */
 const GARDEN_ORGANIC = [
-  // 3 排 8 朵：第一排 3、中排 2、底排 3
-  { x: -6, y: -8, r: -5, s: 0.96 },
-  { x: 4, y: -12, r: 3, s: 0.96 },
-  { x: 8, y: -4, r: 5, s: 0.96 },
-  { x: -4, y: 2, r: 3, s: 0.96 },
-  { x: 4, y: -2, r: -4, s: 0.96 },
-  { x: -8, y: 8, r: -3, s: 0.96 },
-  { x: 4, y: 6, r: 4, s: 0.96 },
-  { x: 8, y: 10, r: -5, s: 0.96 },
+  // 3 排 8 朵：第一排 3、中排 2、底排 3 — 偏移盡量小避免分散
+  { x: -2, y: -3, r: -4, s: 1.05 },
+  { x: 2, y: -5, r: 3, s: 1.05 },
+  { x: 3, y: -2, r: 4, s: 1.05 },
+  { x: -2, y: 1, r: 3, s: 1.05 },
+  { x: 2, y: -1, r: -3, s: 1.05 },
+  { x: -3, y: 3, r: -3, s: 1.05 },
+  { x: 2, y: 2, r: 4, s: 1.05 },
+  { x: 3, y: 4, r: -4, s: 1.05 },
 ];
 
 const slotOrganicStyle = (idx) => {
@@ -165,7 +165,7 @@ const activeBuffsDisplay = computed(() => {
   
   // 👇 新增星星描述
   if (state.activeBuffs?.starUntil && now < state.activeBuffs.starUntil)
-    items.push({ icon: '⭐', name: '無敵星星', desc: `五星出現率 ${state.activeBuffs.starMultiplier || 2} 倍`, remain: Math.ceil((state.activeBuffs.starUntil - now) / 60000) });
+    items.push({ icon: '🦋', name: '蝴蝶燈', desc: `五星出現率 ${state.activeBuffs.starMultiplier || 2} 倍`, remain: Math.ceil((state.activeBuffs.starUntil - now) / 60000) });
   
   return items;
 });
@@ -611,12 +611,19 @@ onUnmounted(() => {
           </Transition>
         </div>
 
+        <button
+          type="button"
+          class="task-fab"
+          @touchmove.stop.prevent
+          @mousedown.stop
+          @click="playSound('button'); emit('change-tab', 'dailyMission')"
+        >
+          <span v-if="taskBadgeCount > 0" class="task-fab-badge">{{ taskBadgeCount }}</span>
+          <span class="task-fab-ico"><GardenUiIcons kind="clipboard" :size="22" /></span>
+          <span class="task-fab-lbl">任務</span>
+        </button>
+
         <aside class="left-rail" @touchmove.stop.prevent @mousedown.stop>
-          <button type="button" class="rail-item rail-task" @click="playSound('button'); emit('change-tab', 'dailyMission')">
-            <span v-if="taskBadgeCount > 0" class="rail-badge">{{ taskBadgeCount }}</span>
-            <span class="rail-ico"><GardenUiIcons kind="clipboard" :size="22" /></span>
-            <span class="rail-txt">任務</span>
-          </button>
           <button type="button" class="rail-item rail-tool" @click="quickUseRain">
             <span class="rail-ico"><GardenUiIcons kind="water" :size="22" /></span>
             <span class="rail-txt">澆水壺</span>
@@ -1144,10 +1151,50 @@ onUnmounted(() => {
 }
 .buff-tooltip-portrait strong { color: #ffeaa7; }
 
+.task-fab {
+  position: absolute;
+  left: calc(max(10px, env(safe-area-inset-left)) + 4px);
+  top: calc(max(8px, env(safe-area-inset-top)) + 102px);
+  width: 56px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 7px 4px 6px;
+  border-radius: 14px;
+  border: 3px solid #4a3728;
+  background: linear-gradient(180deg, #fff8e7, #f0d9b5);
+  box-shadow: 0 4px 0 #3d2b1f;
+  cursor: pointer;
+  z-index: 50;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+.task-fab:active { transform: translateY(2px); box-shadow: 0 2px 0 #3d2b1f; }
+.task-fab-ico { display: flex; align-items: center; justify-content: center; line-height: 0; }
+.task-fab-lbl { font-size: 0.62rem; font-weight: 900; color: #2d1f14; line-height: 1.1; }
+.task-fab-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  border-radius: 50%;
+  background: #ff4757;
+  color: #fff;
+  font-size: 0.6rem;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #fff;
+  box-shadow: 0 2px 8px rgba(255,71,87,0.6);
+}
+
 .left-rail {
   position: absolute;
   left: max(4px, env(safe-area-inset-left));
-  top: calc(max(8px, env(safe-area-inset-top)) + 132px);
   bottom: 96px;
   width: 60px;
   display: flex;
@@ -1155,10 +1202,6 @@ onUnmounted(() => {
   gap: 8px;
   z-index: 45;
   pointer-events: auto;
-}
-.rail-task {
-  margin-bottom: auto;
-  align-self: flex-start;
 }
 .rail-item {
   position: relative;
@@ -1271,10 +1314,13 @@ onUnmounted(() => {
 .garden-stage {
   position: relative;
   width: 100%;
-  height: clamp(300px, 46vh, 430px);
-  min-height: 300px;
-  margin-top: min(7vh, 54px);
-  margin-bottom: 84px;
+  max-width: 460px;
+  height: clamp(360px, 56vh, 540px);
+  min-height: 360px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: min(5vh, 38px);
+  margin-bottom: 96px;
 }
 .garden-stage::after {
   content: '';
@@ -1295,8 +1341,8 @@ onUnmounted(() => {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
   grid-template-rows: repeat(3, 1fr);
-  column-gap: 6px;
-  row-gap: 4px;
+  column-gap: 0;
+  row-gap: 0;
   align-items: center;
   justify-items: center;
 }
@@ -1311,9 +1357,9 @@ onUnmounted(() => {
 .slot-organic-wrap:nth-child(8) { grid-column: 5 / span 2; grid-row: 3; }
 
 .slot-organic-wrap {
-  width: 90%;
-  height: 90%;
-  min-height: 70px;
+  width: 132%;
+  height: 128%;
+  min-height: 110px;
   display: flex;
   align-items: center;
   justify-content: center;
