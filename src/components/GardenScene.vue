@@ -11,14 +11,15 @@ import GardenUiIcons from './GardenUiIcons.vue';
 
 /** 花槽錯落位移（參考圖二：自然庭園感，非死板網格） */
 const GARDEN_ORGANIC = [
-  { x: -20, y: -7, r: -6, s: 1.2 },
-  { x: 15, y: -16, r: 5, s: 1.08 },
-  { x: -6, y: 12, r: 3, s: 1.18 },
-  { x: 23, y: 3, r: -4, s: 1.12 },
-  { x: -18, y: 20, r: 7, s: 1.06 },
-  { x: 8, y: 26, r: -5, s: 1.22 },
-  { x: -27, y: 35, r: 4, s: 1.1 },
-  { x: 24, y: 34, r: 6, s: 1.16 },
+  // 3 排 8 朵：第一排 3、中排 2、底排 3
+  { x: -6, y: -8, r: -5, s: 0.96 },
+  { x: 4, y: -12, r: 3, s: 0.96 },
+  { x: 8, y: -4, r: 5, s: 0.96 },
+  { x: -4, y: 2, r: 3, s: 0.96 },
+  { x: 4, y: -2, r: -4, s: 0.96 },
+  { x: -8, y: 8, r: -3, s: 0.96 },
+  { x: 4, y: 6, r: 4, s: 0.96 },
+  { x: 8, y: 10, r: -5, s: 0.96 },
 ];
 
 const slotOrganicStyle = (idx) => {
@@ -568,12 +569,16 @@ onUnmounted(() => {
 
         <div class="sign-and-ency">
           <div class="wood-sign">
-            <span class="weather-glyph" aria-hidden="true">
-              <GardenUiIcons :kind="weatherIconKind" :size="22" />
-            </span>
-            <span class="sign-weather">{{ currentWeather.name }}</span>
-            <span class="sign-time">{{ gameClock }}</span>
-            <span class="sign-eff">{{ Math.round(spawnMultiplier * 100) }}%</span>
+            <div class="sign-row sign-row-top">
+              <span class="weather-glyph" aria-hidden="true">
+                <GardenUiIcons :kind="weatherIconKind" :size="20" />
+              </span>
+              <span class="sign-weather">{{ currentWeather.name }}</span>
+              <span class="sign-eff">{{ Math.round(spawnMultiplier * 100) }}%</span>
+            </div>
+            <div class="sign-row sign-row-bottom">
+              <span class="sign-time">{{ gameClock }}</span>
+            </div>
           </div>
           <button
             type="button"
@@ -1013,16 +1018,23 @@ onUnmounted(() => {
 
 .wood-sign {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 6px 10px;
-  padding: 8px 14px;
-  background: linear-gradient(180deg, #d4a574, #a67c52);
-  border: 3px solid #4a3728;
-  border-radius: 10px;
-  box-shadow: 0 4px 0 #3d2b1f, inset 0 1px 0 rgba(255,255,255,0.35);
+  gap: 2px;
+  padding: 6px 14px;
+  background: linear-gradient(180deg, #fff5d1, #ffe7a3);
+  border: 3px solid #6b4a2b;
+  border-radius: 12px;
+  box-shadow: 0 4px 0 #4a3017, inset 0 1px 0 rgba(255,255,255,0.7);
   max-width: 62%;
+}
+.sign-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #6b4a2b;
 }
 .weather-glyph {
   display: flex;
@@ -1032,23 +1044,27 @@ onUnmounted(() => {
 }
 .sign-weather {
   font-weight: 900;
-  font-size: 0.82rem;
-  color: #2d1f14;
+  font-size: 0.86rem;
+  color: #6b4a2b;
 }
 .sign-time {
   font-weight: 900;
-  font-size: 0.85rem;
-  color: #fff;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.4);
-  background: rgba(45, 31, 20, 0.35);
-  padding: 2px 8px;
-  border-radius: 6px;
+  font-size: 0.82rem;
+  color: #6b4a2b;
+  background: rgba(255, 244, 200, 0.85);
+  padding: 1px 10px;
+  border-radius: 999px;
+  border: 1.5px solid rgba(107, 74, 43, 0.45);
+  letter-spacing: 0.5px;
 }
 .sign-eff {
-  font-size: 0.65rem;
-  font-weight: 800;
-  color: #2d1f14;
-  opacity: 0.85;
+  font-size: 0.72rem;
+  font-weight: 900;
+  color: #6b4a2b;
+  background: rgba(255, 235, 165, 0.8);
+  border: 1.5px solid rgba(107, 74, 43, 0.5);
+  border-radius: 999px;
+  padding: 1px 8px;
 }
 
 .ency-fab {
@@ -1131,8 +1147,8 @@ onUnmounted(() => {
 .left-rail {
   position: absolute;
   left: max(4px, env(safe-area-inset-left));
-  top: calc(max(8px, env(safe-area-inset-top)) + 58px);
-  bottom: 92px;
+  top: calc(max(8px, env(safe-area-inset-top)) + 132px);
+  bottom: 96px;
   width: 60px;
   display: flex;
   flex-direction: column;
@@ -1142,6 +1158,7 @@ onUnmounted(() => {
 }
 .rail-task {
   margin-bottom: auto;
+  align-self: flex-start;
 }
 .rail-item {
   position: relative;
@@ -1276,16 +1293,27 @@ onUnmounted(() => {
   height: 100%;
   z-index: 2;
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  grid-template-rows: repeat(4, 1fr);
-  gap: 4px 18px;
+  grid-template-columns: repeat(6, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  column-gap: 6px;
+  row-gap: 4px;
   align-items: center;
   justify-items: center;
 }
+/* 3-2-3 排列：每排佔 2 欄寬，中排兩朵置中各偏左/右 1 欄 */
+.slot-organic-wrap:nth-child(1) { grid-column: 1 / span 2; grid-row: 1; }
+.slot-organic-wrap:nth-child(2) { grid-column: 3 / span 2; grid-row: 1; }
+.slot-organic-wrap:nth-child(3) { grid-column: 5 / span 2; grid-row: 1; }
+.slot-organic-wrap:nth-child(4) { grid-column: 2 / span 2; grid-row: 2; }
+.slot-organic-wrap:nth-child(5) { grid-column: 4 / span 2; grid-row: 2; }
+.slot-organic-wrap:nth-child(6) { grid-column: 1 / span 2; grid-row: 3; }
+.slot-organic-wrap:nth-child(7) { grid-column: 3 / span 2; grid-row: 3; }
+.slot-organic-wrap:nth-child(8) { grid-column: 5 / span 2; grid-row: 3; }
+
 .slot-organic-wrap {
-  width: 112%;
-  height: 112%;
-  min-height: 78px;
+  width: 90%;
+  height: 90%;
+  min-height: 70px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1338,17 +1366,21 @@ onUnmounted(() => {
 .harvest-label {
   position: absolute;
   left: 50%;
-  bottom: 24px;
+  bottom: 32px;
   transform: translateX(-50%);
   margin: 0;
-  padding: 4px 20px;
-  background: rgba(74, 55, 40, 0.88);
-  color: #fff;
-  font-size: 0.9rem;
+  padding: 2px 14px;
+  background: linear-gradient(180deg, #fff5d1, #ffe7a3);
+  color: #6b4a2b;
+  font-size: 0.72rem;
   font-weight: 900;
+  letter-spacing: 1.5px;
   border-radius: 999px;
-  border: 3px solid #fff1d6;
-  box-shadow: 0 4px 0 #2d1f14;
+  border: 2px solid #6b4a2b;
+  box-shadow: 0 3px 0 #4a3017;
+  white-space: nowrap;
+  line-height: 1.1;
+  writing-mode: horizontal-tb;
 }
 .harvest-count-badge {
   position: absolute;
