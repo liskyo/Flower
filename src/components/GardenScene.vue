@@ -11,22 +11,14 @@ import GardenUiIcons from './GardenUiIcons.vue';
 
 /** 花槽錯落位移（參考圖二：自然庭園感，非死板網格） */
 const GARDEN_ORGANIC = [
-  { x: 6, y: -14, r: -5, s: 1.06 },
-  { x: 14, y: -5, r: 4, s: 0.96 },
-  { x: -9, y: -11, r: -3, s: 1.03 },
-  { x: 11, y: 5, r: 6, s: 0.97 },
-  { x: -12, y: 0, r: -4, s: 1.05 },
-  { x: 5, y: -9, r: 3, s: 1.07 },
-  { x: -7, y: -3, r: -2, s: 0.96 },
-  { x: 13, y: 11, r: 5, s: 1.01 },
-  { x: 9, y: -7, r: -6, s: 1.04 },
-  { x: -11, y: 9, r: 2, s: 0.98 },
-  { x: 7, y: 7, r: -4, s: 1.02 },
-  { x: -15, y: -1, r: 7, s: 0.94 },
-  { x: 1, y: 13, r: -3, s: 1.02 },
-  { x: 15, y: 5, r: 4, s: 0.97 },
-  { x: -5, y: -9, r: -2, s: 1.05 },
-  { x: -2, y: 15, r: 3, s: 1 },
+  { x: -20, y: -7, r: -6, s: 1.2 },
+  { x: 15, y: -16, r: 5, s: 1.08 },
+  { x: -6, y: 12, r: 3, s: 1.18 },
+  { x: 23, y: 3, r: -4, s: 1.12 },
+  { x: -18, y: 20, r: 7, s: 1.06 },
+  { x: 8, y: 26, r: -5, s: 1.22 },
+  { x: -27, y: 35, r: 4, s: 1.1 },
+  { x: 24, y: 34, r: 6, s: 1.16 },
 ];
 
 const slotOrganicStyle = (idx) => {
@@ -55,6 +47,8 @@ const taskBadgeCount = computed(() =>
 const emit = defineEmits(['change-tab']);
 const slotRefs = ref([]);
 const isSwiping = ref(false);
+const touchStart = ref(null);
+const didSceneSwipe = ref(false);
 
 const basketRef = ref(null);
 const basketImgRef = ref(null);
@@ -90,7 +84,7 @@ const processBasketImage = () => {
 
 const currentSceneNames = computed(() => {
   const names = SCENE_NAMES_BY_COUNTRY[state.currentCountry];
-  if (Array.isArray(names) && names.length === 4) return names;
+  if (Array.isArray(names) && names.length > 0) return names;
   return ["場景 1", "場景 2", "場景 3", "場景 4"];
 });
 
@@ -214,6 +208,13 @@ const handleTouchMove = (e) => {
 };
 
 const formatNumber = (num) => new Intl.NumberFormat('en-US').format(num || 0);
+const formatCompact = (num) => {
+  const value = Number(num) || 0;
+  const abs = Math.abs(value);
+  if (abs >= 1000000) return `${(value / 1000000).toFixed(abs >= 10000000 ? 0 : 1).replace(/\.0$/, '')}M`;
+  if (abs >= 1000) return `${(value / 1000).toFixed(abs >= 10000 ? 0 : 1).replace(/\.0$/, '')}K`;
+  return formatNumber(value);
+};
 
 const triggerHarvestFeedback = ({ flower, x, y, reward }) => {
   if (!reward?.success) return;
@@ -427,6 +428,59 @@ const harvestAllReady = () => {
   if (n === 0) playSound('error');
 };
 
+const unlockedSceneNumbers = computed(() =>
+  currentSceneNames.value
+    .map((_, index) => index + 1)
+    .filter(scene => isSceneUnlocked(state.currentCountry, scene))
+);
+
+const switchSceneByDirection = (direction) => {
+  const scenes = unlockedSceneNumbers.value;
+  const currentIndex = scenes.indexOf(Number(state.currentScene));
+  const nextScene = scenes[currentIndex + direction];
+  if (!nextScene) {
+    playSound('error');
+    return;
+  }
+  playSound('button');
+  setScene(nextScene);
+};
+
+const handleGardenTouchStart = (event) => {
+  startSwiping();
+  const touch = event.touches?.[0];
+  if (!touch) return;
+  touchStart.value = {
+    x: touch.clientX,
+    y: touch.clientY,
+    t: Date.now()
+  };
+  didSceneSwipe.value = false;
+};
+
+const handleGardenTouchMove = (event) => {
+  const touch = event.touches?.[0];
+  const start = touchStart.value;
+  if (touch && start && !didSceneSwipe.value) {
+    const dx = touch.clientX - start.x;
+    const dy = touch.clientY - start.y;
+    if (Math.abs(dx) > 58 && Math.abs(dx) > Math.abs(dy) * 1.35) {
+      didSceneSwipe.value = true;
+      switchSceneByDirection(dx < 0 ? 1 : -1);
+      return;
+    }
+  }
+  if (!didSceneSwipe.value) handleTouchMove(event);
+};
+
+const handleGardenTouchEnd = () => {
+  stopSwiping();
+  touchStart.value = null;
+  window.setTimeout(() => {
+    didSceneSwipe.value = false;
+  }, 80);
+};
+
 onMounted(() => {
   catchUpSpawning();
   document.addEventListener('visibilitychange', handleVisibilityChange);
@@ -459,9 +513,10 @@ onUnmounted(() => {
     @mousedown="startSwiping"
     @mouseup="stopSwiping"
     @mouseleave="stopSwiping"
-    @touchstart="startSwiping"
-    @touchend="stopSwiping"
-    @touchmove.prevent="handleTouchMove"
+    @touchstart="handleGardenTouchStart"
+    @touchend="handleGardenTouchEnd"
+    @touchcancel="handleGardenTouchEnd"
+    @touchmove.prevent="handleGardenTouchMove"
   >
     <div class="portrait-shell">
       <div class="scene-bg-wrapper">
@@ -487,14 +542,14 @@ onUnmounted(() => {
               <span class="cur-icon-wrap" aria-hidden="true">
                 <GardenUiIcons kind="petal" :size="18" />
               </span>
-              <span class="cur-val">{{ formatNumber(petalTotal) }}</span>
+              <span class="cur-val">{{ formatCompact(petalTotal) }}</span>
               <button type="button" class="cur-plus" @click="playSound('button'); emit('change-tab', 'shop')">+</button>
             </div>
             <div class="currency-row gems-row">
               <span class="cur-icon-wrap" aria-hidden="true">
                 <GardenUiIcons kind="diamond" :size="18" />
               </span>
-              <span class="cur-val">{{ formatNumber(state.diamonds) }}</span>
+              <span class="cur-val">{{ formatCompact(state.diamonds) }}</span>
               <button type="button" class="cur-plus" @click="playSound('button'); emit('change-tab', 'shop')">+</button>
             </div>
           </div>
@@ -552,7 +607,7 @@ onUnmounted(() => {
         </div>
 
         <aside class="left-rail" @touchmove.stop.prevent @mousedown.stop>
-          <button type="button" class="rail-item" @click="playSound('button'); emit('change-tab', 'dailyMission')">
+          <button type="button" class="rail-item rail-task" @click="playSound('button'); emit('change-tab', 'dailyMission')">
             <span v-if="taskBadgeCount > 0" class="rail-badge">{{ taskBadgeCount }}</span>
             <span class="rail-ico"><GardenUiIcons kind="clipboard" :size="22" /></span>
             <span class="rail-txt">任務</span>
@@ -575,28 +630,10 @@ onUnmounted(() => {
         </aside>
 
         <div class="scene-overlay-ui">
-          <nav class="landmark-strip" @touchmove.stop.prevent @mousedown.stop>
-            <template v-for="(name, index) in currentSceneNames" :key="index">
-              <button
-                v-if="isSceneUnlocked(state.currentCountry, index + 1)"
-                type="button"
-                :class="{ active: state.currentScene === (index + 1) }"
-                class="landmark-chip"
-                @click="playSound('button'); setScene(index + 1)"
-              >
-                {{ name }}
-              </button>
-              <button v-else type="button" class="landmark-chip locked" disabled>
-                🔒 {{ name }}
-                <span class="unlock-p">({{ getSceneUnlockProgress(state.currentCountry, index + 1) }}%)</span>
-              </button>
-            </template>
-          </nav>
-
           <div class="garden-stage">
             <div class="flowers-fixed-grid">
               <div
-                v-for="(slot, idx) in currentGarden.slice(0, 16)"
+                v-for="(slot, idx) in currentGarden.slice(0, 8)"
                 :key="`${state.currentCountry}_${state.currentScene}_${slot.id}`"
                 class="slot-organic-wrap"
                 :style="slotOrganicStyle(idx)"
@@ -857,18 +894,21 @@ onUnmounted(() => {
 .currency-block {
   flex: 1;
   display: flex;
-  flex-direction: column;
-  gap: 5px;
-  max-width: 200px;
+  flex-direction: row;
+  justify-content: center;
+  gap: 6px;
+  max-width: none;
+  padding-top: 2px;
 }
 .currency-row {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
+  flex: 0 1 132px;
   background: rgba(74, 55, 40, 0.92);
   border: 2px solid #2d1f14;
   border-radius: 999px;
-  padding: 4px 8px 4px 10px;
+  padding: 5px 7px 5px 9px;
   box-shadow: 0 3px 0 #2d1f14;
 }
 .petals-row {
@@ -886,7 +926,7 @@ onUnmounted(() => {
 }
 .cur-val {
   flex: 1;
-  font-size: 0.78rem;
+  font-size: 0.82rem;
   font-weight: 900;
   color: #fff;
   min-width: 0;
@@ -1091,14 +1131,17 @@ onUnmounted(() => {
 .left-rail {
   position: absolute;
   left: max(4px, env(safe-area-inset-left));
-  top: 22%;
-  bottom: 28%;
-  width: 64px;
+  top: calc(max(8px, env(safe-area-inset-top)) + 58px);
+  bottom: 92px;
+  width: 60px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
   z-index: 45;
   pointer-events: auto;
+}
+.rail-task {
+  margin-bottom: auto;
 }
 .rail-item {
   position: relative;
@@ -1106,7 +1149,7 @@ onUnmounted(() => {
   flex-direction: column;
   align-items: center;
   gap: 2px;
-  padding: 8px 4px;
+  padding: 7px 3px;
   border-radius: 14px;
   border: 3px solid #4a3728;
   background: linear-gradient(180deg, #fff8e7, #f0d9b5);
@@ -1164,7 +1207,8 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 0 68px 0 72px;
+  justify-content: center;
+  padding: 0 46px 0 62px;
   z-index: 20;
 }
 
@@ -1209,11 +1253,11 @@ onUnmounted(() => {
 
 .garden-stage {
   position: relative;
-  flex: 1;
   width: 100%;
-  min-height: 140px;
-  max-height: 42vh;
-  margin-top: 4px;
+  height: clamp(300px, 46vh, 430px);
+  min-height: 300px;
+  margin-top: min(7vh, 54px);
+  margin-bottom: 84px;
 }
 .garden-stage::after {
   content: '';
@@ -1228,20 +1272,20 @@ onUnmounted(() => {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 94%;
-  height: 90%;
+  width: 100%;
+  height: 100%;
   z-index: 2;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   grid-template-rows: repeat(4, 1fr);
-  gap: 2px 8px;
+  gap: 4px 18px;
   align-items: center;
   justify-items: center;
 }
 .slot-organic-wrap {
-  width: 100%;
-  height: 100%;
-  min-height: 48px;
+  width: 112%;
+  height: 112%;
+  min-height: 78px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1251,15 +1295,17 @@ onUnmounted(() => {
 }
 
 .harvest-cta {
-  position: relative;
+  position: absolute;
+  left: 50%;
+  bottom: 72px;
+  transform: translateX(-50%);
   align-self: center;
-  margin-top: 6px;
-  margin-bottom: 6px;
+  margin: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 6px 28px 10px;
+  padding: 0;
   border: none;
   background: transparent;
   cursor: pointer;
@@ -1276,8 +1322,8 @@ onUnmounted(() => {
   overflow: hidden;
 }
 .harvest-basket-visual {
-  width: 72px;
-  height: 72px;
+  width: 144px;
+  height: 144px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1290,9 +1336,13 @@ onUnmounted(() => {
 }
 .harvest-basket-emoji { font-size: 3.2rem; line-height: 1; }
 .harvest-label {
-  margin-top: -6px;
-  padding: 4px 22px;
-  background: #4a3728;
+  position: absolute;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  margin: 0;
+  padding: 4px 20px;
+  background: rgba(74, 55, 40, 0.88);
   color: #fff;
   font-size: 0.9rem;
   font-weight: 900;
@@ -1302,8 +1352,8 @@ onUnmounted(() => {
 }
 .harvest-count-badge {
   position: absolute;
-  top: 4px;
-  right: 12px;
+  top: 12px;
+  right: 16px;
   min-width: 22px;
   height: 22px;
   padding: 0 6px;
@@ -1336,6 +1386,7 @@ onUnmounted(() => {
   gap: 8px;
   padding: 8px 4px 4px;
   z-index: 60;
+  margin-top: auto;
 }
 .dock-btn {
   position: relative;

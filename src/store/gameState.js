@@ -5,6 +5,8 @@ import { getCatalogAchievementDefinitions } from '../data/achievements';
 
 export { DAILY_LOGIN_REWARDS, DAILY_MISSIONS, DAILY_MISSION_MILESTONES };
 
+const GARDEN_SLOT_COUNT = 8;
+
 // --- 音效管理器 ---
 const sounds = {
   // 替換成你放在 public 資料夾裡的路徑
@@ -66,7 +68,7 @@ const initDefaultGardens = () => {
     const maxScene = Math.max(1, Number(country.scenes) || 4);
     for (let scene = 1; scene <= maxScene; scene++) {
       const key = `${country.id}_${scene}`;
-      gardens[key] = Array.from({ length: 24 }, (_, i) => ({
+      gardens[key] = Array.from({ length: GARDEN_SLOT_COUNT }, (_, i) => ({
         id: i,
         flowerId: null,
         startTime: null,
@@ -94,7 +96,7 @@ const ensureGardensAndSpawnsForState = (targetState) => {
     for (let scene = 1; scene <= maxScene; scene++) {
       const key = `${country.id}_${scene}`;
       if (!targetState.gardens[key]) {
-        targetState.gardens[key] = Array.from({ length: 24 }, (_, i) => ({
+        targetState.gardens[key] = Array.from({ length: GARDEN_SLOT_COUNT }, (_, i) => ({
           id: i,
           flowerId: null,
           startTime: null,
@@ -120,7 +122,7 @@ const defaultState = {
   inventory: {},
   medals: {},
   gardens: {},
-  upgrades: { spawnRate: 0.5, maxSlots: 24 },
+  upgrades: { spawnRate: 0.5, maxSlots: GARDEN_SLOT_COUNT },
   activeBuffs: {
     sunnyDollUntil: null,
     rainUntil: null,
@@ -642,7 +644,7 @@ export const handleLogout = async () => {
 export const getCurrentGarden = () => {
   const key = `${state.currentCountry}_${state.currentScene}`;
   if (!state.gardens[key]) {
-    state.gardens[key] = Array.from({ length: 24 }, (_, i) => ({ id: i, flowerId: null, startTime: null, status: 'empty' }));
+    state.gardens[key] = Array.from({ length: GARDEN_SLOT_COUNT }, (_, i) => ({ id: i, flowerId: null, startTime: null, status: 'empty' }));
   }
 
   // 自動清理舊存檔中已不存在的花朵 (例如改過場景ID導致變更)
@@ -685,12 +687,12 @@ const getWeight = (rarity) => {
 };
 
 const seedVariety = () => {
-  const garden = getCurrentGarden().slice(0, 16);
+  const garden = getCurrentGarden().slice(0, GARDEN_SLOT_COUNT);
   const pool = getFlowersForCurrentScene();
   if (pool.length === 0) return;
 
   garden.forEach((slot, i) => {
-    if (slot.status === 'empty' && i < 6) {
+    if (slot.status === 'empty' && i < 4) {
       // 👇 替換成權重抽取系統，修復無視機率的 Bug
       const totalWeight = pool.reduce((sum, flower) => sum + getWeight(flower.rarity), 0);
       let randomVal = Math.random() * totalWeight;
@@ -712,7 +714,7 @@ const seedVariety = () => {
 };
 
 // 初始檢查
-if (getCurrentGarden().slice(0, 16).filter(s => s.status !== 'empty').length < 3) {
+if (getCurrentGarden().slice(0, GARDEN_SLOT_COUNT).filter(s => s.status !== 'empty').length < 3) {
   seedVariety();
 }
 
@@ -797,7 +799,7 @@ export const autoSpawn = (targetCountry = null, targetScene = null) => {
   const gardenKey = `${country}_${scene}`;
 
   if (!state.gardens[gardenKey]) return;
-  const garden = state.gardens[gardenKey].slice(0, 16);
+  const garden = state.gardens[gardenKey].slice(0, GARDEN_SLOT_COUNT);
   const emptySlots = garden.filter(s => s.status === 'empty');
   if (emptySlots.length === 0) return;
 
@@ -859,7 +861,7 @@ export const catchUpSpawning = () => {
 
       if (numCycles > 0) {
         // 限制單次補償上限避免卡頓
-        for (let i = 0; i < Math.min(numCycles, 16); i++) {
+        for (let i = 0; i < Math.min(numCycles, GARDEN_SLOT_COUNT); i++) {
           autoSpawn(country, scene);
         }
         // 👇 修正重點：完美繼承剩餘的小數點秒數，而不是粗暴地設定為 now
@@ -931,7 +933,7 @@ export const resetGame = (mode = 'player') => {
       inventory: mode === 'dev' ? devInventory : {},
       medals: {},
       gardens: {},
-      upgrades: { spawnRate: 0.5, maxSlots: 24 },
+      upgrades: { spawnRate: 0.5, maxSlots: GARDEN_SLOT_COUNT },
       activeBuffs: { sunnyDollUntil: null, rainUntil: null, rainMultiplier: 1, fertilizerUntil: null, fertilizerMultiplier: 1, starUntil: null, starMultiplier: 1 },
       exp: mode === 'dev' ? 200000 : 0,
       level: mode === 'dev' ? 15 : 1,
