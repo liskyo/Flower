@@ -1,5 +1,5 @@
 /**
- * 檢查 public/assets 與各國 JSON 是否一致（小寫路徑約定）。
+ * 此外檢查 public/assets/icons 下檔名是否符小寫命名（與 README 約定一致）。
  *
  * 用法：
  *   npm run check:assets
@@ -85,6 +85,60 @@ async function main() {
     }
   }
 
+  const iconsRoot = join(root, 'public', 'assets', 'icons');
+  if (await pathExists(iconsRoot)) {
+    const iconDirOk = /^[a-z0-9_]+$/;
+    const iconFileOk = /^[a-z0-9_]+\.(png|webp|jpg|jpeg|svg)$/;
+    const allowedIconFolders = new Set(['ui', 'tools', 'currency', 'weather', 'badges']);
+    let entries;
+    try {
+      entries = await readdir(iconsRoot, { withFileTypes: true });
+    } catch (e) {
+      errors.push(`無法讀取 public/assets/icons：${e.message}`);
+    }
+    if (entries) {
+      for (const ent of entries) {
+        const name = ent.name;
+        if (name === 'README.md') continue;
+        if (ent.isFile()) {
+          errors.push(`public/assets/icons 根目錄只應含 README 與分類子資料夾：請移走或改名 ${name}`);
+          continue;
+        }
+        if (!ent.isDirectory()) continue;
+        if (!iconDirOk.test(name)) {
+          errors.push(`icons 子資料夾名稱須小寫 [a-z0-9_]：public/assets/icons/${name}/`);
+          continue;
+        }
+        if (!allowedIconFolders.has(name)) {
+          errors.push(
+            `icons 未知子資料夾 public/assets/icons/${name}/（允許：${[...allowedIconFolders].join(', ')}）`,
+          );
+        }
+        const sub = join(iconsRoot, name);
+        let subEntries;
+        try {
+          subEntries = await readdir(sub, { withFileTypes: true });
+        } catch (e) {
+          errors.push(`無法讀取 public/assets/icons/${name}/：${e.message}`);
+          continue;
+        }
+        for (const f of subEntries) {
+          if (f.name === '.gitkeep') continue;
+          if (f.isDirectory()) {
+            errors.push(`icons 內不應有巢狀目錄：public/assets/icons/${name}/${f.name}/`);
+            continue;
+          }
+          if (!f.isFile()) continue;
+          if (!iconFileOk.test(f.name)) {
+            errors.push(
+              `icon 檔名須為小寫 [a-z0-9_].(png|webp|jpg|jpeg|svg)：public/assets/icons/${name}/${f.name}`,
+            );
+          }
+        }
+      }
+    }
+  }
+
   if (errors.length) {
     const log = warnOnly ? console.warn : console.error;
     log(`\n${warnOnly ? '⚠️' : '❌'} check:assets 發現 ${errors.length} 個問題：\n`);
@@ -94,7 +148,7 @@ async function main() {
     process.exit(0);
   }
 
-  console.log('✅ check:assets：public/assets 與國家 JSON 對應正常（小寫路徑）。');
+  console.log('✅ check:assets：國家資產與 icons 命名檢查通過（小寫路徑約定）。');
 }
 
 main().catch((e) => {
