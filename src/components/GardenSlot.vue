@@ -227,7 +227,7 @@ defineExpose({ triggerHarvest, getSlotStatus });
           withered: slotData.status === 'withered'
         }"
       ></div>
-      <div v-if="slotData.status !== 'empty' && flower" class="flower-container-v3" :style="{ transform: `scale(${growthScale})` }">
+      <div v-if="slotData.status !== 'empty' && flower" class="flower-container-v3" :style="{ transform: `translate(-50%, -50%) scale(${growthScale})` }">
         <div class="flower-render-box">
           <img ref="imgRef" :src="getFlowerImagePath(flower.country, flower.id)" class="hidden-core" @load="processImage" />
           <canvas ref="canvasRef" class="hidden-core"></canvas>
@@ -309,13 +309,17 @@ defineExpose({ triggerHarvest, getSlotStatus });
 
 /* --- 找到這段並替換 --- */
 .flower-container-v3 {
+  position: absolute;
+  left: 50%;
+  top: 62%;
+  transform-origin: 50% 50%;
   width: 100%; 
   max-width: 150px; 
   /* 👇 關鍵修改：拔掉固定的 height，改用 aspect-ratio 讓高度自動跟隨寬度 */
   aspect-ratio: 1 / 1; 
   height: auto;        
   display: flex; align-items: center; justify-content: center;
-  position: relative; transition: transform 0.3s ease;
+  transition: transform 0.3s ease;
   overflow: visible; z-index: 50;
 }
 
