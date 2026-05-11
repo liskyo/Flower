@@ -8,7 +8,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "check:assets": "node scripts/check-assets.mjs",
-    "check:assets:warn": "node scripts/check-assets.mjs --warn-only"
+    "check:assets:warn": "node scripts/check-assets.mjs --warn-only",
+    "icons:normalize": "node scripts/normalize-icons.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.105.1",

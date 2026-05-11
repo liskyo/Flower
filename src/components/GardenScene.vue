@@ -12,6 +12,15 @@ import GardenUiIcons from './GardenUiIcons.vue';
 /** 頂欄花幣／鑽石條圖（圖內含數字框，文字用絕對定位疊上） */
 const petalCurrencyBarSrc = getIconPath(ICON_CATEGORY.CURRENCY, COMMON_ICON.CUR_PETAL);
 const diamondCurrencyBarSrc = getIconPath(ICON_CATEGORY.CURRENCY, COMMON_ICON.CUR_DIAMOND);
+const iconUiTask = getIconPath(ICON_CATEGORY.UI, COMMON_ICON.UI_TASK);
+const iconUiSettings = getIconPath(ICON_CATEGORY.UI, COMMON_ICON.UI_SETTINGS);
+const iconDockCatalog = getIconPath(ICON_CATEGORY.UI, COMMON_ICON.DOCK_CATALOG);
+const iconDockShop = getIconPath(ICON_CATEGORY.UI, COMMON_ICON.DOCK_SHOP);
+const iconDockGarden = getIconPath(ICON_CATEGORY.UI, COMMON_ICON.DOCK_GARDEN);
+const iconUiActivity = getIconPath(ICON_CATEGORY.UI, COMMON_ICON.UI_ACTIVITY);
+const iconToolWater = getIconPath(ICON_CATEGORY.TOOLS, COMMON_ICON.TOOL_WATER);
+const iconToolFertilizer = getIconPath(ICON_CATEGORY.TOOLS, COMMON_ICON.TOOL_FERTILIZER);
+const iconToolButterfly = getIconPath(ICON_CATEGORY.TOOLS, COMMON_ICON.TOOL_BUTTERFLY);
 const GARDEN_ORGANIC = [
   // 3 排 8 朵：第一排 3、中排 2、底排 3 — 偏移盡量小避免分散
   { x: -2, y: -3, r: -4, s: 1.05 },
@@ -555,7 +564,7 @@ onUnmounted(() => {
 
           <div class="gear-wrap">
             <button type="button" class="gear-btn" @click="showSettings = !showSettings" aria-label="設定">
-              <GardenUiIcons kind="gear" :size="22" />
+              <img class="png-icon-gear" :src="iconUiSettings" alt="" draggable="false" />
             </button>
             <div v-if="showSettings" class="settings-dropdown">
               <button type="button" @click="showSettings = false; emit('change-tab', 'inventory')">🎒 道具箱</button>
@@ -585,7 +594,7 @@ onUnmounted(() => {
             @mousedown.stop
             @click="playSound('button'); emit('change-tab', 'catalog')"
           >
-            <span class="fab-ico"><GardenUiIcons kind="book" :size="22" /></span>
+            <span class="fab-ico"><img class="png-icon-fab" :src="iconDockCatalog" alt="" draggable="false" /></span>
             <span class="fab-lbl">圖鑑</span>
           </button>
         </div>
@@ -617,23 +626,23 @@ onUnmounted(() => {
           @click="playSound('button'); emit('change-tab', 'dailyMission')"
         >
           <span v-if="taskBadgeCount > 0" class="task-fab-badge">{{ taskBadgeCount }}</span>
-          <span class="task-fab-ico"><GardenUiIcons kind="clipboard" :size="22" /></span>
+          <span class="task-fab-ico"><img class="png-icon-task" :src="iconUiTask" alt="" draggable="false" /></span>
           <span class="task-fab-lbl">任務</span>
         </button>
 
         <aside class="left-rail" @touchmove.stop.prevent @mousedown.stop>
           <button type="button" class="rail-item rail-tool" @click="quickUseRain">
-            <span class="rail-ico"><GardenUiIcons kind="water" :size="22" /></span>
+            <span class="rail-ico"><img class="png-icon-rail" :src="iconToolWater" alt="" draggable="false" /></span>
             <span class="rail-txt">澆水壺</span>
             <span class="rail-sub">×{{ rainOwned }}</span>
           </button>
           <button type="button" class="rail-item rail-tool" @click="quickUseFert">
-            <span class="rail-ico"><GardenUiIcons kind="fertilizer" :size="22" /></span>
+            <span class="rail-ico"><img class="png-icon-rail" :src="iconToolFertilizer" alt="" draggable="false" /></span>
             <span class="rail-txt">花肥</span>
             <span class="rail-sub">×{{ fertOwned }}</span>
           </button>
           <button type="button" class="rail-item rail-tool" @click="quickUseStar">
-            <span class="rail-ico"><GardenUiIcons kind="butterfly" :size="22" /></span>
+            <span class="rail-ico"><img class="png-icon-rail" :src="iconToolButterfly" alt="" draggable="false" /></span>
             <span class="rail-txt">蝴蝶燈</span>
             <span class="rail-sub" :class="{ on: butterflyOn }">{{ butterflyOn ? 'ON' : '—' }}</span>
           </button>
@@ -679,20 +688,20 @@ onUnmounted(() => {
 
         <nav class="bottom-dock" @touchmove.stop.prevent @mousedown.stop>
           <button type="button" class="dock-btn" @click="playSound('button'); emit('change-tab', 'catalog')">
-            <span class="dock-ico"><GardenUiIcons kind="book" :size="24" /></span>
+            <span class="dock-ico"><img class="png-icon-dock" :src="iconDockCatalog" alt="" draggable="false" /></span>
             <span class="dock-lbl">圖鑑</span>
           </button>
           <button type="button" class="dock-btn" @click="playSound('button'); emit('change-tab', 'shop')">
-            <span class="dock-ico"><GardenUiIcons kind="shop" :size="24" /></span>
+            <span class="dock-ico"><img class="png-icon-dock" :src="iconDockShop" alt="" draggable="false" /></span>
             <span class="dock-lbl">商店</span>
           </button>
           <button type="button" class="dock-btn" @click="playSound('button'); emit('change-tab', 'map')">
-            <span class="dock-ico"><GardenUiIcons kind="pot" :size="24" /></span>
+            <span class="dock-ico"><img class="png-icon-dock" :src="iconDockGarden" alt="" draggable="false" /></span>
             <span class="dock-lbl">花園佈置</span>
           </button>
           <button type="button" class="dock-btn" @click="playSound('button'); emit('change-tab', 'activityHub')">
             <span v-if="activityBadgeCount > 0" class="dock-badge">{{ activityBadgeCount }}</span>
-            <span class="dock-ico"><GardenUiIcons kind="gift" :size="24" /></span>
+            <span class="dock-ico"><img class="png-icon-dock" :src="iconUiActivity" alt="" draggable="false" /></span>
             <span class="dock-lbl">活動</span>
           </button>
         </nav>
@@ -1068,6 +1077,53 @@ onUnmounted(() => {
   line-height: 0;
 }
 .gear-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 #2d1f14; }
+
+/* public/assets/icons 內 PNG（檔名小寫，與 getIconPath 一致） */
+.png-icon-gear {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+  display: block;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+.png-icon-fab {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+  display: block;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+.png-icon-task {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+  display: block;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+.png-icon-rail {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+  display: block;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+.png-icon-dock {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+  display: block;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
 
 .settings-dropdown {
   position: absolute;

@@ -24,23 +24,31 @@ export const ICON_CATEGORY = {
  * | UI_TASK | ui | 任務／每日任務入口按鈕 |
  * | UI_SETTINGS | ui | 設定（齒輪）按鈕 |
  * | UI_ACTIVITY | ui | 活動中心／福利聚合入口 |
+ * | UI_HOME | ui | 首頁（可選） |
  * | TOOL_WATER | tools | 澆水壺道具 |
  * | TOOL_FERTILIZER | tools | 花肥道具 |
  * | TOOL_BUTTERFLY | tools | 蝴蝶燈（五星機率 buff）道具 |
- * | CUR_PETAL | currency | 花幣（花瓣貨幣）顯示 |
- * | CUR_DIAMOND | currency | 鑽石顯示 |
+ * | CUR_PETAL | currency | 花幣（花瓣貨幣）長條圖 |
+ * | CUR_DIAMOND | currency | 鑽石長條圖 |
  * | CUR_TICKET | currency | 旅遊機票（地圖／背包）顯示 |
+ * | DOCK_CATALOG | ui | 圖鑑（右上圓鈕、底部 Dock） |
+ * | DOCK_SHOP | ui | 商店（底部 Dock） |
+ * | DOCK_GARDEN | ui | 花園佈置（底部 Dock） |
  */
 export const COMMON_ICON = {
   UI_TASK: 'ui_task',
   UI_SETTINGS: 'ui_settings',
   UI_ACTIVITY: 'ui_activity',
+  UI_HOME: 'ui_home',
   TOOL_WATER: 'tool_water',
   TOOL_FERTILIZER: 'tool_fertilizer',
   TOOL_BUTTERFLY: 'tool_butterfly',
   CUR_PETAL: 'cur_petal',
   CUR_DIAMOND: 'cur_diamond',
   CUR_TICKET: 'cur_ticket',
+  DOCK_CATALOG: 'dock_catalog',
+  DOCK_SHOP: 'dock_shop',
+  DOCK_GARDEN: 'dock_garden',
 };
 
 const ICON_ALLOWED_EXT = new Set(['png', 'webp', 'jpg', 'jpeg', 'svg']);

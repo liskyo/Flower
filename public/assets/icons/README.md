@@ -4,6 +4,14 @@
 
 ## 子目錄約定
 
+主場景已使用的檔名（小寫、`.png`）：
+
+- **ui/**：`ui_task.png`、`ui_settings.png`、`ui_activity.png`、`dock_catalog.png`、`dock_shop.png`、`dock_garden.png`、`ui_home.png`（可選）
+- **tools/**：`tool_water.png`、`tool_fertilizer.png`、`tool_butterfly.png`
+- **currency/**：`cur_petal.png`、`cur_diamond.png`
+
+新增一批中文檔名後，可執行 `npm run icons:normalize` 重新整理（會刪除重複／不合規檔名，請先備份）。
+
 | 目錄 | 用途 |
 |------|------|
 | `ui/` | 介面通用按鈕：任務、設定、活動中心等 |
